@@ -1,14 +1,23 @@
 package com.xylope.betriot.data.riotdata;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Builder
 public class SummonerDto {
+    @Getter @Setter
     private String accountId;
+    @Getter @Setter
     private int profileIconId;
+    @Getter @Setter
     private long revisionDate;
+    @Getter @Setter
     private String name;
+    @Getter @Setter
     private String id;
+    @Getter @Setter
     private String puuid;
-    private int summonerLevel;
+    @Getter @Setter
+    private long summonerLevel;
 }
