@@ -5,5 +5,8 @@
 
     <bean id="summonerDao" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerDao">
         <property name="riotApiKey" ref="riotApiKey"/>
+        <property name="callback" ref="summonerApiCallback"/>
     </bean>
+
+    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerDao$SummonerAPICallback"/>
 </beans>

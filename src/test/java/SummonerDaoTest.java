@@ -37,4 +37,28 @@ public class SummonerDaoTest {
         assertEquals(summoner.getId(), testSummoner.getId());
         assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
     }
+
+    @Test
+    public void testGetByName() {
+        SummonerDto summoner = summonerDao.getByName(testSummoner.getName());
+        assertEquals(summoner.getAccountId(), testSummoner.getAccountId());
+        assertEquals(summoner.getId(), testSummoner.getId());
+        assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
+    }
+
+    @Test
+    public void testGetByPuuid() {
+        SummonerDto summoner = summonerDao.getByPuuid(testSummoner.getPuuid());
+        assertEquals(summoner.getAccountId(), testSummoner.getAccountId());
+        assertEquals(summoner.getId(), testSummoner.getId());
+        assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
+    }
+
+    @Test
+    public void testGetById() {
+        SummonerDto summoner = summonerDao.getById(testSummoner.getId());
+        assertEquals(summoner.getAccountId(), testSummoner.getAccountId());
+        assertEquals(summoner.getId(), testSummoner.getId());
+        assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
+    }
 }

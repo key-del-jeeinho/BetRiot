@@ -1,5 +1,6 @@
 package com.xylope.betriot.layer.dataaccess;
 
+import com.google.gson.JsonObject;
 import com.xylope.betriot.data.riotdata.SummonerDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,38 +8,48 @@ import lombok.Setter;
 import java.util.List;
 
 public class SummonerV4SummonerDao implements SummonerDao{
+    @Setter
+    private RiotAPICallback<SummonerDto> callback;
     @Setter @Getter
     private String riotApiKey;
+
     @Override//TODO 2021.02.19 | 미구현 | Xylope
     public SummonerDto getByName(String name) {
-        return null;
+        return RiotAPITemplate.getData( "lol/summoner/v4/summoners/by-name/" + name + "?api_key=" + riotApiKey, callback);
     }
 
     @Override//TODO 2021.02.19 | 미구현 | Xylope
     public SummonerDto getById(String id) {
-        return null;
+        return RiotAPITemplate.getData( "lol/summoner/v4/summoners/" + id + "?api_key=" + riotApiKey, callback);
     }
 
     @Override//TODO 2021.02.19 | 미구현 | Xylope
     public SummonerDto getByPuuid(String puuid) {
-        return null;
+        return RiotAPITemplate.getData( "lol/summoner/v4/summoners/by-puuid/" + puuid + "?api_key=" + riotApiKey, callback);
     }
 
     @Override//TODO 2021.02.19 | 미구현 | Xylope
     public SummonerDto getByAccountId(String accountId) {
-        return RiotAPITemplate.getData("https://kr.api.riotgames.com//lol/summoner/v4/summoners/by-account/" + accountId + "?api_key=" + riotApiKey,
-                k-> SummonerDto.builder()
-                .profileIconId(k.get("profileIconId").getAsInt())
-                .name(k.get("name").getAsString())
-                .puuid(k.get("puuid").getAsString())
-                .summonerLevel(k.get("summonerLevel").getAsLong())
-                .revisionDate(k.get("revisionDate").getAsLong())
-                .id(k.get("id").getAsString())
-                .accountId(k.get("accountId").getAsString()).build());
+        return RiotAPITemplate.getData( "lol/summoner/v4/summoners/by-account/" + accountId + "?api_key=" + riotApiKey, callback);
     }
 
+
     @Override//TODO 2021.02.19 | 미구현 | Xylope
-    public List<SummonerDto> getByMatch(String matchId해당변수이름수정바람) {
+    public List<SummonerDto> getByMatch(String matchId) {
         return null;
+    }
+
+    static class SummonerAPICallback implements RiotAPICallback<SummonerDto> {
+        @Override
+        public SummonerDto getRiotDataObject(JsonObject k) {
+            return SummonerDto.builder()
+                    .profileIconId(k.get("profileIconId").getAsInt())
+                    .name(k.get("name").getAsString())
+                    .puuid(k.get("puuid").getAsString())
+                    .summonerLevel(k.get("summonerLevel").getAsLong())
+                    .revisionDate(k.get("revisionDate").getAsLong())
+                    .id(k.get("id").getAsString())
+                    .accountId(k.get("accountId").getAsString()).build();
+        }
     }
 }

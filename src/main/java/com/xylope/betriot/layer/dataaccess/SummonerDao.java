@@ -1,7 +1,6 @@
 package com.xylope.betriot.layer.dataaccess;
 
 import com.xylope.betriot.data.riotdata.SummonerDto;
-
 import java.util.List;
 
 public interface SummonerDao extends RiotDao {
@@ -9,5 +8,5 @@ public interface SummonerDao extends RiotDao {
     SummonerDto getById(String id);
     SummonerDto getByPuuid(String puuid);
     SummonerDto getByAccountId(String accountId);
-    List<SummonerDto> getByMatch(String matchId해당변수이름수정바람);
+    List<SummonerDto> getByMatch(String matchId);
 }

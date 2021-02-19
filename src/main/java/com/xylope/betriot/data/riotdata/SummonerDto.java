@@ -3,8 +3,9 @@ package com.xylope.betriot.data.riotdata;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-@Builder
+@Builder @ToString
 public class SummonerDto {
     @Getter @Setter
     private String accountId;

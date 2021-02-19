@@ -2,7 +2,6 @@ package com.xylope.betriot.layer.dataaccess;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.xylope.betriot.data.riotdata.SummonerDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +17,7 @@ public class RiotAPITemplate {
         BufferedReader br = null;
 
         try {
-            url = new URL(urlStr);
+            url = new URL(RiotDao.rootUrl + urlStr);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
