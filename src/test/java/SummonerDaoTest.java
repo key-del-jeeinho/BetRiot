@@ -35,8 +35,6 @@ public class SummonerDaoTest {
         SummonerDto summoner = summonerDao.getByAccountId(testSummoner.getAccountId());
         assertEquals(summoner.getAccountId(), testSummoner.getAccountId());
         assertEquals(summoner.getId(), testSummoner.getId());
-        assertNotNull(summoner.getPuuid());
-        assertNotNull(testSummoner.getPuuid());
-        //assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
+        assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
     }
 }
