@@ -17,7 +17,7 @@ public class RiotAPITemplate {
         BufferedReader br = null;
 
         try {
-            url = new URL(RiotDao.rootUrl + urlStr);
+            url = new URL(RiotAPI.rootUrl + urlStr);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));

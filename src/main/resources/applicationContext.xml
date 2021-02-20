@@ -3,10 +3,40 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="summonerDao" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerDao">
+    <!-- JDA Events and CustomEventManager -->
+    <bean id="jdaEventManager" class="com.xylope.betriot.JDAEventManager">
+        <property name="listeners">
+            <list>
+                <ref bean="userJoinListener"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="userJoinListener" class="com.xylope.betriot.layer.service.listener.UserJoinListener"/>
+
+    <!-- Riot API -->
+    <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerAPI">
         <property name="riotApiKey" ref="riotApiKey"/>
         <property name="callback" ref="summonerApiCallback"/>
     </bean>
 
-    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerDao$SummonerAPICallback"/>
+    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerAPI$SummonerAPICallback"/>
+
+
+    <!-- DAOs -->
+    <bean id="userDao" class="com.xylope.betriot.layer.logic.dao.UserDaoJdbc">
+        <property name="jdbc" ref="jdbcTemplate"/>
+    </bean>
+
+    <bean id = "jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/bet_riot_test?characterEncoding=UTF-8&amp;serverTimezone=UTC"/>
+        <property name="username" value="root"/>
+        <property name="password" value="0000"/>
+    </bean>
 </beans>
+
