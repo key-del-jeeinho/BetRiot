@@ -12,7 +12,10 @@
         </property>
     </bean>
 
-    <bean id="userJoinListener" class="com.xylope.betriot.layer.service.listener.UserJoinListener"/>
+    <bean id="userJoinListener" class="com.xylope.betriot.layer.service.listener.UserJoinListener">
+        <property name="dao" ref="userDao"/>
+        <property name="summonerAPI" ref="summonerApi"/>
+    </bean>
 
     <!-- Riot API -->
     <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerAPI">

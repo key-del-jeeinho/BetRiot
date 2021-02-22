@@ -64,7 +64,7 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public void update(User user) {
-        jdbc.update("update users set discord_id = ?, riot_id = ?, money = ?", user.getDiscordId(), user.getRiotId(), user.getMoney());
+        jdbc.update("update users set discord_id = ?, riot_id = ?, money = ? where discord_id = ?", user.getDiscordId(), user.getRiotId(), user.getMoney(), user.getDiscordId());
     }
 
     @Override
