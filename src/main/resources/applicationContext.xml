@@ -12,7 +12,7 @@
         </property>
     </bean>
 
-    <bean id="userJoinListener" class="com.xylope.betriot.layer.service.listener.UserJoinListener">
+    <bean id="userJoinListener" class="com.xylope.betriot.layer.service.discord.listener.UserJoinListener">
         <property name="dao" ref="userDao"/>
         <property name="summonerAPI" ref="summonerApi"/>
     </bean>
@@ -27,7 +27,7 @@
 
 
     <!-- DAOs -->
-    <bean id="userDao" class="com.xylope.betriot.layer.logic.dao.UserDaoJdbc">
+    <bean id="userDao" class="com.xylope.betriot.layer.domain.dao.UserDaoJdbc">
         <property name="jdbc" ref="jdbcTemplate"/>
     </bean>
 

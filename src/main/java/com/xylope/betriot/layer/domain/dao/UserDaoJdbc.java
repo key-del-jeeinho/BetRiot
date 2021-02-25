@@ -1,6 +1,6 @@
-package com.xylope.betriot.layer.logic.dao;
+package com.xylope.betriot.layer.domain.dao;
 
-import com.xylope.betriot.layer.logic.vo.User;
+import com.xylope.betriot.layer.domain.vo.User;
 import lombok.Setter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;

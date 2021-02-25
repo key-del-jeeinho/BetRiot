@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.logic.vo;
+package com.xylope.betriot.layer.domain.vo;
 
 import lombok.*;
 
