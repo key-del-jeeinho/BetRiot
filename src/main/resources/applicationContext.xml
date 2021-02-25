@@ -7,16 +7,9 @@
     <bean id="jdaEventManager" class="com.xylope.betriot.JDAEventManager">
         <property name="listeners">
             <list>
-                <ref bean="userJoinListener"/>
             </list>
         </property>
     </bean>
-
-    <bean id="userJoinListener" class="com.xylope.betriot.layer.service.discord.listener.UserJoinListener">
-        <property name="dao" ref="userDao"/>
-        <property name="summonerAPI" ref="summonerApi"/>
-    </bean>
-
     <!-- Riot API -->
     <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerAPI">
         <property name="riotApiKey" ref="riotApiKey"/>
