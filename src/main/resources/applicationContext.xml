@@ -3,13 +3,27 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!-- Services -->
+    <bean id="userRegisterService" class="com.xylope.betriot.layer.service.user.UserRegisterService">
+        <constructor-arg ref="guildMemberJoinListener"/>
+        <constructor-arg ref="privateMessageReactionAddListener"/>
+        <property name="dao" ref="userDao"/>
+    </bean>
+
     <!-- JDA Events and CustomEventManager -->
     <bean id="jdaEventManager" class="com.xylope.betriot.JDAEventManager">
         <property name="listeners">
             <list>
+                <ref bean="guildMemberJoinListener"/>
+                <ref bean="messageReceivedListener"/>
+                <ref bean="privateMessageReactionAddListener"/>
             </list>
         </property>
     </bean>
+
+    <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener"/>
+    <bean id="messageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener"/>
+    <bean id="privateMessageReactionAddListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener"/>
     <!-- Riot API -->
     <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerAPI">
         <property name="riotApiKey" ref="riotApiKey"/>

@@ -3,9 +3,7 @@ package com.xylope.betriot.layer.service.user;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class UnRegisterUser {
     @Getter
     private RegisterProgress progress;
@@ -13,7 +11,12 @@ public class UnRegisterUser {
     private final long discordId;
     private long termsMessageId;
     private boolean isTermsAccept;
-    private String riotName;
+    private long riotId;
+
+    public UnRegisterUser(long discordId) {
+        this.discordId = discordId;
+        this.progress = RegisterProgress.UNREGISTERED;
+    }
 
     private <R> R doSomethingAt(DoSomethingCallback<R> callback, RegisterProgress progress) throws WrongRegisterProgressException {
         if(checkProgress(progress))
@@ -22,27 +25,27 @@ public class UnRegisterUser {
     }
 
     public long getTermsMessageId() throws WrongRegisterProgressException {
-        return doSomethingAt(()->termsMessageId, RegisterProgress.TERMS);
+        return doSomethingAt(()->termsMessageId, RegisterProgress.CHECK_TERMS);
     }
 
     public void setTermsMessageId(long termsMessageId) throws WrongRegisterProgressException {
-        doSomethingAt(()->this.termsMessageId = termsMessageId, RegisterProgress.TERMS);
+        doSomethingAt(()->this.termsMessageId = termsMessageId, RegisterProgress.CHECK_TERMS);
     }
 
     public boolean isTermsAccept() throws WrongRegisterProgressException {
-        return doSomethingAt(()->isTermsAccept, RegisterProgress.TERMS);
+        return doSomethingAt(()->isTermsAccept, RegisterProgress.CHECK_TERMS);
     }
 
     public void setTermsAccept(boolean isTermsAccept) throws WrongRegisterProgressException {
-        doSomethingAt(()->this.isTermsAccept = isTermsAccept, RegisterProgress.TERMS);
+        doSomethingAt(()->this.isTermsAccept = isTermsAccept, RegisterProgress.CHECK_TERMS);
     }
 
-    public String getRiotName() throws WrongRegisterProgressException {
-        return doSomethingAt(()->this.riotName, RegisterProgress.RIOT_AUTHORIZE);
+    public long getRiotId() throws WrongRegisterProgressException {
+        return doSomethingAt(()->this.riotId, RegisterProgress.RIOT_AUTHORIZE);
     }
 
-    public void setRiotName(String riotName) throws WrongRegisterProgressException {
-        doSomethingAt(()->this.riotName = riotName, RegisterProgress.RIOT_AUTHORIZE);
+    public void setRiotId(long riotId) throws WrongRegisterProgressException {
+        doSomethingAt(()->this.riotId = riotId, RegisterProgress.RIOT_AUTHORIZE);
     }
 
     public boolean checkProgress(RegisterProgress progress) {
