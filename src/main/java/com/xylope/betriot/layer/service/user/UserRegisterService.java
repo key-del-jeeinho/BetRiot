@@ -26,21 +26,19 @@ public class UserRegisterService {
     private final Set<UnRegisterUser> unRegisterUserQueue;
     @Setter
     UserDao dao;
-    private GuildMemberJoinListener guildMemberJoinListener;
-    private PrivateMessageReactionAddListener privateMessageReactionAddListener;
 
     public UserRegisterService(GuildMemberJoinListener guildMemberJoinListener, PrivateMessageReactionAddListener privateMessageReactionAddListener) {
         unRegisterUserQueue = new HashSet<>();
-        this.guildMemberJoinListener = guildMemberJoinListener;
-        this.privateMessageReactionAddListener = privateMessageReactionAddListener;
 
         guildMemberJoinListener.addListener(this::checkIsUserUnRegistered);
         privateMessageReactionAddListener.addListener(this::checkTermsAccept);
     }
+
     public void registerUser(Guild guild, User user) {
         //Build Message
         PrivateChannel pc = user.openPrivateChannel().complete();
 
+        //TODO 2021.02.27 | 추후 Property 사용할것 | Xylope
         String registerMessage = String.format(
                 "%s님이 계신 BetRiot %s 서버는 벳라이엇봇이 적용된 서버입니다.\n" +
                 "벳라이엇은 여러분의 LOL 경기를 디스코드에 중계하고, 다른 유저분들이 해당 경기에 포인트를 배팅할 수 있는 봇 입니다.\n",
@@ -60,14 +58,19 @@ public class UserRegisterService {
                 .setFooter("made by Xylope")
                 .build();
 
-        AtomicLong messageId = new AtomicLong();
-        pc.sendMessage(content).queue((message)->messageId.set(message.getIdLong()));
+        pc.sendMessage(content).queue((message)-> {
+            message.addReaction(SpecialEmote.TERMS_AGREE.getEmote()).queue();
+            message.addReaction(SpecialEmote.TERMS_DISAGREE.getEmote()).queue();
+            prepareCheckTerm(user, message.getIdLong());
+        });
+    }
 
-        //Prepare to nextStep
+    public void prepareCheckTerm(User user, long messageId) {
+        //Prepare to CheckTermStep
         UnRegisterUser unRegisterUser = new UnRegisterUser(user.getIdLong());
         unRegisterUser.nextStep();
         try {
-            unRegisterUser.setTermsMessageId(messageId.get());
+            unRegisterUser.setTermsMessageId(messageId);
         } catch (WrongRegisterProgressException e) {
             System.out.println("Use setTermsMessageId method when RegisterProcess isn't " + RegisterProgress.CHECK_TERMS);
             e.printStackTrace();
