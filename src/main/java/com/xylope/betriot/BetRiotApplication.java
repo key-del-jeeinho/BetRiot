@@ -16,7 +16,7 @@ public class BetRiotApplication {
     @Getter
     private static GenericXmlApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml", "/secretContext.xml");
     @Getter
-    private JDA jda;
+    private final JDA jda;
     @Autowired
     private final JDAEventManager mng;
     private final UserRegisterService registerService;

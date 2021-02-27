@@ -1,5 +1,6 @@
 package com.xylope.betriot.layer.service.user;
 
+import com.xylope.betriot.exception.NotExistIDException;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.service.SpecialEmote;
@@ -18,17 +19,16 @@ import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEv
 import java.awt.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class UserRegisterService {
     @Getter
-    private final Set<UnRegisterUser> unRegisterUserQueue;
+    private final UnRegisterUserSet unRegisterUserSet;
     @Setter
     UserDao dao;
 
     public UserRegisterService(GuildMemberJoinListener guildMemberJoinListener, PrivateMessageReactionAddListener privateMessageReactionAddListener) {
-        unRegisterUserQueue = new HashSet<>();
+        unRegisterUserSet = new UnRegisterUserSet();
 
         guildMemberJoinListener.addListener(this::checkIsUserUnRegistered);
         privateMessageReactionAddListener.addListener(this::checkTermsAccept);
@@ -75,7 +75,7 @@ public class UserRegisterService {
             System.out.println("Use setTermsMessageId method when RegisterProcess isn't " + RegisterProgress.CHECK_TERMS);
             e.printStackTrace();
         }
-        unRegisterUserQueue.add(unRegisterUser);
+        unRegisterUserSet.add(unRegisterUser);
     }
 
     //RepeatListeners
@@ -93,43 +93,38 @@ public class UserRegisterService {
         long messageId = event.getMessageIdLong();
         User user = event.getChannel().getUser();
 
-        AtomicBoolean isTermsMessage = new AtomicBoolean(false);
-        AtomicReference<UnRegisterUser> target = new AtomicReference<>();
+        boolean isTermsMessage =  unRegisterUserSet.isMessageTerms(messageId);
+        UnRegisterUser target = null;
+
+        if (isTermsMessage)
+            target = unRegisterUserSet.getUserByTermsMessageId(messageId);
 
         //Find unRegisterUser at queue to termsMessageId
-        unRegisterUserQueue.forEach(unRegisterUser -> {
-            try {
-                if(unRegisterUser.getTermsMessageId() == messageId) {
-                    isTermsMessage.set(true);
-                    target.set(unRegisterUser);
-                }
-            } catch (WrongRegisterProgressException e) {
-                e.printStackTrace();
-            }
-        });
 
         //Check is Emote SpecialEmote.TERMS_XXX
-        if(isTermsMessage.get()) {
+        if(isTermsMessage) {
             String emote = event.getReactionEmote().getName();
             try {
                 if (emote.equals(SpecialEmote.TERMS_AGREE.getEmote())) {
-                    agreeTerms(target.get(), user);
-                    target.get().setTermsAccept(true);
+                    agreeTerms(target, user);
                 } else if (emote.equals(SpecialEmote.TERMS_DISAGREE.getEmote())) {
-                    disagreeTerms(target.get(), user);
-                    target.get().setTermsAccept(false);
+                    disagreeTerms(target, user);
                 }
 
             } catch (WrongRegisterProgressException e) {
                 System.out.println("Use setTermsAccept method when RegisterProcess isn't " + RegisterProgress.CHECK_TERMS);
                 PrivateChannel pc = user.openPrivateChannel().complete();
-                pc.sendMessage("오류가 발생하였습니다! 다음 메세지를 관리자에게 보여주세요\n```" + Arrays.toString(e.getStackTrace()) + "```").queue();
+                pc.sendMessage("오류가 발생하였습니다! 다음 메세지를 관리자에게 보여주세요\n```" +
+                "Use setTermsAccept method when RegisterProcess isn't " + RegisterProgress.CHECK_TERMS + "\n" +
+                e.getMessage() + "```").queue();
                 pc.close().complete();
             }
         }
     }
 
-    private void agreeTerms(UnRegisterUser unRegisterUser, User user) {
+    private void agreeTerms(UnRegisterUser unRegisterUser, User user) throws WrongRegisterProgressException {
+        unRegisterUser.setTermsAccept(true);
+
         PrivateChannel pc = user.openPrivateChannel().complete();
         pc.sendMessage("약관에 동의하셧습니다").queue();
 
@@ -137,9 +132,12 @@ public class UserRegisterService {
         pc.sendMessage("라이엇 닉네임을 입력해주세요!").queue();
     }
 
-    private void disagreeTerms(UnRegisterUser unRegisterUser, User user) {
+    private void disagreeTerms(UnRegisterUser unRegisterUser, User user) throws WrongRegisterProgressException {
+        unRegisterUser.setTermsAccept(false);
+
         PrivateChannel pc = user.openPrivateChannel().complete();
         pc.sendMessage("약관에 비동의하셧습니다! 만약, 가입을 희망하시면 해당 봇이 적용된 서버에 다시 들어와주세요! 이용해주셔서 감사합니다 :)").queue();
-        unRegisterUserQueue.remove(unRegisterUser);
+
+        unRegisterUserSet.remove(unRegisterUser);
     }
 }
