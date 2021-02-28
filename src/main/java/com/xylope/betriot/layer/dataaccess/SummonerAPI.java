@@ -4,7 +4,7 @@ import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import java.util.List;
 
 public interface SummonerAPI extends RiotAPI {
-    SummonerDto getByName(String name);
+    SummonerDto getByName(String name) ;
     SummonerDto getById(String id);
     SummonerDto getByPuuid(String puuid);
     SummonerDto getByAccountId(String accountId);

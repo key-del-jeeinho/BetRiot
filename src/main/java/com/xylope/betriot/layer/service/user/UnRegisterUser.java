@@ -10,7 +10,7 @@ public class UnRegisterUser {
     @Getter @NonNull
     private final long discordId;
     private long termsMessageId;
-    private boolean isTermsAccept;
+    private boolean isTermsAgree;
     private long riotId;
 
     public UnRegisterUser(long discordId) {
@@ -32,12 +32,12 @@ public class UnRegisterUser {
         doSomethingAt(()->this.termsMessageId = termsMessageId, RegisterProgress.CHECK_TERMS);
     }
 
-    public boolean isTermsAccept() throws WrongRegisterProgressException {
-        return doSomethingAt(()->isTermsAccept, RegisterProgress.CHECK_TERMS);
+    public boolean isTermsAgree() throws WrongRegisterProgressException {
+        return doSomethingAt(()->isTermsAgree, RegisterProgress.CHECK_TERMS);
     }
 
-    public void setTermsAccept(boolean isTermsAccept) throws WrongRegisterProgressException {
-        doSomethingAt(()->this.isTermsAccept = isTermsAccept, RegisterProgress.CHECK_TERMS);
+    public void setTermsAgree(boolean isTermsAgree) throws WrongRegisterProgressException {
+        doSomethingAt(()->this.isTermsAgree = isTermsAgree, RegisterProgress.CHECK_TERMS);
     }
 
     public long getRiotId() throws WrongRegisterProgressException {

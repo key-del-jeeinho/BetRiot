@@ -13,15 +13,15 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(locations = {"/applicationContext.xml", "/secretContext.xml"})
 public class SummonerAPITest {
     @Autowired
-    SummonerAPI summonerDao;
+    SummonerAPI summonerAPI;
     SummonerDto testSummoner;
 
     @Before
     public void setUp() {
         testSummoner = SummonerDto.builder()
-                .id("nXAQ7K_nuISCFYM-4FwAbz-FOBVANB9lICXpE3I6lbRC28o")
-                .accountId("fmK-bR76A5c_J9PlX7Kmr0m9wNIY-KTKs9kmZuBJBC9grPE4UVJpuMQV")
-                .puuid("yUZtK3XtKhyiCxX-D8zsBR95egK7QidscxwmhhXsV33vWtERKJBvMwySi-g72hPPCUc5ykjuCOJu7w")
+                .id("zYB6KP19JlRLGII2035PPhMxmqugF9ZfIqkHCmbPefMHbEg")
+                .accountId("D9vN4A3-YFyW6CiNlWnBsSzckOQE-DBS59kKqn4PpeaZyLO-NbUNx3s8")
+                .puuid("mMo9n9ZnK48C8XyKZ3AweGOtWpa7qE-dhnd-ON4sEyexpdPAZeLpzFRKV7MVhsOp8ystb3H4JY3Jaw")
                 .name("엄준식사하셧나요")
                 .profileIconId(4777)
                 .revisionDate(1613475547000L)
@@ -31,7 +31,7 @@ public class SummonerAPITest {
 
     @Test
     public void testGetByAccountId() {
-        SummonerDto summoner = summonerDao.getByAccountId(testSummoner.getAccountId());
+        SummonerDto summoner = summonerAPI.getByAccountId(testSummoner.getAccountId());
         assertEquals(summoner.getAccountId(), testSummoner.getAccountId());
         assertEquals(summoner.getId(), testSummoner.getId());
         assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
@@ -39,7 +39,7 @@ public class SummonerAPITest {
 
     @Test
     public void testGetByName() {
-        SummonerDto summoner = summonerDao.getByName(testSummoner.getName());
+        SummonerDto summoner = summonerAPI.getByName(testSummoner.getName());
         assertEquals(summoner.getAccountId(), testSummoner.getAccountId());
         assertEquals(summoner.getId(), testSummoner.getId());
         assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
@@ -47,7 +47,7 @@ public class SummonerAPITest {
 
     @Test
     public void testGetByPuuid() {
-        SummonerDto summoner = summonerDao.getByPuuid(testSummoner.getPuuid());
+        SummonerDto summoner = summonerAPI.getByPuuid(testSummoner.getPuuid());
         assertEquals(summoner.getAccountId(), testSummoner.getAccountId());
         assertEquals(summoner.getId(), testSummoner.getId());
         assertEquals(summoner.getPuuid(), testSummoner.getPuuid());
@@ -55,7 +55,7 @@ public class SummonerAPITest {
 
     @Test
     public void testGetById() {
-        SummonerDto summoner = summonerDao.getById(testSummoner.getId());
+        SummonerDto summoner = summonerAPI.getById(testSummoner.getId());
         assertEquals(summoner.getAccountId(), testSummoner.getAccountId());
         assertEquals(summoner.getId(), testSummoner.getId());
         assertEquals(summoner.getPuuid(), testSummoner.getPuuid());

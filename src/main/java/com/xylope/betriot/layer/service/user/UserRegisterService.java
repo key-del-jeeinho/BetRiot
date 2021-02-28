@@ -1,37 +1,41 @@
 package com.xylope.betriot.layer.service.user;
 
-import com.xylope.betriot.exception.NotExistIDException;
+import com.xylope.betriot.exception.DataNotFoundException;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
+import com.xylope.betriot.layer.dataaccess.SummonerAPI;
+import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.service.SpecialEmote;
 import com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener;
 import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener;
+import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 
 import java.awt.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class UserRegisterService {
     @Getter
     private final UnRegisterUserSet unRegisterUserSet;
     @Setter
+    private SummonerAPI summonerAPI;
+    @Setter
     UserDao dao;
 
-    public UserRegisterService(GuildMemberJoinListener guildMemberJoinListener, PrivateMessageReactionAddListener privateMessageReactionAddListener) {
+    public UserRegisterService(GuildMemberJoinListener guildMemberJoinListener,
+                               PrivateMessageReactionAddListener privateMessageReactionAddListener,
+                               PrivateMessageReceivedListener privateMessageReceivedListener) {
         unRegisterUserSet = new UnRegisterUserSet();
 
         guildMemberJoinListener.addListener(this::checkIsUserUnRegistered);
-        privateMessageReactionAddListener.addListener(this::checkTermsAccept);
+        privateMessageReactionAddListener.addListener(this::checkTermsAgree);
+        privateMessageReceivedListener.addListener(this::authorizeRiotAccount);
     }
 
     public void registerUser(Guild guild, User user) {
@@ -79,6 +83,7 @@ public class UserRegisterService {
     }
 
     //RepeatListeners
+    //Condition of Register (if User Join Guild which Applied BetRiot)
     public void checkIsUserUnRegistered(GuildMemberJoinEvent event) {
         if(event.getUser().isBot()) return;
         Guild guild = event.getGuild();
@@ -88,7 +93,8 @@ public class UserRegisterService {
         }
     }
 
-    public void  checkTermsAccept(PrivateMessageReactionAddEvent event) {
+    //CheckPrivateMessageReaction is Emote of TermAgree or TermDisagree
+    public void checkTermsAgree(PrivateMessageReactionAddEvent event) {
         if(Objects.requireNonNull(event.getUser()).isBot()) return;
         long messageId = event.getMessageIdLong();
         User user = event.getChannel().getUser();
@@ -112,10 +118,10 @@ public class UserRegisterService {
                 }
 
             } catch (WrongRegisterProgressException e) {
-                System.out.println("Use setTermsAccept method when RegisterProcess isn't " + RegisterProgress.CHECK_TERMS);
+                System.out.println("Use setTermsAgree method when RegisterProcess isn't " + RegisterProgress.CHECK_TERMS);
                 PrivateChannel pc = user.openPrivateChannel().complete();
                 pc.sendMessage("오류가 발생하였습니다! 다음 메세지를 관리자에게 보여주세요\n```" +
-                "Use setTermsAccept method when RegisterProcess isn't " + RegisterProgress.CHECK_TERMS + "\n" +
+                "Use setTermsAgree method when RegisterProcess isn't " + RegisterProgress.CHECK_TERMS + "\n" +
                 e.getMessage() + "```").queue();
                 pc.close().complete();
             }
@@ -123,21 +129,55 @@ public class UserRegisterService {
     }
 
     private void agreeTerms(UnRegisterUser unRegisterUser, User user) throws WrongRegisterProgressException {
-        unRegisterUser.setTermsAccept(true);
+        unRegisterUser.setTermsAgree(true);
 
         PrivateChannel pc = user.openPrivateChannel().complete();
         pc.sendMessage("약관에 동의하셧습니다").queue();
 
         unRegisterUser.nextStep();
-        pc.sendMessage("라이엇 닉네임을 입력해주세요!").queue();
+        pc.sendMessage("소환사님의 라이엇 닉네임을 입력해주세요!").queue();
     }
 
     private void disagreeTerms(UnRegisterUser unRegisterUser, User user) throws WrongRegisterProgressException {
-        unRegisterUser.setTermsAccept(false);
+        unRegisterUser.setTermsAgree(false);
 
         PrivateChannel pc = user.openPrivateChannel().complete();
-        pc.sendMessage("약관에 비동의하셧습니다! 만약, 가입을 희망하시면 해당 봇이 적용된 서버에 다시 들어와주세요! 이용해주셔서 감사합니다 :)").queue();
+        pc.sendMessage("약관에 비동의하셧습니다! 해당 봇이 적용된 서버에 다시 들어오시거나, 벳라이엇의 서비스를 이용하실경우 회원가입을 재진행 할 수 있습니다! 이용해주셔서 감사합니다 :)").queue();
 
         unRegisterUserSet.remove(unRegisterUser);
+    }
+
+    public void authorizeRiotAccount(PrivateMessageReceivedEvent event) {
+        if (event.getAuthor().isBot()) return;
+        User user = event.getAuthor();
+        Message message = event.getMessage();
+        PrivateChannel pc = user.openPrivateChannel().complete();
+        long discordId = user.getIdLong();
+
+        if(unRegisterUserSet.isUserExistByDiscordId(discordId)) {
+            UnRegisterUser unRegisterUser = unRegisterUserSet.getUserByDiscordId(discordId);
+            if(unRegisterUser.getProgress().equals(RegisterProgress.RIOT_AUTHORIZE)) {
+                String unreliableRiotId = message.getContentRaw();
+                SummonerDto summonerDto = null;
+                try {
+                    summonerDto = summonerAPI.getByName(unreliableRiotId);
+                } catch (DataNotFoundException e) {
+                    pc.sendMessage("해당 이름을 가진 소환사를 찾을 수 없습니다! 다시시도해주세요!").queue();
+                    pc.close().queue();
+                    return;
+                }
+                MessageEmbed summonerProfileMessage = new EmbedBuilder()
+                        .setColor(new Color(227, 39, 87))
+                        //setImage()
+                        .setTitle(summonerDto.getName() + "님 환영합니다!")
+                        .addField("소환사님의 정보",
+                                String.format("이름 : %s\n레벨 : %d\n계정 식별자 : %s",
+                                        summonerDto.getName(),
+                                        summonerDto.getSummonerLevel(),
+                                        summonerDto.getAccountId()), true)
+                        .build();
+                pc.sendMessage(summonerProfileMessage).queue();
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@
     <bean id="userRegisterService" class="com.xylope.betriot.layer.service.user.UserRegisterService">
         <constructor-arg ref="guildMemberJoinListener"/>
         <constructor-arg ref="privateMessageReactionAddListener"/>
+        <constructor-arg ref="privateMessageReceivedListener"/>
+        <property name="summonerAPI" ref="summonerApi"/>
         <property name="dao" ref="userDao"/>
     </bean>
 
@@ -17,6 +19,7 @@
                 <ref bean="guildMemberJoinListener"/>
                 <ref bean="messageReceivedListener"/>
                 <ref bean="privateMessageReactionAddListener"/>
+                <ref bean="privateMessageReceivedListener"/>
             </list>
         </property>
     </bean>
@@ -24,7 +27,11 @@
     <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener"/>
     <bean id="messageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener"/>
     <bean id="privateMessageReactionAddListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener"/>
+    <bean id="privateMessageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener"/>
     <!-- Riot API -->
+    <bean id="dataDragonApi" class="com.xylope.betriot.layer.dataaccess.DataDragonAPIImpl">
+        <property name="riotApiKey" ref="riotApiKey"/>
+    </bean>
     <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerAPI">
         <property name="riotApiKey" ref="riotApiKey"/>
         <property name="callback" ref="summonerApiCallback"/>
