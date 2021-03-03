@@ -4,12 +4,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- Services -->
-    <bean id="userRegisterService" class="com.xylope.betriot.layer.service.user.UserRegisterService">
+    <bean id="userRegisterService" class="com.xylope.betriot.layer.service.user.register.UserRegisterService">
         <constructor-arg ref="guildMemberJoinListener"/>
         <constructor-arg ref="privateMessageReactionAddListener"/>
         <constructor-arg ref="privateMessageReceivedListener"/>
         <property name="summonerAPI" ref="summonerApi"/>
         <property name="dao" ref="userDao"/>
+        <property name="dataDragonAPI" ref="dataDragonApi"/>
     </bean>
 
     <!-- JDA Events and CustomEventManager -->

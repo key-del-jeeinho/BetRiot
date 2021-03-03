@@ -90,12 +90,6 @@ public class RiotAPITemplate {
         return getData(urlStr, callback, logic);
     }
 
-    public static  <T> T getData(String urlStr, RiotAPICallback.ReaderCallback<T> callback) {
-        Callback<T> logic = (br, urlStr1, callback1) -> callback.getRiotDataObject(br);
-
-        return getData(urlStr, callback, logic);
-    }
-
     @FunctionalInterface
     public interface Callback<T> {
         T doSomething(BufferedReader br, String urlStr, RiotAPICallback<T, ?> callback) throws IOException;

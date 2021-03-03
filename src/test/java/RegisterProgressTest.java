@@ -1,4 +1,4 @@
-import com.xylope.betriot.layer.service.user.RegisterProgress;
+import com.xylope.betriot.layer.service.user.register.RegisterProgress;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -1,7 +1,8 @@
-package com.xylope.betriot.layer.service.user;
+package com.xylope.betriot.layer.service.user.register;
 
 import com.xylope.betriot.exception.DataNotFoundException;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
+import com.xylope.betriot.layer.dataaccess.DataDragonAPI;
 import com.xylope.betriot.layer.dataaccess.SummonerAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import com.xylope.betriot.layer.domain.dao.UserDao;
@@ -18,6 +19,7 @@ import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 
 import java.awt.*;
+import java.net.MalformedURLException;
 import java.util.*;
 
 public class UserRegisterService {
@@ -25,6 +27,8 @@ public class UserRegisterService {
     private final UnRegisterUserSet unRegisterUserSet;
     @Setter
     private SummonerAPI summonerAPI;
+    @Setter
+    private DataDragonAPI dataDragonAPI;
     @Setter
     UserDao dao;
 
@@ -103,9 +107,8 @@ public class UserRegisterService {
         UnRegisterUser target = null;
 
         if (isTermsMessage)
+            //Find unRegisterUser at queue to termsMessageId
             target = unRegisterUserSet.getUserByTermsMessageId(messageId);
-
-        //Find unRegisterUser at queue to termsMessageId
 
         //Check is Emote SpecialEmote.TERMS_XXX
         if(isTermsMessage) {
@@ -154,8 +157,10 @@ public class UserRegisterService {
         PrivateChannel pc = user.openPrivateChannel().complete();
         long discordId = user.getIdLong();
 
+        //check user is exist in unRegisterUserSet
         if(unRegisterUserSet.isUserExistByDiscordId(discordId)) {
             UnRegisterUser unRegisterUser = unRegisterUserSet.getUserByDiscordId(discordId);
+            //check User's progress is RIOT_AUTHORIZE
             if(unRegisterUser.getProgress().equals(RegisterProgress.RIOT_AUTHORIZE)) {
                 String unreliableRiotId = message.getContentRaw();
                 SummonerDto summonerDto = null;
@@ -166,16 +171,26 @@ public class UserRegisterService {
                     pc.close().queue();
                     return;
                 }
-                MessageEmbed summonerProfileMessage = new EmbedBuilder()
-                        .setColor(new Color(227, 39, 87))
-                        //setImage()
-                        .setTitle(summonerDto.getName() + "님 환영합니다!")
-                        .addField("소환사님의 정보",
-                                String.format("이름 : %s\n레벨 : %d\n계정 식별자 : %s",
-                                        summonerDto.getName(),
-                                        summonerDto.getSummonerLevel(),
-                                        summonerDto.getAccountId()), true)
-                        .build();
+                MessageEmbed summonerProfileMessage = null;
+                //insert UserInformation to summonerProfileMessage
+                try {
+                    summonerProfileMessage = new EmbedBuilder()
+                            .setColor(new Color(227, 39, 87))
+                            .setImage(dataDragonAPI.getProfileIconURL(summonerDto.getProfileIconId()).toString())
+                            .setTitle(summonerDto.getName() + "님 환영합니다!")
+                            .addField("소환사님의 정보",
+                                    String.format("이름 : %s\n레벨 : %d\n계정 식별자 : %s",
+                                            summonerDto.getName(),
+                                            summonerDto.getSummonerLevel(),
+                                            summonerDto.getAccountId()), true)
+                            .build();
+                } catch (MalformedURLException e) {
+                    pc.sendMessage("요청을 처리하는 도중 오류가 일어났습니다! 다음 메세지를 관리자분께 보여주세요!" + e.getCause()).queue();
+                    e.printStackTrace();
+                }
+
+                assert summonerProfileMessage != null; //AssertMessage
+                //send InformationMessage
                 pc.sendMessage(summonerProfileMessage).queue();
             }
         }

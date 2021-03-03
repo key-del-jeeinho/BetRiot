@@ -13,28 +13,28 @@ public class SummonerV4SummonerAPI implements SummonerAPI {
     @Setter @Getter //Override
     private String riotApiKey;
 
-    @Override//TODO 2021.02.19 | 미구현 | Xylope
+    @Override
     public SummonerDto getByName(String name) {
         return RiotAPITemplate.getData( RiotAPI.riotRootUrl + "/lol/summoner/v4/summoners/by-name/" + name + "?api_key=" + riotApiKey, callback);
     }
 
-    @Override//TODO 2021.02.19 | 미구현 | Xylope
+    @Override
     public SummonerDto getById(String id) {
         return RiotAPITemplate.getData( RiotAPI.riotRootUrl + "/lol/summoner/v4/summoners/" + id + "?api_key=" + riotApiKey, callback);
     }
 
-    @Override//TODO 2021.02.19 | 미구현 | Xylope
+    @Override
     public SummonerDto getByPuuid(String puuid) {
         return RiotAPITemplate.getData( RiotAPI.riotRootUrl + "/lol/summoner/v4/summoners/by-puuid/" + puuid + "?api_key=" + riotApiKey, callback);
     }
 
-    @Override//TODO 2021.02.19 | 미구현 | Xylope
+    @Override
     public SummonerDto getByAccountId(String accountId) {
         return RiotAPITemplate.getData( RiotAPI.riotRootUrl + "/lol/summoner/v4/summoners/by-account/" + accountId + "?api_key=" + riotApiKey, callback);
     }
 
 
-    @Override//TODO 2021.02.19 | 미구현 | Xylope
+    @Override
     public List<SummonerDto> getByMatch(String matchId) {
         return null;
     }

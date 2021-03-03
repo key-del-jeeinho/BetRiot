@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user;
+package com.xylope.betriot.layer.service.user.register;
 
 import com.xylope.betriot.exception.WrongRegisterProgressException;
 import lombok.Getter;
