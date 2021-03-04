@@ -7,7 +7,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-public class SummonerV4SummonerAPI implements SummonerAPI {
+public class SummonerAPISummonerV4 implements SummonerAPI {
     @Setter
     private SummonerAPICallback callback;
     @Setter @Getter //Override
@@ -15,22 +15,22 @@ public class SummonerV4SummonerAPI implements SummonerAPI {
 
     @Override
     public SummonerDto getByName(String name) {
-        return RiotAPITemplate.getData( RiotAPI.riotRootUrl + "/lol/summoner/v4/summoners/by-name/" + name + "?api_key=" + riotApiKey, callback);
+        return RiotAPITemplate.getData( RiotAPI.RIOT_ROOT_URL + "/lol/summoner/v4/summoners/by-name/" + name + "?api_key=" + riotApiKey, callback);
     }
 
     @Override
     public SummonerDto getById(String id) {
-        return RiotAPITemplate.getData( RiotAPI.riotRootUrl + "/lol/summoner/v4/summoners/" + id + "?api_key=" + riotApiKey, callback);
+        return RiotAPITemplate.getData( RiotAPI.RIOT_ROOT_URL + "/lol/summoner/v4/summoners/" + id + "?api_key=" + riotApiKey, callback);
     }
 
     @Override
     public SummonerDto getByPuuid(String puuid) {
-        return RiotAPITemplate.getData( RiotAPI.riotRootUrl + "/lol/summoner/v4/summoners/by-puuid/" + puuid + "?api_key=" + riotApiKey, callback);
+        return RiotAPITemplate.getData( RiotAPI.RIOT_ROOT_URL + "/lol/summoner/v4/summoners/by-puuid/" + puuid + "?api_key=" + riotApiKey, callback);
     }
 
     @Override
     public SummonerDto getByAccountId(String accountId) {
-        return RiotAPITemplate.getData( RiotAPI.riotRootUrl + "/lol/summoner/v4/summoners/by-account/" + accountId + "?api_key=" + riotApiKey, callback);
+        return RiotAPITemplate.getData( RiotAPI.RIOT_ROOT_URL + "/lol/summoner/v4/summoners/by-account/" + accountId + "?api_key=" + riotApiKey, callback);
     }
 
 
@@ -47,7 +47,6 @@ public class SummonerV4SummonerAPI implements SummonerAPI {
                     .name(k.get("name").getAsString())
                     .puuid(k.get("puuid").getAsString())
                     .summonerLevel(k.get("summonerLevel").getAsLong())
-                    .revisionDate(k.get("revisionDate").getAsLong())
                     .id(k.get("id").getAsString())
                     .accountId(k.get("accountId").getAsString()).build();
         }

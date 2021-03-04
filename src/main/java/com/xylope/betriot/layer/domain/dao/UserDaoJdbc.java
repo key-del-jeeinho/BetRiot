@@ -1,6 +1,6 @@
 package com.xylope.betriot.layer.domain.dao;
 
-import com.xylope.betriot.layer.domain.vo.User;
+import com.xylope.betriot.layer.domain.vo.UserVO;
 import lombok.Setter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,45 +10,45 @@ import java.util.List;
 public class UserDaoJdbc implements UserDao {
     @Setter
     JdbcOperations jdbc;
-    private RowMapper<User> userMapper = (rs, rowNum) -> new User(
+    private RowMapper<UserVO> userMapper = (rs, rowNum) -> new UserVO(
             rs.getLong("discord_id"),
             rs.getString("riot_id"),
             rs.getInt("money")
     );
 
     @Override
-    public User get(long discordId) {
+    public UserVO get(long discordId) {
         return jdbc.queryForObject("select * from users where discord_id = ?", new Object[]{discordId},
                 userMapper);
     }
 
     @Override
-    public List<User> getAll() {
+    public List<UserVO> getAll() {
         return jdbc.query("select * from users order by discord_id", userMapper);
     }
 
     @Override
-    public List<User> getAllOrderByMoney() {
+    public List<UserVO> getAllOrderByMoney() {
         return jdbc.query("select * from users order by money desc", userMapper);
     }
 
     @Override
-    public User getInServer(long discordId, long serverId) {
+    public UserVO getInServer(long discordId, long serverId) {
         return null;
     }
 
     @Override
-    public List<User> getAllInServer(long serverId) {
+    public List<UserVO> getAllInServer(long serverId) {
         return null;
     }
 
     @Override
-    public List<User> getAllOrderByMoneyInServer(long serverId) {
+    public List<UserVO> getAllOrderByMoneyInServer(long serverId) {
         return null;
     }
 
     @Override
-    public void add(User user) {
+    public void add(UserVO user) {
         jdbc.update("insert into users (discord_id, riot_id, money) values (?, ?, ?)", user.getDiscordId(), user.getRiotId(), user.getMoney());
     }
 
@@ -63,7 +63,7 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public void update(User user) {
+    public void update(UserVO user) {
         jdbc.update("update users set discord_id = ?, riot_id = ?, money = ? where discord_id = ?", user.getDiscordId(), user.getRiotId(), user.getMoney(), user.getDiscordId());
     }
 

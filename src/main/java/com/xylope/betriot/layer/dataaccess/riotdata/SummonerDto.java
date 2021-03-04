@@ -12,8 +12,6 @@ public class SummonerDto {
     @Getter @Setter
     private int profileIconId;
     @Getter @Setter
-    private long revisionDate;
-    @Getter @Setter
     private String name;
     @Getter @Setter
     private String id;

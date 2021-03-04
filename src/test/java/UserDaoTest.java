@@ -1,5 +1,5 @@
 import com.xylope.betriot.layer.domain.dao.UserDao;
-import com.xylope.betriot.layer.domain.vo.User;
+import com.xylope.betriot.layer.domain.vo.UserVO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,15 +18,15 @@ import static org.junit.Assert.*;
 public class UserDaoTest {
     @Autowired
     UserDao userDao;
-    List<User> users;
+    List<UserVO> users;
 
     @Before
     public void setUp() {
         users = new ArrayList<>();
-        users.add(new User(553155577228951552L, "asdfasdf", 0));
-        users.add(new User(153155576228951552L, "agdfadfg", 0));
-        users.add(new User(366087289190875137L, "jdfcys", 538900));
-        users.add(new User(716555267604480001L, "euyhtrjhryfd", 538901));
+        users.add(new UserVO(553155577228951552L, "asdfasdf", 0));
+        users.add(new UserVO(153155576228951552L, "agdfadfg", 0));
+        users.add(new UserVO(366087289190875137L, "jdfcys", 538900));
+        users.add(new UserVO(716555267604480001L, "euyhtrjhryfd", 538901));
     }
 
     @Test
@@ -42,10 +42,10 @@ public class UserDaoTest {
     public void testGetAll() {
         userDao.removeAll();
 
-        for (User user : users)
+        for (UserVO user : users)
             userDao.add(user);
         for(int i = 0; i < users.size(); i++) {
-            List<User> usersToGetAll = userDao.getAll();
+            List<UserVO> usersToGetAll = userDao.getAll();
             usersToGetAll.retainAll(users); //usersToGetALl 과 users 간의 교집합을 usersToGetAll 에 저장
             //만약 두 리스트 내의 요소값이 동일하다면 해당 요청 실행후 두 리스트의 크기는 동일함
             assertEquals(usersToGetAll.size(), users.size());
@@ -57,16 +57,17 @@ public class UserDaoTest {
     public void testGetAllOrderByMoney() {
         userDao.removeAll();
 
-        for (User user : users)
+        for (UserVO user : users)
             userDao.add(user);
 
-        List<User> usersOrderByMoney = userDao.getAllOrderByMoney();
-        List<User> compareData = new ArrayList<>(users);
+        List<UserVO> usersOrderByMoney = userDao.getAllOrderByMoney();
+        List<UserVO> compareData = new ArrayList<>(users);
 
-        compareData.sort(Comparator.comparingInt(User::getMoney));
+        compareData.sort(Comparator.comparingInt(UserVO::getMoney));
 
         for(int i = 0; i < users.size(); i++) {
-            assertEquals(usersOrderByMoney.get(i), compareData.get(i));
+            System.out.println(usersOrderByMoney.get(i));
+            assertEquals(usersOrderByMoney.get(i), compareData.get(users.size() - i - 1));
         }
 
         userDao.removeAll();
@@ -98,7 +99,7 @@ public class UserDaoTest {
         userDao.removeAll();
         assertEquals(userDao.getCount(), 0);
 
-        for (User user : users)
+        for (UserVO user : users)
             userDao.add(user);
         assertEquals(userDao.getCount(), users.size());
 
@@ -110,7 +111,7 @@ public class UserDaoTest {
         userDao.removeAll();
 
         userDao.add(users.get(0));
-        User user = new User(
+        UserVO user = new UserVO(
                 users.get(0).getDiscordId(),
                 users.get(0).getRiotId(),
                 users.get(0).getMoney() +1000
@@ -128,7 +129,7 @@ public class UserDaoTest {
         userDao.removeAll();
         assertEquals(userDao.getCount(), 0);
         int i = 0;
-        for(User user : users) {
+        for(UserVO user : users) {
             userDao.add(user);
             assertEquals(userDao.getCount(), ++i);
         }

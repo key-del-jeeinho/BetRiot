@@ -1,22 +1,22 @@
 package com.xylope.betriot.layer.domain.dao;
 
-import com.xylope.betriot.layer.domain.vo.User;
+import com.xylope.betriot.layer.domain.vo.UserVO;
 
 import java.util.List;
 
 public interface UserDao {
-    User get(long discordId);
-    List<User> getAll();
-    List<User> getAllOrderByMoney();
+    UserVO get(long discordId);
+    List<UserVO> getAll();
+    List<UserVO> getAllOrderByMoney();
 
-    User getInServer(long discordId, long serverId);
-    List<User> getAllInServer(long serverId);
-    List<User> getAllOrderByMoneyInServer(long serverId);
+    UserVO getInServer(long discordId, long serverId);
+    List<UserVO> getAllInServer(long serverId);
+    List<UserVO> getAllOrderByMoneyInServer(long serverId);
 
-    void add(User user);
+    void add(UserVO user);
     void remove(long discordId);
     void removeAll();
-    void update(User user);
+    void update(UserVO user);
 
     int getCount();
 

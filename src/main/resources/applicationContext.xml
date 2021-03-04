@@ -9,8 +9,9 @@
         <constructor-arg ref="privateMessageReactionAddListener"/>
         <constructor-arg ref="privateMessageReceivedListener"/>
         <property name="summonerAPI" ref="summonerApi"/>
-        <property name="dao" ref="userDao"/>
         <property name="dataDragonAPI" ref="dataDragonApi"/>
+        <property name="championMasteryAPI" ref="championMasteryAPI"/>
+        <property name="dao" ref="userDao"/>
     </bean>
 
     <!-- JDA Events and CustomEventManager -->
@@ -29,17 +30,36 @@
     <bean id="messageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener"/>
     <bean id="privateMessageReactionAddListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener"/>
     <bean id="privateMessageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener"/>
+
     <!-- Riot API -->
     <bean id="dataDragonApi" class="com.xylope.betriot.layer.dataaccess.DataDragonAPIImpl">
+        <qualifier value="main"/>
+    </bean>
+
+    <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.SummonerAPISummonerV4">
+        <property name="callback" ref="summonerApiCallback"/>
+        <property name="riotApiKey" ref="riotApiKey"/>
+        <qualifier value="main"/>
+    </bean>
+
+    <bean id="championMasteryAPI" class="com.xylope.betriot.layer.dataaccess.ChampionMasteryAPIImpl">
         <property name="riotApiKey" ref="riotApiKey"/>
     </bean>
-    <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerAPI">
+
+    <!-- property reference -->
+
+    <bean id="spareSummonerApi" class="com.xylope.betriot.layer.dataaccess.SummonerAPISummonerV4">
         <property name="riotApiKey" ref="riotApiKey"/>
         <property name="callback" ref="summonerApiCallback"/>
+        <qualifier value="spare"/>
     </bean>
 
-    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.SummonerV4SummonerAPI$SummonerAPICallback"/>
+    <bean id="spareDataDragonApi" class="com.xylope.betriot.layer.dataaccess.DataDragonAPIImpl">
+        <property name="riotApiKey" ref="riotApiKey"/>
+        <qualifier value="spare"/>
+    </bean>
 
+    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.SummonerAPISummonerV4$SummonerAPICallback"/>
 
     <!-- DAOs -->
     <bean id="userDao" class="com.xylope.betriot.layer.domain.dao.UserDaoJdbc">

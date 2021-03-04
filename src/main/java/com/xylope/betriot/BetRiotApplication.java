@@ -1,5 +1,7 @@
 package com.xylope.betriot;
 
+import com.merakianalytics.orianna.Orianna;
+import com.merakianalytics.orianna.types.common.Region;
 import com.xylope.betriot.layer.service.user.register.UserRegisterService;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
@@ -19,6 +21,8 @@ public class BetRiotApplication {
     private final UserRegisterService registerService;
 
     public BetRiotApplication(String token) throws LoginException {
+        Orianna.setRiotAPIKey(context.getBean("riotApiKey", String.class));
+        Orianna.setDefaultRegion(Region.KOREA);
         jda = JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .build();

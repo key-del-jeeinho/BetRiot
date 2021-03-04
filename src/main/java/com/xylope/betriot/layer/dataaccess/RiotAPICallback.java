@@ -10,9 +10,6 @@ import java.io.IOException;
 public interface RiotAPICallback<T, T2> {
     T getRiotDataObject(T2 k) throws IOException;
     interface JsonObjectCallback<T> extends RiotAPICallback<T, JsonObject>{}
-    interface JsonArrayCallback<T> extends RiotAPICallback<T, JsonArray>{
-        @Override
-        T getRiotDataObject(JsonArray k);
-    }
-    interface ReaderCallback<T> extends RiotAPICallback<T, BufferedReader>{}
+    interface JsonArrayCallback<T> extends RiotAPICallback<T, JsonArray>{}
+    interface StringCallback<T> extends RiotAPICallback<T, String>{}
 }

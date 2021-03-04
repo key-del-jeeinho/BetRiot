@@ -1,9 +1,14 @@
+import com.merakianalytics.orianna.Orianna;
+import com.merakianalytics.orianna.types.common.Platform;
+import com.xylope.betriot.BetRiotApplication;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import com.xylope.betriot.layer.dataaccess.SummonerAPI;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -12,9 +17,19 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationContext.xml", "/secretContext.xml"})
 public class SummonerAPITest {
+    @Qualifier("main")
     @Autowired
-    SummonerAPI summonerAPI;
-    SummonerDto testSummoner;
+    private SummonerAPI summonerAPI;
+    @Autowired
+    private static String riotApiKey;
+    private SummonerDto testSummoner;
+
+    @BeforeClass
+    public static void setUpOrianna() {
+        riotApiKey = BetRiotApplication.getContext().getBean("riotApiKey", String.class);
+        Orianna.setRiotAPIKey(riotApiKey);
+        Orianna.setDefaultPlatform(Platform.KOREA);
+    }
 
     @Before
     public void setUp() {
@@ -24,7 +39,6 @@ public class SummonerAPITest {
                 .puuid("mMo9n9ZnK48C8XyKZ3AweGOtWpa7qE-dhnd-ON4sEyexpdPAZeLpzFRKV7MVhsOp8ystb3H4JY3Jaw")
                 .name("엄준식사하셧나요")
                 .profileIconId(4777)
-                .revisionDate(1613475547000L)
                 .summonerLevel(66)
                 .build();
     }

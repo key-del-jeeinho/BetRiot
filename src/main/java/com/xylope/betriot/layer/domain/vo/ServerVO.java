@@ -5,11 +5,12 @@ import lombok.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @EqualsAndHashCode
-public class User {
+@ToString
+public class ServerVO {
     @Getter @NonNull
-    private final long discordId;
+    private final int id;
+    @Getter @NonNull
+    private final String serverId;
     @Getter @Setter
-    private String riotId;
-    @Getter @Setter
-    private int money;
+    private int premiumLevel;
 }

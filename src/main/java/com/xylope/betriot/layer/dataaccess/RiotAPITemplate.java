@@ -81,6 +81,19 @@ public class RiotAPITemplate {
         return getData(urlStr, callback, logic);
     }
 
+    public static  <T> T getData(String urlStr, RiotAPICallback.StringCallback<T> callback) {
+        Callback<T> logic = (br, urlStr1, callback1) -> {
+            String line;
+            StringBuffer content = new StringBuffer();
+            while ((line = br.readLine()) != null) {
+                content.append(line);
+            }
+            return callback.getRiotDataObject(content.toString());
+        };
+
+        return getData(urlStr, callback, logic);
+    }
+
     public static  <T> T getData(String urlStr, RiotAPICallback.JsonArrayCallback<T> callback) {
         Callback<T> logic = (br, urlStr1, callback1) -> {
             JsonArray k = JsonParser.parseReader(br).getAsJsonArray();
