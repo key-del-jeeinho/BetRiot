@@ -47,6 +47,7 @@ public class UserRegisterService {
                                PrivateMessageReceivedListener privateMessageReceivedListener) {
         unRegisterUserSet = new UnRegisterUserSet();
 
+        //Add repeat listener
         guildMemberJoinListener.addListener(this::checkIsUserUnRegistered);
         privateMessageReactionAddListener.addListener(this::checkTermsAgree);
         privateMessageReactionAddListener.addListener(this::checkProfileIconChanged);
