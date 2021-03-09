@@ -1,9 +1,12 @@
-package com.xylope.betriot.layer.dataaccess;
+package com.xylope.betriot.layer.dataaccess.apis;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xylope.betriot.exception.ZeroChampionMasteryPointException;
+import com.xylope.betriot.layer.dataaccess.RiotAPI;
+import com.xylope.betriot.layer.dataaccess.RiotAPICallback;
+import com.xylope.betriot.layer.dataaccess.RiotAPITemplate;
 import com.xylope.betriot.layer.dataaccess.riotdata.ChampionMasteryDto;
 import lombok.Setter;
 

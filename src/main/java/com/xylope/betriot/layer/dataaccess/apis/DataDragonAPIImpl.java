@@ -1,13 +1,13 @@
-package com.xylope.betriot.layer.dataaccess;
+package com.xylope.betriot.layer.dataaccess.apis;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xylope.betriot.exception.DataNotFoundException;
+import com.xylope.betriot.layer.dataaccess.RiotAPI;
+import com.xylope.betriot.layer.dataaccess.RiotAPITemplate;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.net.MalformedURLException;
 import java.util.Set;
 
 public class DataDragonAPIImpl implements DataDragonAPI {

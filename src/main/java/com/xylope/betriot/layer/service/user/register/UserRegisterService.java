@@ -2,24 +2,24 @@ package com.xylope.betriot.layer.service.user.register;
 
 import com.xylope.betriot.exception.DataNotFoundException;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
-import com.xylope.betriot.exception.ZeroChampionMasteryPointException;
-import com.xylope.betriot.layer.dataaccess.ChampionMasteryAPI;
-import com.xylope.betriot.layer.dataaccess.DataDragonAPI;
-import com.xylope.betriot.layer.dataaccess.SummonerAPI;
-import com.xylope.betriot.layer.dataaccess.riotdata.ChampionMasteryDto;
+import com.xylope.betriot.layer.dataaccess.apis.DataDragonAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener;
 import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener;
 import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener;
-import lombok.Getter;
+import com.xylope.betriot.layer.service.user.apis.UserSummonerAPI;
+import com.xylope.betriot.layer.service.user.message.UserErrorMessageSender;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.util.*;
@@ -30,17 +30,17 @@ import static com.xylope.betriot.layer.service.user.register.RegisterProgress.CH
 import static com.xylope.betriot.layer.service.user.register.RegisterProgress.RIOT_AUTHORIZE;
 
 public class UserRegisterService {
-    @Getter
+    Logger logger = LogManager.getLogger(this.getClass());
     private final UnRegisterUserSet unRegisterUserSet;
     @Setter
-    private SummonerAPI summonerAPI;
+    private UserSummonerAPI summonerAPI;
     @Setter
     private DataDragonAPI dataDragonAPI;
     @Setter
-    private ChampionMasteryAPI championMasteryAPI;
+    private UserErrorMessageSender errorMessageSender;
     @Setter
     UserDao dao;
-    Color defaultEmbedColor = new Color(227, 39, 87);
+    private static final Color DEFAULT_EMBED_COLOR = new Color(255, 200, 0);
 
     public UserRegisterService(GuildMemberJoinListener guildMemberJoinListener,
                                PrivateMessageReactionAddListener privateMessageReactionAddListener,
@@ -70,7 +70,7 @@ public class UserRegisterService {
                 TERMS_AGREE.getEmote(), TERMS_DISAGREE.getEmote());
 
         MessageEmbed content = new EmbedBuilder()
-                .setColor(defaultEmbedColor)
+                .setColor(DEFAULT_EMBED_COLOR)
                 .setTitle("BetRiot 회원가입")
                 .setDescription("리그로브레전드 배팅 봇 BetRiot 의 가입 안내입니다!")
                 .addField("안녕하세요", registerMessage, false)
@@ -92,8 +92,11 @@ public class UserRegisterService {
         try {
             unRegisterUser.setTermsMessageId(messageId);
         } catch (WrongRegisterProgressException e) {
-            System.out.println("Use setTermsMessageId method when RegisterProcess isn't " + CHECK_TERMS);
-            e.printStackTrace();
+            String msg = "Use setTermsMessageId method when RegisterProcess isn't " + CHECK_TERMS + "\n" + e.getMessage();
+            logger.log(Level.ERROR, msg);
+            PrivateChannel pc = user.openPrivateChannel().complete();
+            errorMessageSender.sendMessage(pc, msg);
+            pc.close().queue();
         }
         unRegisterUserSet.add(unRegisterUser);
     }
@@ -132,12 +135,11 @@ public class UserRegisterService {
                     }
 
                 } catch (WrongRegisterProgressException e) {
-                    System.out.println("Use setTermsAgree method when RegisterProcess isn't " + CHECK_TERMS);
+                    String msg = "Use setTermsAgree method when RegisterProcess isn't " + CHECK_TERMS + "\n" + e.getMessage();
+                    logger.log(Level.ERROR, msg);
                     PrivateChannel pc = user.openPrivateChannel().complete();
-                    pc.sendMessage("오류가 발생하였습니다! 다음 메세지를 관리자에게 보여주세요\n```" +
-                            "Use setTermsAgree method when RegisterProcess isn't " + CHECK_TERMS + "\n" +
-                            e.getMessage() + "```").queue();
-                    pc.close().complete();
+                    errorMessageSender.sendMessage(pc, msg);
+                    pc.close().queue();
                 }
             }
         }
@@ -151,6 +153,7 @@ public class UserRegisterService {
 
         unRegisterUser.nextStep();
         pc.sendMessage("소환사님의 라이엇 닉네임을 입력해주세요!").queue();
+        pc.close().queue();
     }
 
     private void disagreeTerms(UnRegisterUser unRegisterUser, User user) throws WrongRegisterProgressException {
@@ -158,7 +161,7 @@ public class UserRegisterService {
 
         PrivateChannel pc = user.openPrivateChannel().complete();
         pc.sendMessage("약관에 비동의하셧습니다! 해당 봇이 적용된 서버에 다시 들어오시거나, 벳라이엇의 서비스를 이용하실경우 회원가입을 재진행 할 수 있습니다! 이용해주셔서 감사합니다 :)").queue();
-
+        pc.close().queue();
         unRegisterUserSet.remove(unRegisterUser);
     }
 
@@ -183,29 +186,8 @@ public class UserRegisterService {
                     pc.close().queue();
                     return;
                 }
-                MessageEmbed summonerProfileMessage;
-                //insert UserInformation to summonerProfileMessage
-                String thumbnailUrl;
-                try {
-                    ChampionMasteryDto mostChampion = championMasteryAPI.getChampionMasteryTopById(summoner.getId());
-                    String mostChampionId = dataDragonAPI.getChampionIdByKey(mostChampion.getChampionId());
-                    thumbnailUrl = dataDragonAPI.getChampionImageUrlById(mostChampionId);
-                } catch (ZeroChampionMasteryPointException e) {
-                    thumbnailUrl = dataDragonAPI.getProfileIconURL(summoner.getProfileIconId());
-                }
-
-
-                summonerProfileMessage = new EmbedBuilder()
-                        .setColor(defaultEmbedColor)
-                        .setThumbnail(thumbnailUrl)
-                        .setTitle(summoner.getName() + "님 환영합니다!")
-                        .addField("소환사님의 정보",
-                                String.format("이름 : %s\n레벨 : %d",
-                                        summoner.getName(),
-                                        summoner.getSummonerLevel()), false)
-                        .build();
-
                 //send InformationMessage
+                MessageEmbed summonerProfileMessage = summonerAPI.getUserProfileMessage(summoner, DEFAULT_EMBED_COLOR);
                 pc.sendMessage(summonerProfileMessage).queue();
 
                 //prepare next step
@@ -218,7 +200,7 @@ public class UserRegisterService {
 
 
                 MessageEmbed riotAuthorizeMessage = new EmbedBuilder()
-                        .setColor(defaultEmbedColor)
+                        .setColor(DEFAULT_EMBED_COLOR)
                         .setThumbnail(dataDragonAPI.getProfileIconURL(authorizeIconId))
                         .addField("라이엇 인증절차를 진행합니다!",
                                 String.format(
@@ -230,25 +212,24 @@ public class UserRegisterService {
                 try {
                     unRegisterUser.setAuthorizeIconId(authorizeIconId);
                 } catch (WrongRegisterProgressException e) {
-                    System.out.println("use setAuthorizeIconId method when RegisterProgress isn't" + RIOT_AUTHORIZE);
-                    pc.sendMessage("오류가 발생하였습니다! 다음 메세지를 관리자에게 보여주세요\n```" +
-                            "Use setAuthorizeIconId method when RegisterProcess isn't " + RIOT_AUTHORIZE + "\n" +
-                            e.getMessage() + "```").queue();
-                    pc.close().complete();
+                    String msg = "Use setAuthorizeIconId method when RegisterProcess isn't " + RIOT_AUTHORIZE + "\n" + e.getMessage();
+                    logger.log(Level.ERROR, msg);
+                    errorMessageSender.sendMessage(pc, msg);
+                    pc.close().queue();
                     return;
                 }
 
                 try {
                     unRegisterUser.setRiotId(summoner.getId());
                 } catch (WrongRegisterProgressException e) {
-                    System.out.println("use setRiotId method when RegisterProgress isn't" + RIOT_AUTHORIZE);
-                    pc.sendMessage("오류가 발생하였습니다! 다음 메세지를 관리자에게 보여주세요\n```" +
-                            "Use setRiotId method when RegisterProcess isn't " + RIOT_AUTHORIZE + "\n" +
-                            e.getMessage() + "```").queue();
-                    pc.close().complete();
+                    String msg = "Use setRiotId method when RegisterProcess isn't " + RIOT_AUTHORIZE + "\n" + e.getMessage();
+                    logger.log(Level.ERROR, msg);
+                    errorMessageSender.sendMessage(pc, msg);
+                    pc.close().queue();
                     return;
                 }
 
+                pc.close().queue();
                 //nextStep
                 unRegisterUser.nextStep();
             }
@@ -270,18 +251,17 @@ public class UserRegisterService {
                 try {
                     authorizeIconId = unRegisterUser.getAuthorizeIconId();
                 } catch (WrongRegisterProgressException e) {
-                    System.out.println("use getAuthorizeIconId method when RegisterProgress isn't" + RIOT_AUTHORIZE);
-                    pc.sendMessage("오류가 발생하였습니다! 다음 메세지를 관리자에게 보여주세요\n```" +
-                            "Use getAuthorizeIconId method when RegisterProcess isn't " + CHECK_TERMS + "\n" +
-                            e.getMessage() + "```").queue();
-                    pc.close().complete();
+                    String msg = "Use getAuthorizeIconId method when RegisterProcess isn't " + CHECK_TERMS + "\n" + e.getMessage();
+                    logger.log(Level.ERROR, msg);
+                    errorMessageSender.sendMessage(pc, msg);
+                    pc.close().queue();
                     return;
                 }
 
                 try {
                     if (summonerAPI.getById(unRegisterUser.getRiotId()).getProfileIconId() == authorizeIconId) {
                         MessageEmbed messageEmbed = new EmbedBuilder()
-                                .setColor(defaultEmbedColor)
+                                .setColor(DEFAULT_EMBED_COLOR)
                                 .setTitle("축하드립니다!")
                                 .addField(user.getName() + "님, 환영합니다!",
                                         "벳라이엇에 성공적으로 회원가입이 완료되었습니다!\n" +
@@ -298,12 +278,13 @@ public class UserRegisterService {
                         unRegisterUser.cancelStep();
                     }
                 } catch (WrongRegisterProgressException e) {
-                    System.out.println("use getRiotId method when RegisterProgress isn't" + RIOT_AUTHORIZE);
-                    pc.sendMessage("오류가 발생하였습니다! 다음 메세지를 관리자에게 보여주세요\n```" +
-                            "Use getRiotId method when RegisterProcess isn't " + CHECK_TERMS + "\n" +
-                            e.getMessage() + "```").queue();
-                    pc.close().complete();
+                    String msg = "Use getRiotId method when RegisterProcess isn't " + CHECK_TERMS + "\n" + e.getMessage();
+                    logger.log(Level.ERROR, msg);
+                    errorMessageSender.sendMessage(pc, msg);
+                    pc.close().queue();
+                    return;
                 }
+                pc.close().queue();
             }
         }
     }

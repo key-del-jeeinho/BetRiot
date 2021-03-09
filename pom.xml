@@ -38,6 +38,12 @@
             <artifactId>JDA</artifactId>
             <version>LATEST</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.merakianalytics.orianna/orianna -->
+        <dependency>
+            <groupId>com.merakianalytics.orianna</groupId>
+            <artifactId>orianna</artifactId>
+            <version>4.0.0-rc7</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -52,11 +58,11 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/log4j/log4j -->
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
@@ -71,29 +77,29 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
         <dependency>
-            <groupId>com.merakianalytics.orianna</groupId>
-            <artifactId>orianna</artifactId>
-            <version>4.0.0-rc7</version>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
             <version>8.0.16</version>
         </dependency>
 
+        <!-- jackson -->
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>

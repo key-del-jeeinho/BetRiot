@@ -2,7 +2,7 @@ import com.merakianalytics.orianna.Orianna;
 import com.merakianalytics.orianna.types.common.Platform;
 import com.xylope.betriot.BetRiotApplication;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
-import com.xylope.betriot.layer.dataaccess.SummonerAPI;
+import com.xylope.betriot.layer.dataaccess.apis.SummonerAPI;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

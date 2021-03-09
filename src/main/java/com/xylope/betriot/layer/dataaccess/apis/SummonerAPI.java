@@ -1,5 +1,6 @@
-package com.xylope.betriot.layer.dataaccess;
+package com.xylope.betriot.layer.dataaccess.apis;
 
+import com.xylope.betriot.layer.dataaccess.RiotAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import java.util.List;
 

@@ -1,7 +1,7 @@
 import com.merakianalytics.orianna.Orianna;
 import com.merakianalytics.orianna.types.common.Platform;
 import com.xylope.betriot.BetRiotApplication;
-import com.xylope.betriot.layer.dataaccess.DataDragonAPI;
+import com.xylope.betriot.layer.dataaccess.apis.DataDragonAPI;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

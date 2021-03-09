@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+<Configuration status="WARN">
+    <Property name="layoutPattern">
+        %style{%d{yyyy/MM/dd HH:mm:ss,SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red, ERROR=red, INFO=green, DEBUG=blue}  [%C] %style{[%t]}{yellow}- %m%n -
+    </Property>
+
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern = "%{layoutPattern}"/>
+        </Console>
+        <RollingFile name = "file" fileName = "/log/${logNm}.log" filePattern = "/log/logs/${logNm}_%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern = "${layoutPattern}" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size = "10MB" />
+                <TimeBasedTriggeringPolicy module = "true" interval="1" />
+            </Policies>
+            <DefaultRolloverStrategy max = "500" fileIndex = "min" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+
+        <Root level="info" additivity="false" >
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Root>
+
+        <logger name="org.xylope.betriot" level="trace" additivity="false" >
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </logger>
+
+        <logger name="com.test" additivity="false" >
+            <AppenderRef ref="console" level="info" />
+            <AppenderRef ref="file" level="debug" />
+        </logger>
+    </Loggers>
+</Configuration>
+-->
+<Configuration>
+    <properties>
+        <property name="pattern"> -%style{%d{yyyy/MM/dd HH:mm:ss,SSS}}{cyan} %highlight{[%-5p]}{FATAL=red-blink, ERROR=red, INFO=green, DEBUG=blue}  [%C] %style{[%t]}{yellow}- %m%n</property>
+        <property name="path">/log/logs</property>
+    </properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+        <RollingFile name="file" fileName="${path}/${logNm}.log" filePattern="${path}${logNm}_%d{yyyyMMdd}.log">
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size = "10MB" />
+                <TimeBasedTriggeringPolicy interval="1" />
+            </Policies>
+            <DefaultRolloverStrategy max = "500" fileIndex = "min" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO" additivity="FALSE">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Root>
+
+        <Logger name="com.xylope.betriot" level="INFO" additivity="FALSE">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Logger>
+    </Loggers>
+</Configuration>

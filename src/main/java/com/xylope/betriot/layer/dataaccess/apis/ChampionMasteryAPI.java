@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.dataaccess;
+package com.xylope.betriot.layer.dataaccess.apis;
 
 import com.xylope.betriot.layer.dataaccess.riotdata.ChampionMasteryDto;
 
