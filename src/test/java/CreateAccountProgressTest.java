@@ -1,4 +1,4 @@
-import com.xylope.betriot.layer.service.user.register.RegisterProgress;
+import com.xylope.betriot.layer.service.user.account.create.CreateAccountProgress;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,13 +8,13 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class RegisterProgressTest {
-    List<RegisterProgress> progressList;
+public class CreateAccountProgressTest {
+    List<CreateAccountProgress> progressList;
 
     @Before
     public void setUp() {
         progressList = new ArrayList<>();
-        progressList.addAll(Arrays.asList(RegisterProgress.values()));
+        progressList.addAll(Arrays.asList(CreateAccountProgress.values()));
     }
 
     @Test

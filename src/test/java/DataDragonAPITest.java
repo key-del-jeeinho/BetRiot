@@ -1,12 +1,13 @@
 import com.merakianalytics.orianna.Orianna;
 import com.merakianalytics.orianna.types.common.Platform;
-import com.xylope.betriot.BetRiotApplication;
 import com.xylope.betriot.layer.dataaccess.apis.DataDragonAPI;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -20,10 +21,11 @@ public class DataDragonAPITest {
     @Qualifier("main")
     @Autowired
     DataDragonAPI dataDragonAPI;
+    public static final ApplicationContext CONTEXT = new GenericXmlApplicationContext("/applicationContext.xml", "/secretContext.xml");
 
     @BeforeClass
     public static void setUp() {
-        Orianna.setRiotAPIKey(BetRiotApplication.getContext().getBean(String.class));
+        Orianna.setRiotAPIKey(CONTEXT.getBean(String.class));
         Orianna.setDefaultPlatform(Platform.KOREA);
     }
 

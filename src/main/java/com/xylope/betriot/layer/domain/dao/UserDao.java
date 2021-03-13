@@ -14,6 +14,7 @@ public interface UserDao {
     List<UserVO> getAllOrderByMoneyInServer(long serverId);
 
     void add(UserVO user);
+    void add(UserVO... users);
     void remove(long discordId);
     void removeAll();
     void update(UserVO user);
@@ -21,4 +22,9 @@ public interface UserDao {
     int getCount();
 
     boolean isUserExist(long discordId);
+
+    List<UserVO> getByPermission(UserVO.Permission permission);
+    List<UserVO> getAllOrderByPermission();
+    boolean isPermission(long discordId, UserVO.Permission permission);
+    boolean checkPermission(long discordId, UserVO.Permission minPermission); //최소 권한
 }

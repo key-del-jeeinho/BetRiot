@@ -1,4 +1,4 @@
-package com.xylope.betriot;
+package com.xylope.betriot.manager;
 
 import lombok.Setter;
 import net.dv8tion.jda.api.JDA;

@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface EventRepeater<T extends GenericEvent> {
     default void repeatEvent(List<RepeatListener<T>> listeners, T event) {
-        listeners.forEach(listener-> listener.onEvent(event));
+        listeners.forEach(listener-> {listener.onEvent(event);
+            System.out.println(listener + " 호출");
+        });
     }
 
     void addListener(RepeatListener<T> listener);

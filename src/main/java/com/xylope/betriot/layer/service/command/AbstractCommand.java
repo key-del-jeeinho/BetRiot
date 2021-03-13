@@ -1,18 +1,21 @@
 package com.xylope.betriot.layer.service.command;
 
 import com.xylope.betriot.layer.service.command.trigger.CommandTrigger;
+import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractCommand implements Executable{
-    Map<CommandTrigger, AbstractCommand> childMaps;
+    @Setter
+    protected CommandTrigger trigger;
+    protected List<AbstractCommand> children;
 
     public AbstractCommand() {
-        childMaps = new HashMap<>();
+        children = new ArrayList<>();
     }
 
-    public void addChildCommand(CommandTrigger trigger, AbstractCommand cmd) {
-        childMaps.put(trigger, cmd);
+    public void addChildCommand(AbstractCommand cmd) {
+        children.add(cmd);
     }
 }

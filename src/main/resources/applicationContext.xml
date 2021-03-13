@@ -3,23 +3,24 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- Services -->
-    <bean id="userRegisterService" class="com.xylope.betriot.layer.service.user.register.UserRegisterService">
-        <constructor-arg ref="guildMemberJoinListener"/>
-        <constructor-arg ref="privateMessageReactionAddListener"/>
-        <constructor-arg ref="privateMessageReceivedListener"/>
-        <property name="summonerAPI" ref="userSummonerApi"/>
-        <property name="dataDragonAPI" ref="dataDragonApi"/>
-        <property name="errorMessageSender" ref="errorMessageSender"/>
-        <property name="dao" ref="userDao"/>
+    <!-- Application -->
+    <bean id="betRiotApplication" class="com.xylope.betriot.BetRiotApplication">
+        <constructor-arg ref="discordToken"/>
+        <constructor-arg ref="commandManager"/>
+        <constructor-arg ref="jdaEventManager"/>
+        <constructor-arg ref="riotApiKey"/>
     </bean>
 
-    <bean id="errorMessageSender" class="com.xylope.betriot.layer.service.user.message.UserErrorMessageSender">
-        <property name="adminEmail" value="xylopeofficial@gmail.com"/>
+    <!-- Manager -->
+    <bean id="commandManager" class="com.xylope.betriot.manager.CommandManager" init-method="initRootCommand">
+        <property name="messageReceivedListener" ref="messageReceivedListener"/>
+        <property name="profileCommand" ref="profileCommand"/>
+        <property name="createAccountCommand" ref="createAccountCommand"/>
+        <property name="removeAccountCommand" ref="removeAccountCommand"/>
+        <property name="helpCommand" ref="helpCommand"/>
     </bean>
 
-    <!-- JDA Events and CustomEventManager -->
-    <bean id="jdaEventManager" class="com.xylope.betriot.JDAEventManager">
+    <bean id="jdaEventManager" class="com.xylope.betriot.manager.JDAEventManager">
         <property name="listeners">
             <list>
                 <ref bean="guildMemberJoinListener"/>
@@ -30,10 +31,82 @@
         </property>
     </bean>
 
+    <!-- Services -->
+    <bean id="createAccountService" class="com.xylope.betriot.layer.service.user.account.create.CreateAccountService">
+        <constructor-arg ref="guildMemberJoinListener"/>
+        <constructor-arg ref="privateMessageReactionAddListener"/>
+        <constructor-arg ref="privateMessageReceivedListener"/>
+        <property name="summonerAPI" ref="userSummonerApi"/>
+        <property name="dataDragonAPI" ref="dataDragonApi"/>
+        <property name="errorMessageSender" ref="errorMessageSender"/>
+        <property name="dao" ref="userDao"/>
+    </bean>
+
+    <bean id="removeAccountService" class="com.xylope.betriot.layer.service.user.account.remove.RemoveAccountService">
+        <constructor-arg ref="privateMessageReactionAddListener"/>
+        <property name="privateMessageSender" ref="channelMessageSenderWithCallback"/>
+        <property name="dao" ref="userDao"/>
+    </bean>
+
+    <!-- JDA Events -->
     <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener"/>
     <bean id="messageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener"/>
     <bean id="privateMessageReactionAddListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener"/>
     <bean id="privateMessageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener"/>
+
+    <!-- JDA Message Sender -->
+    <bean id="errorMessageSender" class="com.xylope.betriot.layer.service.user.message.PrivateErrorMessageSender">
+        <property name="adminEmail" ref="adminMail"/>
+    </bean>
+    <bean id="channelMessageSender" class="com.xylope.betriot.layer.service.user.message.ChannelMessageSenderImpl"/>
+    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.service.user.message.ChannelEmbedMessageSender"/>
+    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.service.user.message.PrivateMessageSenderWithCallbackImpl"/>
+
+    <!-- Commands -->
+    <bean id="rootCommand" class="com.xylope.betriot.layer.service.command.RootCommand"/>
+
+    <bean id="profileCommand" class="com.xylope.betriot.layer.service.command.custom.ProfileCommand">
+        <constructor-arg ref="userDao"/>
+        <constructor-arg ref="channelMessageSender"/>
+        <constructor-arg ref="channelEmbedMessageSender"/>
+        <constructor-arg ref="userSummonerApi"/>
+        <property name="trigger" ref="profileTrigger"/>
+    </bean>
+
+    <bean id="createAccountCommand" class="com.xylope.betriot.layer.service.command.custom.CreateAccountCommand">
+        <constructor-arg ref="createAccountService"/>
+        <constructor-arg ref="userDao"/>
+        <constructor-arg ref="channelMessageSender"/>
+        <property name="trigger" ref="createAccountTrigger"/>
+    </bean>
+
+    <bean id="removeAccountCommand" class="com.xylope.betriot.layer.service.command.custom.RemoveAccountCommand">
+        <constructor-arg ref="userDao"/>
+        <constructor-arg ref="removeAccountService"/>
+        <constructor-arg ref="channelMessageSender"/>
+        <property name="trigger" ref="removeAccountTrigger"/>
+    </bean>
+
+    <bean id="helpCommand" class="com.xylope.betriot.layer.service.command.custom.HelpCommand">
+        <constructor-arg ref="channelEmbedMessageSender"/>
+        <constructor-arg ref="adminMail"/>
+        <property name="trigger" ref="helpTrigger"/>
+    </bean>
+
+    <!-- Triggers -->
+    <bean id="profileTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="프로필"/>
+    </bean>
+    <bean id="createAccountTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="회원가입"/>
+    </bean>
+    <bean id="removeAccountTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="회원탈퇴"/>
+    </bean>
+
+    <bean id="helpTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="도움말"/>
+    </bean>
 
     <!-- Riot API -->
     <bean id="userSummonerApi" class="com.xylope.betriot.layer.service.user.apis.UserSummonerAPIImpl">
@@ -74,6 +147,7 @@
     <!-- DAOs -->
     <bean id="userDao" class="com.xylope.betriot.layer.domain.dao.UserDaoJdbc">
         <property name="jdbc" ref="jdbcTemplate"/>
+        <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
     <bean id = "jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -85,6 +159,10 @@
         <property name="url" value="jdbc:mysql://localhost:3306/bet_riot_test?characterEncoding=UTF-8&amp;serverTimezone=UTC"/>
         <property name="username" value="root"/>
         <property name="password" value="0000"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
     </bean>
 </beans>
 

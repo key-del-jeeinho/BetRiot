@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 public class MessageReceivedListener extends EventRepeaterImpl<GuildMessageReceivedEvent>{
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
+        if(event.getAuthor().isBot()) return;
         repeatEvent(event);
     }
 }

@@ -1,7 +1,8 @@
 package com.xylope.betriot.layer.domain.vo;
 
+import com.xylope.betriot.exception.DataNotFoundException;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
-import com.xylope.betriot.layer.service.user.register.UnRegisterUser;
+import com.xylope.betriot.layer.service.user.account.create.BeforeCreateAccountUser;
 import lombok.*;
 
 @AllArgsConstructor
@@ -16,14 +17,51 @@ public class UserVO {
     private String riotId;
     @Getter @Setter
     private int money;
+    @Getter @Setter
+    private Permission permission;
 
-    public UserVO(UnRegisterUser unRegisterUser) {
-        this.discordId = unRegisterUser.getDiscordId();
+    public UserVO(@NonNull long discordId, String riotId, int money) {
+        this.discordId = discordId;
+        this.riotId = riotId;
+        this.money = money;
+        this.permission = Permission.IRON;
+    }
+
+    public UserVO(BeforeCreateAccountUser beforeCreateAccountUser) {
+        this.discordId = beforeCreateAccountUser.getDiscordId();
         try {
-            this.riotId = unRegisterUser.getRiotId();
+            this.riotId = beforeCreateAccountUser.getRiotId();
         } catch (WrongRegisterProgressException e) {
             e.printStackTrace();
         }
         this.money = START_MONEY;
+        this.permission = Permission.IRON;
+    }
+
+    @AllArgsConstructor
+    public enum Permission {
+        /*
+        Iron : 처음 회원가입을 하였을시 부여받는 칭호
+        Bronze :
+        Silver :
+        Gold :
+        Platinum :
+        Diamond :
+        Master :
+        GrandMaster :
+        Challenger : 봇 관리자만 가지고있는 칭호
+        Administrator : 봇 소유자만 가지고있는 칭호
+         */
+        IRON(0), BRONZE(1), SILVER(2), GOLD(3), PLATINUM(4), DIAMOND(5), MASTER(6), GRAND_MASTER(7), CHALLENGER(8), ADMINISTRATOR(9);
+
+        @Getter
+        private final int id;
+
+        public static Permission getById(int id) {
+            for(Permission permission : Permission.values()) {
+                if(permission.getId() == id) return permission;
+            }
+            throw new DataNotFoundException("unknown permission id : " + id);
+        }
     }
 }

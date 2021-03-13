@@ -16,6 +16,7 @@ public class DataDragonAPIImpl implements DataDragonAPI {
 
     @Override
     public String getVersionLast() {
+        System.out.println(RiotAPITemplate.getData(RiotAPI.DATA_DRAGON_ROOT_URL + "/api/versions.json", (JsonArray k) -> k.get(0).getAsString()));
         return RiotAPITemplate.getData(RiotAPI.DATA_DRAGON_ROOT_URL + "/api/versions.json", (JsonArray k) -> k.get(0).getAsString());
     }
 

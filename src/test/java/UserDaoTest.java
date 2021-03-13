@@ -23,10 +23,14 @@ public class UserDaoTest {
     @Before
     public void setUp() {
         users = new ArrayList<>();
-        users.add(new UserVO(553155577228951552L, "asdfasdf", 0));
-        users.add(new UserVO(153155576228951552L, "agdfadfg", 0));
-        users.add(new UserVO(366087289190875137L, "jdfcys", 538900));
-        users.add(new UserVO(716555267604480001L, "euyhtrjhryfd", 538901));
+        users.add(new UserVO(553155577228951552L, "asdfasdf", 0, UserVO.Permission.GOLD));
+        users.add(new UserVO(153155576228951552L, "agdfadfg", 0, UserVO.Permission.GOLD));
+        users.add(new UserVO(366087289190875137L, "jdfcys", 538900, UserVO.Permission.IRON));
+        users.add(new UserVO(716555267604480001L, "euyhtrjhryfd", 538901, UserVO.Permission.CHALLENGER));
+        users.add(new UserVO(22635577228951552L, "rjth", 0, UserVO.Permission.GOLD));
+        users.add(new UserVO(987375576228951552L, "xzc", 0, UserVO.Permission.GOLD));
+        users.add(new UserVO(489227289190875137L, "erw", 0, UserVO.Permission.DIAMOND));
+        users.add(new UserVO(112835267604480001L, "asd", 0, UserVO.Permission.CHALLENGER));
     }
 
     @Test
@@ -57,17 +61,17 @@ public class UserDaoTest {
     public void testGetAllOrderByMoney() {
         userDao.removeAll();
 
-        for (UserVO user : users)
-            userDao.add(user);
+        userDao.add(users.toArray(new UserVO[0]));
 
         List<UserVO> usersOrderByMoney = userDao.getAllOrderByMoney();
         List<UserVO> compareData = new ArrayList<>(users);
 
         compareData.sort(Comparator.comparingInt(UserVO::getMoney));
 
-        for(int i = 0; i < users.size(); i++) {
-            System.out.println(usersOrderByMoney.get(i));
-            assertEquals(usersOrderByMoney.get(i), compareData.get(users.size() - i - 1));
+        int size = users.size();
+
+        for(int i = 0; i < size; i++) {
+            assertEquals(usersOrderByMoney.get(i).getMoney(), compareData.get(size - i - 1).getMoney());
         }
 
         userDao.removeAll();
@@ -99,8 +103,7 @@ public class UserDaoTest {
         userDao.removeAll();
         assertEquals(userDao.getCount(), 0);
 
-        for (UserVO user : users)
-            userDao.add(user);
+        userDao.add(users.toArray(new UserVO[0]));
         assertEquals(userDao.getCount(), users.size());
 
         userDao.removeAll();
@@ -143,5 +146,51 @@ public class UserDaoTest {
         assertTrue(userDao.isUserExist(users.get(0).getDiscordId()));
         assertFalse(userDao.isUserExist(users.get(1).getDiscordId()));
         userDao.removeAll();
+    }
+    @Test
+    public void testGetByPermission() {
+        userDao.removeAll();
+
+        userDao.add(users.toArray(new UserVO[0]));
+
+
+    }
+    @Test
+    public void testGetAllOrderByPermission() {
+        userDao.removeAll();
+
+        userDao.add(users.toArray(new UserVO[0]));
+        List<UserVO> sortedUsers =userDao.getAllOrderByPermission();
+
+        //sorting 알고리즘을 활용한 정렬여부 검사
+        for(int i = 0; i < sortedUsers.size()-1; i++) {
+            int prev = sortedUsers.get(i).getPermission().getId();
+            int next = sortedUsers.get(i+1).getPermission().getId();
+            assertTrue(prev >= next);
+        }
+    }
+    @Test
+    public void testIsPermission() {
+        UserVO testUser = users.get(0);
+        testUser.setPermission(UserVO.Permission.GOLD);
+        UserVO.Permission permission = testUser.getPermission();
+        assertTrue(userDao.isPermission(testUser.getDiscordId(), permission));
+        //UserVO.Permission = userDao
+    }
+
+    @Test
+    public void testCheckPermission() {
+        UserVO testUser = users.get(0);
+        UserVO.Permission permission = testUser.getPermission();
+        UserVO.Permission permission2 = UserVO.Permission.getById(permission.getId() - 1); //Silver
+        UserVO.Permission permission3 = UserVO.Permission.getById(permission.getId() + 1); //Platinum
+
+        userDao.removeAll();
+
+        userDao.add(testUser);
+        assertTrue(userDao.checkPermission(testUser.getDiscordId(), permission)); //Gold 인 유저가 Gold 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
+        assertTrue(userDao.checkPermission(testUser.getDiscordId(), permission2)); //Gold 인 유저가 Silver 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
+        assertFalse(userDao.checkPermission(testUser.getDiscordId(), permission3)); //Gold 인 유저가 Platinum 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
+        //UserVO.Permission = userDao
     }
 }

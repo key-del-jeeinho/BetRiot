@@ -1,6 +1,5 @@
 import com.merakianalytics.orianna.Orianna;
 import com.merakianalytics.orianna.types.common.Platform;
-import com.xylope.betriot.BetRiotApplication;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import com.xylope.betriot.layer.dataaccess.apis.SummonerAPI;
 import org.junit.Before;
@@ -9,6 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -17,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationContext.xml", "/secretContext.xml"})
 public class SummonerAPITest {
+    public static final ApplicationContext CONTEXT = new GenericXmlApplicationContext("/applicationContext.xml", "/secretContext.xml");
     @Qualifier("main")
     @Autowired
     private SummonerAPI summonerAPI;
@@ -26,7 +28,7 @@ public class SummonerAPITest {
 
     @BeforeClass
     public static void setUpOrianna() {
-        riotApiKey = BetRiotApplication.getContext().getBean("riotApiKey", String.class);
+        riotApiKey = CONTEXT.getBean("riotApiKey", String.class);
         Orianna.setRiotAPIKey(riotApiKey);
         Orianna.setDefaultPlatform(Platform.KOREA);
     }

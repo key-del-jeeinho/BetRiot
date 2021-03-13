@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user.register;
+package com.xylope.betriot.layer.service.user.account.create;
 
 import com.xylope.betriot.exception.DataNotFoundException;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
@@ -10,7 +10,7 @@ import com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener
 import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener;
 import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener;
 import com.xylope.betriot.layer.service.user.apis.UserSummonerAPI;
-import com.xylope.betriot.layer.service.user.message.UserErrorMessageSender;
+import com.xylope.betriot.layer.service.user.message.PrivateErrorMessageSender;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -24,28 +24,29 @@ import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.xylope.betriot.layer.service.SpecialEmote.*;
-import static com.xylope.betriot.layer.service.user.register.RegisterProgress.CHECK_TERMS;
-import static com.xylope.betriot.layer.service.user.register.RegisterProgress.RIOT_AUTHORIZE;
+import static com.xylope.betriot.layer.service.user.account.create.CreateAccountProgress.CHECK_TERMS;
+import static com.xylope.betriot.layer.service.user.account.create.CreateAccountProgress.RIOT_AUTHORIZE;
 
-public class UserRegisterService {
+public class CreateAccountService {
     Logger logger = LogManager.getLogger(this.getClass());
-    private final UnRegisterUserSet unRegisterUserSet;
+    private final BeforeCreateAccountUserSet beforeCreateAccountUserSet;
     @Setter
     private UserSummonerAPI summonerAPI;
     @Setter
     private DataDragonAPI dataDragonAPI;
     @Setter
-    private UserErrorMessageSender errorMessageSender;
+    private PrivateErrorMessageSender errorMessageSender;
     @Setter
     UserDao dao;
     private static final Color DEFAULT_EMBED_COLOR = new Color(255, 200, 0);
 
-    public UserRegisterService(GuildMemberJoinListener guildMemberJoinListener,
-                               PrivateMessageReactionAddListener privateMessageReactionAddListener,
-                               PrivateMessageReceivedListener privateMessageReceivedListener) {
-        unRegisterUserSet = new UnRegisterUserSet();
+    public CreateAccountService(GuildMemberJoinListener guildMemberJoinListener,
+                                PrivateMessageReactionAddListener privateMessageReactionAddListener,
+                                PrivateMessageReceivedListener privateMessageReceivedListener) {
+        beforeCreateAccountUserSet = new BeforeCreateAccountUserSet();
 
         //Add repeat listener
         guildMemberJoinListener.addListener(this::checkIsUserUnRegistered);
@@ -54,7 +55,7 @@ public class UserRegisterService {
         privateMessageReceivedListener.addListener(this::authorizeRiotAccount);
     }
 
-    public void registerUser(Guild guild, User user) {
+    public void createUserAccount(Guild guild, User user) {
         //Build Message
         PrivateChannel pc = user.openPrivateChannel().complete();
 
@@ -87,10 +88,10 @@ public class UserRegisterService {
 
     public void prepareCheckTerm(User user, long messageId) {
         //Prepare to CheckTermStep
-        UnRegisterUser unRegisterUser = new UnRegisterUser(user.getIdLong());
-        unRegisterUser.nextStep();
+        BeforeCreateAccountUser beforeCreateAccountUser = new BeforeCreateAccountUser(user.getIdLong());
+        beforeCreateAccountUser.nextStep(); //to CHECK_TERMS
         try {
-            unRegisterUser.setTermsMessageId(messageId);
+            beforeCreateAccountUser.setTermsMessageId(messageId);
         } catch (WrongRegisterProgressException e) {
             String msg = "Use setTermsMessageId method when RegisterProcess isn't " + CHECK_TERMS + "\n" + e.getMessage();
             logger.log(Level.ERROR, msg);
@@ -98,32 +99,30 @@ public class UserRegisterService {
             errorMessageSender.sendMessage(pc, msg);
             pc.close().queue();
         }
-        unRegisterUserSet.add(unRegisterUser);
+        beforeCreateAccountUserSet.add(beforeCreateAccountUser);
     }
 
     //RepeatListeners
     //Condition of Register (if User Join Guild which Applied BetRiot)
     public void checkIsUserUnRegistered(GuildMemberJoinEvent event) {
-        if(event.getUser().isBot()) return;
         Guild guild = event.getGuild();
         User user = event.getUser();
         if(!dao.isUserExist(user.getIdLong())) {
-            registerUser(guild, user);
+            createUserAccount(guild, user);
         }
     }
 
     //CheckPrivateMessageReaction is Emote of TermAgree or TermDisagree
     public void checkTermsAgree(PrivateMessageReactionAddEvent event) {
-        if(Objects.requireNonNull(event.getUser()).isBot()) return;
         long messageId = event.getMessageIdLong();
         User user = event.getChannel().getUser();
 
-        boolean isTermsMessage =  unRegisterUserSet.isMessageTerms(messageId);
-        UnRegisterUser target;
+        boolean isTermsMessage =  beforeCreateAccountUserSet.isMessageTerms(messageId);
+        BeforeCreateAccountUser target;
 
         if (isTermsMessage) {
             //Find unRegisterUser at queue to termsMessageId
-            target = unRegisterUserSet.getUserByTermsMessageId(messageId);
+            target = beforeCreateAccountUserSet.getUserByTermsMessageId(messageId);
             if (target.checkProgress(CHECK_TERMS)) {
                 //Check is Emote SpecialEmote.TERMS_XXX
                 String emote = event.getReactionEmote().getName();
@@ -145,41 +144,41 @@ public class UserRegisterService {
         }
     }
 
-    private void agreeTerms(UnRegisterUser unRegisterUser, User user) throws WrongRegisterProgressException {
-        unRegisterUser.setTermsAgree(true);
+    private void agreeTerms(BeforeCreateAccountUser beforeCreateAccountUser, User user) throws WrongRegisterProgressException {
+        beforeCreateAccountUser.setTermsAgree(true);
 
         PrivateChannel pc = user.openPrivateChannel().complete();
         pc.sendMessage("약관에 동의하셧습니다").queue();
 
-        unRegisterUser.nextStep();
+        beforeCreateAccountUser.nextStep(); //to RIOT_NAME
         pc.sendMessage("소환사님의 라이엇 닉네임을 입력해주세요!").queue();
         pc.close().queue();
     }
 
-    private void disagreeTerms(UnRegisterUser unRegisterUser, User user) throws WrongRegisterProgressException {
-        unRegisterUser.setTermsAgree(false);
+    private void disagreeTerms(BeforeCreateAccountUser beforeCreateAccountUser, User user) throws WrongRegisterProgressException {
+        beforeCreateAccountUser.setTermsAgree(false);
 
         PrivateChannel pc = user.openPrivateChannel().complete();
-        pc.sendMessage("약관에 비동의하셧습니다! 해당 봇이 적용된 서버에 다시 들어오시거나, 벳라이엇의 서비스를 이용하실경우 회원가입을 재진행 할 수 있습니다! 이용해주셔서 감사합니다 :)").queue();
+        pc.sendMessage("약관에 비동의하셧습니다! 해당 봇이 적용된 서버에 다시 들어오시거나, 뱃라이엇 회원가입 명령어를 통하여 회원가입을 재진행 하실 수 있습니다! 이용해주셔서 감사합니다 :)").queue();
         pc.close().queue();
-        unRegisterUserSet.remove(unRegisterUser);
+        beforeCreateAccountUserSet.remove(beforeCreateAccountUser);
     }
 
     private void authorizeRiotAccount(PrivateMessageReceivedEvent event) {
-        if (event.getAuthor().isBot()) return;
         User user = event.getAuthor();
         Message message = event.getMessage();
         PrivateChannel pc = user.openPrivateChannel().complete();
         long discordId = user.getIdLong();
 
         //check user is exist in unRegisterUserSet
-        if(unRegisterUserSet.isUserExistByDiscordId(discordId)) {
-            UnRegisterUser unRegisterUser = unRegisterUserSet.getUserByDiscordId(discordId);
+        if(beforeCreateAccountUserSet.isUserExistByDiscordId(discordId)) {
+            BeforeCreateAccountUser beforeCreateAccountUser = beforeCreateAccountUserSet.getUserByDiscordId(discordId);
             //check User's progress is RIOT_NAME
-            if(unRegisterUser.getProgress().equals(RegisterProgress.RIOT_NAME)) {
+            if(beforeCreateAccountUser.getProgress().equals(CreateAccountProgress.RIOT_NAME)) {
                 String unreliableRiotId = message.getContentRaw();
                 SummonerDto summoner;
                 try {
+                    if(checkRiotName(unreliableRiotId)) throw new DataNotFoundException();
                     summoner = summonerAPI.getByName(unreliableRiotId);
                 } catch (DataNotFoundException e) {
                     pc.sendMessage("해당 이름을 가진 소환사를 찾을 수 없습니다! 다시시도해주세요!").queue();
@@ -208,9 +207,17 @@ public class UserRegisterService {
                                 "변경이 완료되면, %s 이모지를 달아주세요!", RIOT_CHANGE_ICON_DONE.getEmote()),
                                 false)
                         .build();
-                pc.sendMessage(riotAuthorizeMessage).queue((msg -> msg.addReaction(RIOT_CHANGE_ICON_DONE.getEmote()).queue()));
+                pc.sendMessage(riotAuthorizeMessage).queue((msg -> {
+                    msg.addReaction(RIOT_CHANGE_ICON_DONE.getEmote()).queue();
+                    try {
+                        beforeCreateAccountUser.setRiotMessageId(msg.getIdLong());
+                    } catch (WrongRegisterProgressException e) {
+                        errorMessageSender.sendMessage(pc, e.getMessage());
+                        e.printStackTrace();
+                    }
+                }));
                 try {
-                    unRegisterUser.setAuthorizeIconId(authorizeIconId);
+                    beforeCreateAccountUser.setAuthorizeIconId(authorizeIconId);
                 } catch (WrongRegisterProgressException e) {
                     String msg = "Use setAuthorizeIconId method when RegisterProcess isn't " + RIOT_AUTHORIZE + "\n" + e.getMessage();
                     logger.log(Level.ERROR, msg);
@@ -220,7 +227,7 @@ public class UserRegisterService {
                 }
 
                 try {
-                    unRegisterUser.setRiotId(summoner.getId());
+                    beforeCreateAccountUser.setRiotId(summoner.getId());
                 } catch (WrongRegisterProgressException e) {
                     String msg = "Use setRiotId method when RegisterProcess isn't " + RIOT_AUTHORIZE + "\n" + e.getMessage();
                     logger.log(Level.ERROR, msg);
@@ -230,26 +237,33 @@ public class UserRegisterService {
                 }
 
                 pc.close().queue();
-                //nextStep
-                unRegisterUser.nextStep();
+                //to RIOT_AUTHORIZE
+                beforeCreateAccountUser.nextStep();
             }
         }
     }
 
-    private void checkProfileIconChanged(PrivateMessageReactionAddEvent event) {
-        if (Objects.requireNonNull(event.getUser()).isBot()) return;
+    private boolean checkRiotName(String name) {
+        boolean result = false;
+        if(3 <= name.length() && name.length() <= 16)
+            result = !Pattern.matches("^[ㄱ-ㅎ가-힣a-zA-Z0-9]*$", name);
+        return result;
+    }
 
+    private void checkProfileIconChanged(PrivateMessageReactionAddEvent event) {
         User user = event.getUser();
         assert user != null;
         PrivateChannel pc = user.openPrivateChannel().complete();
         long discordId = event.getUserIdLong();
 
-        UnRegisterUser unRegisterUser = unRegisterUserSet.getUserByDiscordId(discordId);
-        if (unRegisterUser.checkProgress(RIOT_AUTHORIZE)) {
+        if(!beforeCreateAccountUserSet.isMessageRiot(event.getMessageIdLong())) return;
+
+        BeforeCreateAccountUser beforeCreateAccountUser = beforeCreateAccountUserSet.getUserByDiscordId(discordId);
+        if (beforeCreateAccountUser.checkProgress(RIOT_AUTHORIZE)) {
             if (event.getReactionEmote().getName().equals(RIOT_CHANGE_ICON_DONE.getEmote())) {
                 int authorizeIconId;
                 try {
-                    authorizeIconId = unRegisterUser.getAuthorizeIconId();
+                    authorizeIconId = beforeCreateAccountUser.getAuthorizeIconId();
                 } catch (WrongRegisterProgressException e) {
                     String msg = "Use getAuthorizeIconId method when RegisterProcess isn't " + CHECK_TERMS + "\n" + e.getMessage();
                     logger.log(Level.ERROR, msg);
@@ -259,7 +273,7 @@ public class UserRegisterService {
                 }
 
                 try {
-                    if (summonerAPI.getById(unRegisterUser.getRiotId()).getProfileIconId() == authorizeIconId) {
+                    if (summonerAPI.getById(beforeCreateAccountUser.getRiotId()).getProfileIconId() == authorizeIconId) {
                         MessageEmbed messageEmbed = new EmbedBuilder()
                                 .setColor(DEFAULT_EMBED_COLOR)
                                 .setTitle("축하드립니다!")
@@ -271,11 +285,11 @@ public class UserRegisterService {
                         pc.sendMessage(messageEmbed).queue();
 
                         //prepare last step
-                        unRegisterUser.nextStep();
-                        registerComplete(unRegisterUser); //complete Register
+                        beforeCreateAccountUser.nextStep(); //to REGISTERED
+                        registerComplete(beforeCreateAccountUser); //complete Register
                     } else {
                         pc.sendMessage("인증에 실패하였습니다! 재인증을 원하시면 라이엇 닉네임을 다시 입력해주세요!").queue();
-                        unRegisterUser.cancelStep();
+                        beforeCreateAccountUser.cancelStep();
                     }
                 } catch (WrongRegisterProgressException e) {
                     String msg = "Use getRiotId method when RegisterProcess isn't " + CHECK_TERMS + "\n" + e.getMessage();
@@ -289,9 +303,9 @@ public class UserRegisterService {
         }
     }
 
-    private void registerComplete(UnRegisterUser unRegisterUser) {
-        if(unRegisterUser.checkProgress(RegisterProgress.REGISTERED)) {
-            UserVO user = new UserVO(unRegisterUser);
+    private void registerComplete(BeforeCreateAccountUser beforeCreateAccountUser) {
+        if(beforeCreateAccountUser.checkProgress(CreateAccountProgress.REGISTERED)) {
+            UserVO user = new UserVO(beforeCreateAccountUser);
             dao.add(user);
         }
     }

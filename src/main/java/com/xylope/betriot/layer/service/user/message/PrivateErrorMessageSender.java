@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 
 import java.awt.*;
 
-public class UserErrorMessageSender implements PrivateMessageSender<String>{
+public class PrivateErrorMessageSender implements PrivateMessageSender<String>{
     @Setter
     private String adminEmail;
 

@@ -1,12 +1,10 @@
-import com.xylope.betriot.layer.service.user.message.UserErrorMessageSender;
-import net.dv8tion.jda.api.EmbedBuilder;
+import com.xylope.betriot.layer.service.user.message.PrivateErrorMessageSender;
+import com.xylope.betriot.layer.service.user.message.PrivateMessageSender;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +17,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationContext.xml", "/secretContext.xml"})
-public class UserErrorMessageSenderTest {
+public class PrivateErrorMessageSenderTest {
     @Autowired
-    UserErrorMessageSender sender;
+    PrivateMessageSender<String> sender;
     @Mock
     PrivateChannel pc;
     @Mock

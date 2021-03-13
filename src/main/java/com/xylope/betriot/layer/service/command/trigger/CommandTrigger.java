@@ -1,6 +1,7 @@
 package com.xylope.betriot.layer.service.command.trigger;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.Objects;
 

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 public class GuildMemberJoinListener extends EventRepeaterImpl<GuildMemberJoinEvent>{
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
+        if(event.getUser().isBot()) return;
         repeatEvent(event);
     }
 }

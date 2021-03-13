@@ -1,70 +1,79 @@
-package com.xylope.betriot.layer.service.user.register;
+package com.xylope.betriot.layer.service.user.account.create;
 
 import com.xylope.betriot.exception.WrongRegisterProgressException;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class UnRegisterUser {
+public class BeforeCreateAccountUser {
     @Getter
-    private RegisterProgress progress;
+    private CreateAccountProgress progress;
     @Getter @NonNull
     private final long discordId;
     private long termsMessageId;
     private boolean isTermsAgree;
+    private long riotMessageId;
     private int authorizeIconId;
     private String riotId;
 
-    public UnRegisterUser(long discordId) {
+    public BeforeCreateAccountUser(long discordId) {
         this.discordId = discordId;
-        this.progress = RegisterProgress.UNREGISTERED;
+        this.progress = CreateAccountProgress.UNREGISTERED;
     }
 
-    private <R> R doSomethingAt(DoSomethingCallback<R> callback, RegisterProgress... progresses) throws WrongRegisterProgressException {
-        for(RegisterProgress progress : progresses)
+    private <R> R doSomethingAt(DoSomethingCallback<R> callback, CreateAccountProgress... progresses) throws WrongRegisterProgressException {
+        for(CreateAccountProgress progress : progresses)
             if(checkProgress(progress))
                 return callback.doSomething();
         throw new WrongRegisterProgressException(String.format("Wrong RegisterProgress \"%s\"", progress.toString()));
     }
 
-    private <R> R doSomethingAt(DoSomethingCallback<R> callback, RegisterProgress progress) throws WrongRegisterProgressException {
+    private <R> R doSomethingAt(DoSomethingCallback<R> callback, CreateAccountProgress progress) throws WrongRegisterProgressException {
         if(checkProgress(progress))
             return callback.doSomething();
         throw new WrongRegisterProgressException(String.format("Wrong RegisterProgress \"%s\"", progress.toString()));
     }
 
     public long getTermsMessageId() throws WrongRegisterProgressException {
-        return doSomethingAt(()->termsMessageId, RegisterProgress.CHECK_TERMS);
+        return doSomethingAt(()->termsMessageId, CreateAccountProgress.CHECK_TERMS);
     }
 
     public void setTermsMessageId(long termsMessageId) throws WrongRegisterProgressException {
-        doSomethingAt(()->this.termsMessageId = termsMessageId, RegisterProgress.CHECK_TERMS);
+        doSomethingAt(()->this.termsMessageId = termsMessageId, CreateAccountProgress.CHECK_TERMS);
     }
 
     public boolean isTermsAgree() throws WrongRegisterProgressException {
-        return doSomethingAt(()->isTermsAgree, RegisterProgress.CHECK_TERMS);
+        return doSomethingAt(()->isTermsAgree, CreateAccountProgress.CHECK_TERMS);
     }
 
     public void setTermsAgree(boolean isTermsAgree) throws WrongRegisterProgressException {
-        doSomethingAt(()->this.isTermsAgree = isTermsAgree, RegisterProgress.CHECK_TERMS);
+        doSomethingAt(()->this.isTermsAgree = isTermsAgree, CreateAccountProgress.CHECK_TERMS);
     }
 
     public String getRiotId() throws WrongRegisterProgressException {
-        return doSomethingAt(()->this.riotId, RegisterProgress.RIOT_AUTHORIZE, RegisterProgress.REGISTERED);
+        return doSomethingAt(()->this.riotId, CreateAccountProgress.RIOT_AUTHORIZE, CreateAccountProgress.REGISTERED);
     }
 
     public void setRiotId(String riotId) throws WrongRegisterProgressException {
-        doSomethingAt(()->this.riotId = riotId, RegisterProgress.RIOT_NAME);
+        doSomethingAt(()->this.riotId = riotId, CreateAccountProgress.RIOT_NAME);
     }
 
     public int getAuthorizeIconId() throws WrongRegisterProgressException {
-        return doSomethingAt(()->this.authorizeIconId, RegisterProgress.RIOT_AUTHORIZE);
+        return doSomethingAt(()->this.authorizeIconId, CreateAccountProgress.RIOT_AUTHORIZE);
     }
 
     public void setAuthorizeIconId(int authorizeIconId) throws WrongRegisterProgressException {
-        doSomethingAt(()->this.authorizeIconId = authorizeIconId, RegisterProgress.RIOT_NAME);
+        doSomethingAt(()->this.authorizeIconId = authorizeIconId, CreateAccountProgress.RIOT_NAME);
     }
 
-    public boolean checkProgress(RegisterProgress progress) {
+    public long getRiotMessageId() throws WrongRegisterProgressException {
+        return doSomethingAt(()->this.riotMessageId, CreateAccountProgress.RIOT_AUTHORIZE);
+    }
+
+    public void setRiotMessageId(long riotMessageId) throws WrongRegisterProgressException {
+        doSomethingAt(()->this.riotMessageId = riotMessageId, CreateAccountProgress.RIOT_AUTHORIZE);
+    }
+
+    public boolean checkProgress(CreateAccountProgress progress) {
         return this.progress.equals(progress);
     }
 
