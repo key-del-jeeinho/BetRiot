@@ -191,6 +191,5 @@ public class UserDaoTest {
         assertTrue(userDao.checkPermission(testUser.getDiscordId(), permission)); //Gold 인 유저가 Gold 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
         assertTrue(userDao.checkPermission(testUser.getDiscordId(), permission2)); //Gold 인 유저가 Silver 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
         assertFalse(userDao.checkPermission(testUser.getDiscordId(), permission3)); //Gold 인 유저가 Platinum 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
-        //UserVO.Permission = userDao
     }
 }

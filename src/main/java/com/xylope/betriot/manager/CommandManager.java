@@ -1,10 +1,9 @@
 package com.xylope.betriot.manager;
 
 import com.xylope.betriot.layer.service.command.RootCommand;
-import com.xylope.betriot.layer.service.command.custom.HelpCommand;
-import com.xylope.betriot.layer.service.command.custom.ProfileCommand;
-import com.xylope.betriot.layer.service.command.custom.CreateAccountCommand;
-import com.xylope.betriot.layer.service.command.custom.RemoveAccountCommand;
+import com.xylope.betriot.layer.service.command.custom.*;
+import com.xylope.betriot.layer.service.command.custom.notice.NoticeAllCommand;
+import com.xylope.betriot.layer.service.command.custom.notice.NoticeCommand;
 import com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.User;
@@ -26,17 +25,26 @@ public class CommandManager implements Manager{
     private RemoveAccountCommand removeAccountCommand;
     @Setter
     private HelpCommand helpCommand;
+    @Setter
+    private NoticeCommand noticeCommand;
+    @Setter
+    private NoticeAllCommand noticeAllCommand;
+    @Setter
+    private KillCodeCommand killCodeCommand;
 
     public CommandManager() {
         this.rootCmd = new RootCommand();
     }
 
     public void initRootCommand() {
+        rootCmd.addChildCommand(noticeCommand);
+        noticeCommand.addChildCommand(noticeAllCommand);
         //leafCommand
         rootCmd.addChildCommand(profileCommand);
         rootCmd.addChildCommand(createAccountCommand);
         rootCmd.addChildCommand(removeAccountCommand);
         rootCmd.addChildCommand(helpCommand);
+        rootCmd.addChildCommand(killCodeCommand); //TODO 임시 커맨드 릴리즈 후 무조건 삭제
     }
 
     @Override

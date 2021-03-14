@@ -2,33 +2,36 @@ package com.xylope.betriot.layer.service.command;
 
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
-import com.xylope.betriot.layer.service.command.trigger.CommandTrigger;
 import lombok.Setter;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 public class PermissionCommandImpl extends AbstractCommand{
     @Setter
     private UserDao dao;
     @Setter
-    UserVO.Permission permission;
+    int permissionLevel;
     @Override
     public void execute(GuildChannel channel, User sender, String... args) {
         if(sender.isBot()) return; //bot can't use command
-        long discordId = sender.getIdLong();
-        if(!dao.isUserExist(discordId)) return; //비회원 유저일경우
-        else if(!dao.checkPermission(discordId, permission)) return; //회원이지만, 권한이 없을경우
 
-        if(args.length > 0) {
-            children.forEach((child) -> {
-                        CommandTrigger trigger = child.trigger;
-                        if (trigger.checkTrigger(args[0])) {
-                            String[] childArgs = new String[args.length - 1];
-                            System.arraycopy(args, 1, childArgs, 0, childArgs.length);
-                            child.execute(channel, sender, childArgs);
-                        }
-                    }
-            );
+        Guild guild = channel.getGuild();
+        TextChannel textChannel = guild.getTextChannelById(channel.getId());
+        long discordId = sender.getIdLong();
+        assert textChannel != null;
+        if(!dao.isUserExist(discordId)) {
+            //비회원 유저일경우
+            textChannel.sendMessage("회원전용 명령어입니다!").queue();
+            return;
         }
+        else if(!dao.checkPermission(discordId, UserVO.Permission.getById(permissionLevel))) {
+            //회원이지만, 권한이 없을경우
+            textChannel.sendMessage("해당 명령어를 사용할 권한이 없습니다!").queue();
+            return;
+        }
+
+        checkChildExecute(channel, sender, args);
     }
 }

@@ -18,6 +18,9 @@
         <property name="createAccountCommand" ref="createAccountCommand"/>
         <property name="removeAccountCommand" ref="removeAccountCommand"/>
         <property name="helpCommand" ref="helpCommand"/>
+        <property name="noticeCommand" ref="noticeCommand"/>
+        <property name="noticeAllCommand" ref="noticeAllCommand"/>
+        <property name="killCodeCommand" ref="killCodeCommand"/>
     </bean>
 
     <bean id="jdaEventManager" class="com.xylope.betriot.manager.JDAEventManager">
@@ -93,6 +96,20 @@
         <property name="trigger" ref="helpTrigger"/>
     </bean>
 
+    <bean id="noticeCommand" class="com.xylope.betriot.layer.service.command.custom.notice.NoticeCommand">
+        <property name="trigger" ref="noticeTrigger"/>
+        <property name="dao" ref="userDao"/>
+        <property name="permissionLevel" value="9"/> <!-- administrator -->
+    </bean>
+
+    <bean id="noticeAllCommand" class="com.xylope.betriot.layer.service.command.custom.notice.NoticeAllCommand">
+        <property name="trigger" ref="noticeAllTrigger"/>
+    </bean>
+
+    <bean id="killCodeCommand" class="com.xylope.betriot.layer.service.command.custom.KillCodeCommand">
+        <property name="trigger" ref="killCodeTrigger"/>
+    </bean>
+
     <!-- Triggers -->
     <bean id="profileTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="프로필"/>
@@ -103,9 +120,17 @@
     <bean id="removeAccountTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="회원탈퇴"/>
     </bean>
-
     <bean id="helpTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="도움말"/>
+    </bean>
+    <bean id="noticeTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="공지"/>
+    </bean>
+    <bean id="noticeAllTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="모두에게"/>
+    </bean>
+    <bean id="killCodeTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="킬코드-BySandworm"/>
     </bean>
 
     <!-- Riot API -->
