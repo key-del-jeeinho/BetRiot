@@ -4,6 +4,7 @@ import com.xylope.betriot.ApplicationBooter;
 import com.xylope.betriot.BetRiotApplication;
 import com.xylope.betriot.layer.service.command.AbstractCommand;
 import com.xylope.betriot.layer.service.command.LeafCommand;
+import com.xylope.betriot.manager.CommandManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -31,14 +32,10 @@ public class NoticeAllCommand extends LeafCommand {
                             args = Arrays.copyOfRange(args, 1, args.length); //args 의 0번째 인덱스(title) 를 지운다.
                         }
 
-                        StringBuffer sb = new StringBuffer();
-                        for(String arg : args)
-                            sb.append(arg).append(" ");
-
                         MessageEmbed message = new EmbedBuilder()
                                 .setTitle("뱃라이엇 공지가 도착했습니다!")
                                 .setColor(new Color(148, 255, 88))
-                                .addField(title, sb.toString(), false)
+                                .addField(title, CommandManager.getRawToArgs(args), false)
                                 .setFooter("공지는 Default Channel 에 전송됩니다!")
                                 .build();
                         jda.getGuilds().forEach(

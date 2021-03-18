@@ -7,4 +7,5 @@ public interface DataDragonAPI extends RiotAPI {
     String getProfileIconURL(int iconId);
     String getChampionIdByKey(long key);
     String getChampionImageUrlById(String id);
+    String getRuneImageUrlById(int id);
 }

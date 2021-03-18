@@ -1,5 +1,7 @@
 import com.xylope.betriot.layer.domain.dao.UserDao;
+import com.xylope.betriot.layer.domain.dao.UserDaoJdbc;
 import com.xylope.betriot.layer.domain.vo.UserVO;
+import lombok.NonNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,6 +93,16 @@ public class UserDaoTest {
 
         userDao.removeAll();
     }
+
+    @Test
+    public void testAddAll() {
+        userDao.removeAll();
+
+        userDao.add(users.toArray(new UserVO[0]));
+
+        userDao.add();
+    }
+
     @Test
     public void testRemove() {
         userDao.removeAll();
@@ -149,10 +161,10 @@ public class UserDaoTest {
     }
     @Test
     public void testGetByPermission() {
+        userDao = new TestUserDao();
         userDao.removeAll();
 
         userDao.add(users.toArray(new UserVO[0]));
-
 
     }
     @Test
@@ -191,5 +203,12 @@ public class UserDaoTest {
         assertTrue(userDao.checkPermission(testUser.getDiscordId(), permission)); //Gold 인 유저가 Gold 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
         assertTrue(userDao.checkPermission(testUser.getDiscordId(), permission2)); //Gold 인 유저가 Silver 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
         assertFalse(userDao.checkPermission(testUser.getDiscordId(), permission3)); //Gold 인 유저가 Platinum 이상 사용할수 있는 컨텐츠에 접근할 수 있는지
+    }
+
+    private static class TestUserDao extends UserDaoJdbc {
+        @Override
+        public void add(UserVO user) {
+            throw new RuntimeException();
+        }
     }
 }

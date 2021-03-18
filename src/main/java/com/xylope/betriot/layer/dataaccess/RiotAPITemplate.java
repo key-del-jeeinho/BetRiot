@@ -48,7 +48,6 @@ public class RiotAPITemplate {
                     break;
                 case RATE_LIMIT_EXCEEDED:
                     throw new RateLimitExceededException();
-
                 case INTERNAL_SERVER_ERROR:
                     break;
                 case BAD_GATEWAY:

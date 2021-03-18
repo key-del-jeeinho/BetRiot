@@ -12,5 +12,5 @@ public class ServerUserRelationVO {
     @Getter
     private final int serverId;
     @Getter
-    private final int userId;
+    private final long userDiscordId;
 }

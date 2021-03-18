@@ -31,6 +31,8 @@ public class CommandManager implements Manager{
     private NoticeAllCommand noticeAllCommand;
     @Setter
     private KillCodeCommand killCodeCommand;
+    @Setter
+    private MatchCommand matchCommand;
 
     public CommandManager() {
         this.rootCmd = new RootCommand();
@@ -45,6 +47,7 @@ public class CommandManager implements Manager{
         rootCmd.addChildCommand(removeAccountCommand);
         rootCmd.addChildCommand(helpCommand);
         rootCmd.addChildCommand(killCodeCommand); //TODO 임시 커맨드 릴리즈 후 무조건 삭제
+        rootCmd.addChildCommand(matchCommand);
     }
 
     @Override
@@ -63,5 +66,15 @@ public class CommandManager implements Manager{
             System.arraycopy(args, 1, childArgs, 0, childArgs.length);
             rootCmd.execute(event.getChannel(), user, childArgs);
         }
+    }
+
+    public static String getRawToArgs(String... args) {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < args.length; i++) {
+            result.append(args[i]);
+            if (i < args.length - 1) result.append(" ");
+        }
+        return result.toString();
     }
 }

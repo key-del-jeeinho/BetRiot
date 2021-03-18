@@ -2,13 +2,17 @@ package com.xylope.betriot.layer.dataaccess.apis;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.merakianalytics.orianna.Orianna;
 import com.xylope.betriot.exception.DataNotFoundException;
 import com.xylope.betriot.layer.dataaccess.RiotAPI;
 import com.xylope.betriot.layer.dataaccess.RiotAPITemplate;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.awt.*;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DataDragonAPIImpl implements DataDragonAPI {
     @Setter @Getter
@@ -43,6 +47,23 @@ public class DataDragonAPIImpl implements DataDragonAPI {
     @Override
     public String getChampionImageUrlById(String id) {
         return RiotAPI.DATA_DRAGON_ROOT_URL + "/cdn/" + getVersionLast() + "/img/champion/" + id + ".png";
+    }
+
+    @Override
+    public String getRuneImageUrlById(int id) {
+        AtomicReference<String> url = new AtomicReference<>();
+        AtomicBoolean isDataFound = new AtomicBoolean(false);
+        Orianna.getRunes().forEach(
+                (rune) -> {
+                    if (rune.getId() == id) {
+                        url.set(rune.getImage().getURL());
+                        isDataFound.set(false);
+                    }
+                }
+        );
+        if(isDataFound.get())
+            return url.get();
+        throw new DataNotFoundException("unknown rune id : " + id);
     }
 
 }

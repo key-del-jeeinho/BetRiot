@@ -1,10 +1,12 @@
 package com.xylope.betriot.layer.dataaccess.riotdata;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@Builder
 public class MatchDto {
     private long gameId;
     private List<ParticipantIdentityDto> participantIdentities;

@@ -21,6 +21,7 @@
         <property name="noticeCommand" ref="noticeCommand"/>
         <property name="noticeAllCommand" ref="noticeAllCommand"/>
         <property name="killCodeCommand" ref="killCodeCommand"/>
+        <property name="matchCommand" ref="matchCommand"/>
     </bean>
 
     <bean id="jdaEventManager" class="com.xylope.betriot.manager.JDAEventManager">
@@ -110,6 +111,14 @@
         <property name="trigger" ref="killCodeTrigger"/>
     </bean>
 
+    <bean id="matchCommand" class="com.xylope.betriot.layer.service.command.custom.MatchCommand">
+        <constructor-arg ref="matchApi"/>
+        <constructor-arg ref="summonerApi"/>
+        <constructor-arg ref="channelEmbedMessageSender"/>
+        <constructor-arg ref="channelMessageSender"/>
+        <property name="trigger" ref="matchTrigger"/>
+    </bean>
+
     <!-- Triggers -->
     <bean id="profileTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="프로필"/>
@@ -132,10 +141,13 @@
     <bean id="killCodeTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="킬코드-BySandworm"/>
     </bean>
+    <bean id="matchTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="전적"/>
+    </bean>
 
     <!-- Riot API -->
     <bean id="userSummonerApi" class="com.xylope.betriot.layer.service.user.apis.UserSummonerAPIImpl">
-        <property name="championMasteryAPI" ref="championMasteryAPI"/>
+        <property name="championMasteryAPI" ref="championMasteryApi"/>
         <property name="dataDragonAPI" ref="dataDragonApi"/>
         <property name="summonerAPI" ref="summonerApi"/>
     </bean>
@@ -150,10 +162,11 @@
         <qualifier value="main"/>
     </bean>
 
-    <bean id="championMasteryAPI" class="com.xylope.betriot.layer.dataaccess.apis.ChampionMasteryAPIImpl">
+    <bean id="championMasteryApi" class="com.xylope.betriot.layer.dataaccess.apis.ChampionMasteryAPIImpl">
         <property name="riotApiKey" ref="riotApiKey"/>
     </bean>
 
+    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.MatchAPIOriana"/>
     <!-- property reference -->
 
     <bean id="spareSummonerApi" class="com.xylope.betriot.layer.dataaccess.apis.SummonerAPISummonerV4">
