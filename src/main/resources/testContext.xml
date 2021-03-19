@@ -3,14 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- Application -->
-    <bean id="betRiotApplication" class="com.xylope.betriot.BetRiotApplication">
-        <constructor-arg ref="discordToken"/>
-        <constructor-arg ref="commandManager"/>
-        <constructor-arg ref="jdaEventManager"/>
-        <constructor-arg ref="riotApiKey"/>
-    </bean>
-
     <!-- Manager -->
     <bean id="commandManager" class="com.xylope.betriot.manager.CommandManager" init-method="initRootCommand">
         <property name="messageReceivedListener" ref="messageReceivedListener"/>

@@ -7,6 +7,10 @@
           <file>file://$MODULE_DIR$/src/main/resources/applicationContext.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/secretContext.xml</file>
         </fileset>
+        <fileset id="fileset2" name="TestContext" removed="false">
+          <file>file://$MODULE_DIR$/src/main/resources/testContext.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/secretContext.xml</file>
+        </fileset>
       </configuration>
     </facet>
   </component>

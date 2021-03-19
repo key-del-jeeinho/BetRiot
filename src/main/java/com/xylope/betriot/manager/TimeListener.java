@@ -7,7 +7,7 @@ import com.xylope.betriot.layer.domain.event.OnSecondEvent;
 
 public interface TimeListener {
     void onTimeSecond(OnSecondEvent e);
-    void onTImeMinute(OnMinuteEvent e);
+    void onTimeMinute(OnMinuteEvent e);
     void onTimeHour(OnHourEvent e);
     void onTImeDay(OnDayEvent e);
 }

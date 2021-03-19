@@ -9,7 +9,7 @@ public abstract class TimeListenerAdapter implements TimeListener{
     @Override
     public void onTimeSecond(OnSecondEvent e) {}
     @Override
-    public void onTImeMinute(OnMinuteEvent e) {}
+    public void onTimeMinute(OnMinuteEvent e) {}
     @Override
     public void onTimeHour(OnHourEvent e) {}
     @Override

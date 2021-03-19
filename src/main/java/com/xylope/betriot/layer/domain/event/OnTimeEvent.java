@@ -6,7 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public abstract class OnTimeEvent {
     @Getter
-    long currentTimeMills;
-    @Getter
-    long getCount;
+    long count;
 }
