@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.dataaccess.apis;
+package com.xylope.betriot.layer.dataaccess.apis.riot;
 
 import com.merakianalytics.orianna.Orianna;
 import com.merakianalytics.orianna.types.core.summoner.Summoner;

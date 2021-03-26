@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user.message;
+package com.xylope.betriot.layer.service.message;
 
 import net.dv8tion.jda.api.entities.PrivateChannel;
 

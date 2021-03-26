@@ -1,6 +1,4 @@
-import com.merakianalytics.orianna.Orianna;
-import com.merakianalytics.orianna.types.common.Platform;
-import com.xylope.betriot.layer.dataaccess.apis.DataDragonAPI;
+import com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPI;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +14,7 @@ import java.net.MalformedURLException;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationContext.xml", "/secretContext.xml"})
+@ContextConfiguration(locations = {"/testContext.xml", "/secretContext.xml"})
 public class DataDragonAPITest {
     @Qualifier("main")
     @Autowired
@@ -25,13 +23,11 @@ public class DataDragonAPITest {
 
     @BeforeClass
     public static void setUp() {
-        Orianna.setRiotAPIKey(CONTEXT.getBean(String.class));
-        Orianna.setDefaultPlatform(Platform.KOREA);
     }
 
     @Test
     public void testGetVersionLast() {
-        assertEquals(dataDragonAPI.getVersionLast(), "11.5.1");
+        assertEquals(dataDragonAPI.getVersionLast(), "11.6.1");
     }
 
     @Test

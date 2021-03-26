@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.dataaccess.apis;
+package com.xylope.betriot.layer.dataaccess.apis.riot;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

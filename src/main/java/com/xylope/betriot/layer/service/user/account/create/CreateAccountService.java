@@ -2,7 +2,7 @@ package com.xylope.betriot.layer.service.user.account.create;
 
 import com.xylope.betriot.exception.DataNotFoundException;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
-import com.xylope.betriot.layer.dataaccess.apis.DataDragonAPI;
+import com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
@@ -10,7 +10,7 @@ import com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener
 import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener;
 import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener;
 import com.xylope.betriot.layer.service.user.apis.UserSummonerAPI;
-import com.xylope.betriot.layer.service.user.message.PrivateErrorMessageSender;
+import com.xylope.betriot.layer.service.message.PrivateErrorMessageSender;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;

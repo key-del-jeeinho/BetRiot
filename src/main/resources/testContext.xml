@@ -54,12 +54,12 @@
     <bean id="timeCounter" class="com.xylope.betriot.manager.TimeCounter"/>
 
     <!-- JDA Message Sender -->
-    <bean id="errorMessageSender" class="com.xylope.betriot.layer.service.user.message.PrivateErrorMessageSender">
+    <bean id="errorMessageSender" class="com.xylope.betriot.layer.service.message.PrivateErrorMessageSender">
         <property name="adminEmail" ref="adminMail"/>
     </bean>
-    <bean id="channelMessageSender" class="com.xylope.betriot.layer.service.user.message.ChannelMessageSenderImpl"/>
-    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.service.user.message.ChannelEmbedMessageSender"/>
-    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.service.user.message.PrivateMessageSenderWithCallbackImpl"/>
+    <bean id="channelMessageSender" class="com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl"/>
+    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender"/>
+    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.service.message.PrivateMessageSenderWithCallbackImpl"/>
 
     <!-- Commands -->
     <bean id="rootCommand" class="com.xylope.betriot.layer.service.command.RootCommand"/>
@@ -92,7 +92,7 @@
         <property name="trigger" ref="helpTrigger"/>
     </bean>
 
-    <bean id="noticeCommand" class="com.xylope.betriot.layer.service.command.custom.notice.NoticeCommand">
+    <bean id="noticeCommand" class="com.xylope.betriot.layer.service.command.custom.notice.NoticeCheckCommand">
         <property name="trigger" ref="noticeTrigger"/>
         <property name="dao" ref="userDao"/>
         <property name="permissionLevel" value="9"/> <!-- administrator -->
@@ -147,35 +147,35 @@
         <property name="summonerAPI" ref="summonerApi"/>
     </bean>
 
-    <bean id="dataDragonApi" class="com.xylope.betriot.layer.dataaccess.apis.DataDragonAPIImpl">
+    <bean id="dataDragonApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPIImpl">
         <qualifier value="main"/>
     </bean>
 
-    <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.apis.SummonerAPISummonerV4">
+    <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4">
         <property name="callback" ref="summonerApiCallback"/>
         <property name="riotApiKey" ref="riotApiKey"/>
         <qualifier value="main"/>
     </bean>
 
-    <bean id="championMasteryApi" class="com.xylope.betriot.layer.dataaccess.apis.ChampionMasteryAPIImpl">
+    <bean id="championMasteryApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.ChampionMasteryAPIImpl">
         <property name="riotApiKey" ref="riotApiKey"/>
     </bean>
 
-    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.MatchAPIOriana"/>
+    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPIOriana"/>
     <!-- property reference -->
 
-    <bean id="spareSummonerApi" class="com.xylope.betriot.layer.dataaccess.apis.SummonerAPISummonerV4">
+    <bean id="spareSummonerApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4">
         <property name="riotApiKey" ref="riotApiKey"/>
         <property name="callback" ref="summonerApiCallback"/>
         <qualifier value="spare"/>
     </bean>
 
-    <bean id="spareDataDragonApi" class="com.xylope.betriot.layer.dataaccess.apis.DataDragonAPIImpl">
+    <bean id="spareDataDragonApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPIImpl">
         <property name="riotApiKey" ref="riotApiKey"/>
         <qualifier value="spare"/>
     </bean>
 
-    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.apis.SummonerAPISummonerV4$SummonerAPICallback"/>
+    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4$SummonerAPICallback"/>
 
     <!-- DAOs -->
     <bean id="userDao" class="com.xylope.betriot.layer.domain.dao.UserDaoJdbc">

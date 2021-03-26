@@ -9,6 +9,7 @@
         <constructor-arg ref="commandManager"/>
         <constructor-arg ref="jdaEventManager"/>
         <constructor-arg ref="riotApiKey"/>
+        <constructor-arg ref="timeCounter"/>
     </bean>
 
     <!-- Manager -->
@@ -22,6 +23,8 @@
         <property name="noticeAllCommand" ref="noticeAllCommand"/>
         <property name="killCodeCommand" ref="killCodeCommand"/>
         <property name="matchCommand" ref="matchCommand"/>
+        <property name="betCommand" ref="betCommand"/>
+        <property name="betOpenCommand" ref="betOpenCommand"/>
     </bean>
 
     <bean id="jdaEventManager" class="com.xylope.betriot.manager.JDAEventManager">
@@ -52,6 +55,15 @@
         <property name="dao" ref="userDao"/>
     </bean>
 
+    <bean id="betService" class="com.xylope.betriot.layer.service.bet.BetService">
+        <constructor-arg ref="timeCounter"/>
+        <constructor-arg ref="matchApi"/>
+        <constructor-arg ref="jdaApi"/>
+        <constructor-arg ref="privateEmbedMessageSenderWithMention"/>
+        <constructor-arg ref="channelEmbedMessageSender"/>
+        <constructor-arg ref="channelErrorMessageSender"/>
+    </bean>
+
     <!-- JDA Events -->
     <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener"/>
     <bean id="messageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener"/>
@@ -62,12 +74,12 @@
     <bean id="timeCounter" class="com.xylope.betriot.manager.TimeCounter"/>
 
     <!-- JDA Message Sender -->
-    <bean id="errorMessageSender" class="com.xylope.betriot.layer.service.user.message.PrivateErrorMessageSender">
+    <bean id="errorMessageSender" class="com.xylope.betriot.layer.service.message.PrivateErrorMessageSender">
         <property name="adminEmail" ref="adminMail"/>
     </bean>
-    <bean id="channelMessageSender" class="com.xylope.betriot.layer.service.user.message.ChannelMessageSenderImpl"/>
-    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.service.user.message.ChannelEmbedMessageSender"/>
-    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.service.user.message.PrivateMessageSenderWithCallbackImpl"/>
+    <bean id="channelMessageSender" class="com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl"/>
+    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender"/>
+    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.service.message.PrivateMessageSenderWithCallbackImpl"/>
 
     <!-- Commands -->
     <bean id="rootCommand" class="com.xylope.betriot.layer.service.command.RootCommand"/>
@@ -100,10 +112,10 @@
         <property name="trigger" ref="helpTrigger"/>
     </bean>
 
-    <bean id="noticeCommand" class="com.xylope.betriot.layer.service.command.custom.notice.NoticeCommand">
+    <bean id="noticeCommand" class="com.xylope.betriot.layer.service.command.custom.notice.NoticeCheckCommand">
         <property name="trigger" ref="noticeTrigger"/>
         <property name="dao" ref="userDao"/>
-        <property name="permissionLevel" value="9"/> <!-- administrator -->
+        <property name="permissionLevel" ref="administrator"/>
     </bean>
 
     <bean id="noticeAllCommand" class="com.xylope.betriot.layer.service.command.custom.notice.NoticeAllCommand">
@@ -120,6 +132,19 @@
         <constructor-arg ref="channelEmbedMessageSender"/>
         <constructor-arg ref="channelMessageSender"/>
         <property name="trigger" ref="matchTrigger"/>
+    </bean>
+
+    <bean id="betCommand" class="com.xylope.betriot.layer.service.command.custom.bet.BetCommand">
+        <property name="permissionLevel" ref="iron"/>
+        <property name="dao" ref="userDao"/>
+        <property name="trigger" ref="betTrigger"/>
+    </bean>
+
+    <bean id="betOpenCommand" class="com.xylope.betriot.layer.service.command.custom.bet.BetOpenCommand">
+        <constructor-arg ref="betService"/>
+        <constructor-arg ref="userDao"/>
+        <constructor-arg ref="channelMessageSender"/>
+        <property name="trigger" ref="betOpenTrigger"/>
     </bean>
 
     <!-- Triggers -->
@@ -147,6 +172,15 @@
     <bean id="matchTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="전적"/>
     </bean>
+    <bean id="betTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="배팅"/>
+    </bean>
+    <bean id="betOpenTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="개설"/>
+    </bean>
+
+    <!-- JDAApi -->
+    <bean id="jdaApi" class="com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI"/>
 
     <!-- Riot API -->
     <bean id="userSummonerApi" class="com.xylope.betriot.layer.service.user.apis.UserSummonerAPIImpl">
@@ -155,35 +189,38 @@
         <property name="summonerAPI" ref="summonerApi"/>
     </bean>
 
-    <bean id="dataDragonApi" class="com.xylope.betriot.layer.dataaccess.apis.DataDragonAPIImpl">
+    <bean id="dataDragonApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPIImpl">
         <qualifier value="main"/>
     </bean>
 
-    <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.apis.SummonerAPISummonerV4">
+    <bean id="summonerApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4">
         <property name="callback" ref="summonerApiCallback"/>
         <property name="riotApiKey" ref="riotApiKey"/>
         <qualifier value="main"/>
     </bean>
 
-    <bean id="championMasteryApi" class="com.xylope.betriot.layer.dataaccess.apis.ChampionMasteryAPIImpl">
+    <bean id="championMasteryApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.ChampionMasteryAPIImpl">
         <property name="riotApiKey" ref="riotApiKey"/>
     </bean>
 
-    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.MatchAPIOriana"/>
-    <!-- property reference -->
+    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPIOriana"/>
 
-    <bean id="spareSummonerApi" class="com.xylope.betriot.layer.dataaccess.apis.SummonerAPISummonerV4">
+    <bean id="privateEmbedMessageSenderWithMention" class="com.xylope.betriot.layer.service.message.PrivateEmbedMessageSenderWithMention"/>
+    <bean id="channelErrorMessageSender" class="com.xylope.betriot.layer.service.message.ChannelErrorMessageSender"/>
+
+    <!-- property reference(SPARE) -->
+    <bean id="spareSummonerApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4">
         <property name="riotApiKey" ref="riotApiKey"/>
         <property name="callback" ref="summonerApiCallback"/>
         <qualifier value="spare"/>
     </bean>
 
-    <bean id="spareDataDragonApi" class="com.xylope.betriot.layer.dataaccess.apis.DataDragonAPIImpl">
+    <bean id="spareDataDragonApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPIImpl">
         <property name="riotApiKey" ref="riotApiKey"/>
         <qualifier value="spare"/>
     </bean>
 
-    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.apis.SummonerAPISummonerV4$SummonerAPICallback"/>
+    <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4$SummonerAPICallback"/>
 
     <!-- DAOs -->
     <bean id="userDao" class="com.xylope.betriot.layer.domain.dao.UserDaoJdbc">
@@ -204,6 +241,38 @@
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- permission values -->
+    <bean id="iron" class="java.lang.Integer">
+        <constructor-arg value="0"/>
+    </bean>
+    <bean id="bronze" class="java.lang.Integer">
+        <constructor-arg value="1"/>
+    </bean>
+    <bean id="silver" class="java.lang.Integer">
+        <constructor-arg value="2"/>
+    </bean>
+    <bean id="gold" class="java.lang.Integer">
+        <constructor-arg value="3"/>
+    </bean>
+    <bean id="platinum" class="java.lang.Integer">
+        <constructor-arg value="4"/>
+    </bean>
+    <bean id="diamond" class="java.lang.Integer">
+        <constructor-arg value="5"/>
+    </bean>
+    <bean id="master" class="java.lang.Integer">
+        <constructor-arg value="6"/>
+    </bean>
+    <bean id="grandMaster" class="java.lang.Integer">
+        <constructor-arg value="7"/>
+    </bean>
+    <bean id="challenger" class="java.lang.Integer">
+        <constructor-arg value="8"/>
+    </bean>
+    <bean id="administrator" class="java.lang.Integer">
+        <constructor-arg value="9"/>
     </bean>
 </beans>
 

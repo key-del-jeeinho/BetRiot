@@ -2,23 +2,30 @@ package com.xylope.betriot.layer.service.command;
 
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
-public class PermissionCommandImpl extends AbstractCommand{
+@NoArgsConstructor
+public class PermittedCommandImpl extends AbstractCommand{
+    @Setter
+    private AbstractCommand command;
     @Setter
     private UserDao dao;
     @Setter
     int permissionLevel;
+
     @Override
     public void execute(GuildChannel channel, User sender, String... args) {
         if(sender.isBot()) return; //bot can't use command
 
         Guild guild = channel.getGuild();
-        TextChannel textChannel = guild.getTextChannelById(channel.getId());
+        TextChannel textChannel = guild .getTextChannelById(channel.getId());
         long discordId = sender.getIdLong();
         assert textChannel != null;
         if(!dao.isUserExist(discordId)) {
@@ -32,6 +39,9 @@ public class PermissionCommandImpl extends AbstractCommand{
             return;
         }
 
-        checkChildExecute(channel, sender, args);
+        if(command == null)
+            checkChildExecute(channel, sender, args);
+        else
+            command.execute(channel, sender, args);
     }
 }

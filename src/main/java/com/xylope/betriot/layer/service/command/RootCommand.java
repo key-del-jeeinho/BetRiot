@@ -7,7 +7,6 @@ public class RootCommand extends CommandImpl {
     @Override
     public void execute(GuildChannel channel, User sender, String... args) {
         super.execute(channel, sender, args);
-        System.out.println(children.size());
         for(AbstractCommand cmd : children) {
             System.out.println(cmd);
         }

@@ -4,12 +4,13 @@ import com.xylope.betriot.layer.domain.event.OnDayEvent;
 import com.xylope.betriot.layer.domain.event.OnHourEvent;
 import com.xylope.betriot.layer.domain.event.OnMinuteEvent;
 import com.xylope.betriot.layer.domain.event.OnSecondEvent;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
 
 public class TimeCounter{
-    @Setter
+    @Setter @Getter
     private boolean isRunning;
 
     private long startTimeMills; // 계속 변동함

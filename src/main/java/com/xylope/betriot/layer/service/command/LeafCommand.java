@@ -1,6 +1,6 @@
 package com.xylope.betriot.layer.service.command;
 
-import com.xylope.betriot.exception.TreeException;
+import com.xylope.betriot.exception.CommandException;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -16,6 +16,6 @@ public class LeafCommand extends AbstractCommand {
 
     @Override
     public void addChildCommand(AbstractCommand cmd) {
-        throw new TreeException("that is leaf command");
+        throw new CommandException("that is leaf command");
     }
 }

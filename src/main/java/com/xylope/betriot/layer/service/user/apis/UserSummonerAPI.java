@@ -1,8 +1,8 @@
 package com.xylope.betriot.layer.service.user.apis;
 
-import com.xylope.betriot.layer.dataaccess.apis.ChampionMasteryAPI;
-import com.xylope.betriot.layer.dataaccess.apis.DataDragonAPI;
-import com.xylope.betriot.layer.dataaccess.apis.SummonerAPI;
+import com.xylope.betriot.layer.dataaccess.apis.riot.ChampionMasteryAPI;
+import com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPI;
+import com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.MessageEmbed;

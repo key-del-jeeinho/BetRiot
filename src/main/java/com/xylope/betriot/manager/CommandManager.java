@@ -2,8 +2,11 @@ package com.xylope.betriot.manager;
 
 import com.xylope.betriot.layer.service.command.RootCommand;
 import com.xylope.betriot.layer.service.command.custom.*;
+import com.xylope.betriot.layer.service.command.custom.bet.BetCommand;
+import com.xylope.betriot.layer.service.command.custom.bet.BetOpenCommand;
+import com.xylope.betriot.layer.service.command.custom.bet.BettingParticipationCommand;
 import com.xylope.betriot.layer.service.command.custom.notice.NoticeAllCommand;
-import com.xylope.betriot.layer.service.command.custom.notice.NoticeCommand;
+import com.xylope.betriot.layer.service.command.custom.notice.NoticeCheckCommand;
 import com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.User;
@@ -26,13 +29,19 @@ public class CommandManager implements Manager{
     @Setter
     private HelpCommand helpCommand;
     @Setter
-    private NoticeCommand noticeCommand;
+    private NoticeCheckCommand noticeCommand;
     @Setter
     private NoticeAllCommand noticeAllCommand;
     @Setter
     private KillCodeCommand killCodeCommand;
     @Setter
     private MatchCommand matchCommand;
+    @Setter
+    private BetCommand betCommand;
+    @Setter
+    private BetOpenCommand betOpenCommand;
+    @Setter
+    private BettingParticipationCommand bettingParticipationCommand;
 
     public CommandManager() {
         this.rootCmd = new RootCommand();
@@ -41,6 +50,10 @@ public class CommandManager implements Manager{
     public void initRootCommand() {
         rootCmd.addChildCommand(noticeCommand);
         noticeCommand.addChildCommand(noticeAllCommand);
+
+        rootCmd.addChildCommand(betCommand);
+        betCommand.addChildCommand(betOpenCommand);
+        betCommand.addChildCommand(bettingParticipationCommand);
         //leafCommand
         rootCmd.addChildCommand(profileCommand);
         rootCmd.addChildCommand(createAccountCommand);

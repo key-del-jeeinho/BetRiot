@@ -24,8 +24,7 @@ public abstract class AbstractCommand implements Executable{
     public void checkChildExecute(GuildChannel channel, User sender, String... args) {
         if(args.length > 0) {
             children.forEach((child) -> {
-                        CommandTrigger trigger = child.trigger;
-                        if (trigger.checkTrigger(args[0])) {
+                        if (child.trigger.checkTrigger(args[0])) {
                             String[] childArgs = new String[args.length - 1];
                             System.arraycopy(args, 1, childArgs, 0, childArgs.length);
                             child.execute(channel, sender, childArgs);

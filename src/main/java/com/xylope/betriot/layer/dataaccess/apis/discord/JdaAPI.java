@@ -1,0 +1,28 @@
+package com.xylope.betriot.layer.dataaccess.apis.discord;
+
+import com.xylope.betriot.ApplicationBooter;
+import com.xylope.betriot.BetRiotApplication;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.User;
+
+import java.util.Objects;
+
+public class JdaAPI {
+    private JDA jda;
+
+    public PrivateChannel getPrivateChannelByUserId(long discordId) {
+        initJda();
+        return Objects.requireNonNull(getUserById(discordId)).openPrivateChannel().complete();
+    }
+
+    public User getUserById(long discordId) {
+        initJda();
+        return jda.getUserById(discordId);
+    }
+
+    private void initJda() {
+        if(jda == null)
+            jda = ApplicationBooter.CONTEXT.getBean(BetRiotApplication.class).getJda();
+    }
+}

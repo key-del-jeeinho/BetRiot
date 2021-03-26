@@ -160,11 +160,12 @@ public class UserDaoTest {
         userDao.removeAll();
     }
     @Test
-    public void testGetByPermission() {
-        userDao = new TestUserDao();
+    public void testGetByPermission() { //Todo 테스트 구현
         userDao.removeAll();
+        //userDao = new TestUserDao();
 
         userDao.add(users.toArray(new UserVO[0]));
+        userDao.removeAll();
 
     }
     @Test
@@ -183,11 +184,16 @@ public class UserDaoTest {
     }
     @Test
     public void testIsPermission() {
+        userDao.removeAll();
+
         UserVO testUser = users.get(0);
+        userDao.add(testUser);
+
         testUser.setPermission(UserVO.Permission.GOLD);
         UserVO.Permission permission = testUser.getPermission();
         assertTrue(userDao.isPermission(testUser.getDiscordId(), permission));
         //UserVO.Permission = userDao
+        userDao.removeAll();
     }
 
     @Test

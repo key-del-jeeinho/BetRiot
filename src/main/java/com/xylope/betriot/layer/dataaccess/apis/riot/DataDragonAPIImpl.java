@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.dataaccess.apis;
+package com.xylope.betriot.layer.dataaccess.apis.riot;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -9,7 +9,6 @@ import com.xylope.betriot.layer.dataaccess.RiotAPITemplate;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.awt.*;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
