@@ -86,7 +86,7 @@ public class Bet {
     }
 
     @AllArgsConstructor
-    enum BetType {
+    public enum BetType {
         PRIVATE(true, "서버 내 배팅"), GLOBAL(false, "글로벌 배팅");
 
         @Getter
@@ -95,10 +95,10 @@ public class Bet {
         private final String displayType;
     }
 
-    enum Progress {
+    public enum Progress {
         UN_ACTIVE, //초기 Bet 생성이후
         OPEN_BET, //매치가 집혔는지 확인이되어 배팅이 개설된 이후
-        CLOSE_BET, //배팅에대한
+        CLOSE_BET, //배팅에대한 참여가 종료된 이후
         MATCH_END, //매치가 종료된 이후
         BET_END //배팅이 종료된 이후
     }

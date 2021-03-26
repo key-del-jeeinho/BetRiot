@@ -25,6 +25,7 @@
         <property name="matchCommand" ref="matchCommand"/>
         <property name="betCommand" ref="betCommand"/>
         <property name="betOpenCommand" ref="betOpenCommand"/>
+        <property name="bettingParticipationCommand" ref="bettingParticipationCommand"/>
     </bean>
 
     <bean id="jdaEventManager" class="com.xylope.betriot.manager.JDAEventManager">
@@ -61,7 +62,9 @@
         <constructor-arg ref="jdaApi"/>
         <constructor-arg ref="privateEmbedMessageSenderWithMention"/>
         <constructor-arg ref="channelEmbedMessageSender"/>
+        <constructor-arg ref="channelMessageSender"/>
         <constructor-arg ref="channelErrorMessageSender"/>
+        <constructor-arg ref="bankUserDao"/>
     </bean>
 
     <!-- JDA Events -->
@@ -147,6 +150,14 @@
         <property name="trigger" ref="betOpenTrigger"/>
     </bean>
 
+    <bean id="bettingParticipationCommand" class="com.xylope.betriot.layer.service.command.custom.bet.BettingParticipationCommand">
+        <constructor-arg ref="channelErrorMessageSender"/>
+        <constructor-arg ref="channelMessageSender"/>
+        <constructor-arg ref="betService"/>
+        <constructor-arg ref="userDao"/>
+        <property name="trigger" ref="bettingParticipationTrigger"/>
+    </bean>
+
     <!-- Triggers -->
     <bean id="profileTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="프로필"/>
@@ -177,6 +188,9 @@
     </bean>
     <bean id="betOpenTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="개설"/>
+    </bean>
+    <bean id="bettingParticipationTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="참가"/>
     </bean>
 
     <!-- JDAApi -->
@@ -223,6 +237,9 @@
     <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4$SummonerAPICallback"/>
 
     <!-- DAOs -->
+    <bean id="bankUserDao" class="com.xylope.betriot.layer.service.user.dao.BankUserDao">
+        <property name="spareDao" ref="userDao"/>
+    </bean>
     <bean id="userDao" class="com.xylope.betriot.layer.domain.dao.UserDaoJdbc">
         <property name="jdbc" ref="jdbcTemplate"/>
         <property name="transactionManager" ref="transactionManager"/>

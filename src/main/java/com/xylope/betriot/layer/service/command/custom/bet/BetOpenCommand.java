@@ -1,6 +1,8 @@
 package com.xylope.betriot.layer.service.command.custom.bet;
 
+import com.xylope.betriot.exception.DuplicatePublisherException;
 import com.xylope.betriot.layer.domain.dao.UserDao;
+import com.xylope.betriot.layer.service.bet.Bet;
 import com.xylope.betriot.layer.service.bet.BetService;
 import com.xylope.betriot.layer.service.command.AbstractCommand;
 import com.xylope.betriot.layer.service.command.LeafCommand;
@@ -25,7 +27,14 @@ public class BetOpenCommand extends LeafCommand {
 
                 TextChannel textChannel = guild.getTextChannelById(channelId);
                 PrivateChannel privateChannel = sender.openPrivateChannel().complete();
-                betService.openPrivateBet(userDao.get(sender.getIdLong()), textChannel, privateChannel);
+                try {
+                    betService.openPrivateBet(userDao.get(sender.getIdLong()), textChannel, privateChannel);
+                } catch (DuplicatePublisherException e) {
+                    if(e.getBet().getProgress() == Bet.Progress.UN_ACTIVE)
+                        stringChannelMessageSender.sendMessage(textChannel, String.format("이미 %s님의 배팅이 대기열에 등록되어있습니다", sender.getAsMention()));
+                    else
+                        stringChannelMessageSender.sendMessage(textChannel, String.format("이미 %s님의 배팅이 진행중입니다", sender.getAsMention()));
+                }
                 privateChannel.close().complete();
             }
         });

@@ -1,6 +1,7 @@
 package com.xylope.betriot.layer.service.command.custom.bet;
 
 import com.xylope.betriot.exception.NotEnoughMoneyException;
+import com.xylope.betriot.exception.WrongBetProgressException;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.bet.BetService;
@@ -62,10 +63,15 @@ public class BettingParticipationCommand extends LeafCommand {
                             String.format("돈이 부족합니다!\n소지금 : %d원\n필요금 : %d원",
                                     e.getPossessionMoney(),
                                     e.getRequiredMoney()));
+                    return;
                 } catch (ArithmeticException e) {
-                    channelErrorMessageSender.sendMessage(textChannel, e.getMessage());
+                    channelMessageSender.sendMessage(textChannel, e.getMessage());
+                    return;
                 } catch (UnknownBetIdException e) {
                     channelMessageSender.sendMessage(textChannel, String.format("존재하지 않는 Id(%s)입니다", e.getId()));
+                    return;
+                } catch (WrongBetProgressException e) {
+                    channelMessageSender.sendMessage(textChannel, "배팅에 참가하실 수 없습니다 (배팅 진행상황이 배팅참가기간 이전이거나 이후입니다)");
                 }
                 channelMessageSender.sendMessage(textChannel, sender.getAsMention() + "배팅에 성공적으로 참여되셧습니다!");
             }

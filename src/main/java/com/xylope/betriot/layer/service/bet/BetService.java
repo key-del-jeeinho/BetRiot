@@ -3,9 +3,7 @@ package com.xylope.betriot.layer.service.bet;
 import com.merakianalytics.orianna.Orianna;
 import com.merakianalytics.orianna.types.core.match.Match;
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch;
-import com.xylope.betriot.exception.BetNotFountException;
-import com.xylope.betriot.exception.IllegalProcessException;
-import com.xylope.betriot.exception.NotEnoughMoneyException;
+import com.xylope.betriot.exception.*;
 import com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI;
 import com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPI;
 import com.xylope.betriot.layer.domain.event.OnSecondEvent;
@@ -43,6 +41,8 @@ public class BetService {
 
     private final BankUserDao userDao;
 
+
+    //TODO MVC 패턴 적용, BetQueue에서 정보를 가져오는것에 대한 클래스 BetModel 을 만들고, 매칭 개설 등에 대한 메세지 수신을 담은 BetView 를 새로 생성한다 (Command 에 있는 메세지 수신도 통합한다)
     public BetService(TimeCounter counter, MatchAPI matchAPI, JdaAPI jdaAPI,
                       PrivateEmbedMessageSenderWithMention privateEmbedMessageSenderWithMention,
                       ChannelEmbedMessageSender channelEmbedMessageSender,
@@ -107,6 +107,11 @@ public class BetService {
 
     //배팅을 개설하는 로직이 담긴 private 메서드
     private void openBet(UserVO user, TextChannel openChannel, PrivateChannel privateChannel, Bet.BetType betType) {
+        betQueue.forEach(bet -> {
+            if(bet.getPublisher().getDiscordId() == user.getDiscordId())
+                throw new DuplicatePublisherException(bet);
+        });
+
         betQueue.add(new Bet(user, openChannel, privateChannel, action, betType));
         MessageEmbed message = new EmbedBuilder()
                 .setTitle("배팅 개설 예약에 성공하였습니다!")
@@ -137,7 +142,8 @@ public class BetService {
                 .addField("", "해당 배팅에 참여하시려면 `뱃라이엇 배팅 참가 " + betId + " <승리 | 패배> <돈>` 명령어를 입력해주세요!", false)
                 .build();
 
-        bet.setProgress(Bet.Progress.OPEN_BET);
+        bet.setProgress(Bet.Progress.OPEN_BET);//TODO 일정시간 이후 배팅 닫기
+
 
         channelEmbedMessageSender.sendMessage(bet.getTextChannel(), message);
     }
@@ -177,6 +183,7 @@ public class BetService {
     //Participant's work
 
     public void addParticipant(int betId, UserVO user, int money, boolean isBetWin) {
+        if(!getBet(betId).getProgress().equals(Bet.Progress.OPEN_BET)) throw new WrongBetProgressException();
         if(money < 0) {
             isBetWin = !isBetWin;
             channelMessageSender.sendMessage(getBet(betId).getTextChannel(), "돈의 값이 음수입니다! 자동으로 반대쪽 배팅에 배팅됩니다!");
