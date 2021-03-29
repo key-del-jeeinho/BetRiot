@@ -161,7 +161,7 @@
         <property name="riotApiKey" ref="riotApiKey"/>
     </bean>
 
-    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPIOriana"/>
+    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPIOrianna"/>
     <!-- property reference -->
 
     <bean id="spareSummonerApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4">

@@ -14,7 +14,7 @@ import java.net.MalformedURLException;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testContext.xml", "/secretContext.xml"})
+@ContextConfiguration(locations = {"/applicationContext.xml", "/secretContext.xml"})
 public class DataDragonAPITest {
     @Qualifier("main")
     @Autowired

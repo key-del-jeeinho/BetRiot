@@ -5,7 +5,7 @@ import com.merakianalytics.orianna.types.core.match.MatchHistory;
 import com.merakianalytics.orianna.types.core.match.Team;
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch;
 
-public interface MatchAPI {
+public interface OriannaMatchAPI {
     Match getByMatchId(long matchId);
     MatchHistory getMatchListBySummoner(String summonerId);
     CurrentMatch getCurrentMatch(String summonerId);

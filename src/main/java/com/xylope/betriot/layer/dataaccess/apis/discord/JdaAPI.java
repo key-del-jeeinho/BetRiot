@@ -18,7 +18,10 @@ public class JdaAPI {
 
     public User getUserById(long discordId) {
         initJda();
-        return jda.getUserById(discordId);
+        User user = jda.getUserById(discordId);
+        if(user == null)
+            user = jda.retrieveUserById(discordId).complete();
+        return user;
     }
 
     private void initJda() {

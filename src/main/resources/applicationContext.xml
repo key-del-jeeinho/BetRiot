@@ -217,7 +217,7 @@
         <property name="riotApiKey" ref="riotApiKey"/>
     </bean>
 
-    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPIOriana"/>
+    <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPIOrianna"/>
 
     <bean id="privateEmbedMessageSenderWithMention" class="com.xylope.betriot.layer.service.message.PrivateEmbedMessageSenderWithMention"/>
     <bean id="channelErrorMessageSender" class="com.xylope.betriot.layer.service.message.ChannelErrorMessageSender"/>

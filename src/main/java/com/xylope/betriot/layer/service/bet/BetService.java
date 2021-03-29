@@ -5,7 +5,7 @@ import com.merakianalytics.orianna.types.core.match.Match;
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch;
 import com.xylope.betriot.exception.*;
 import com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI;
-import com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPI;
+import com.xylope.betriot.layer.dataaccess.apis.riot.OriannaMatchAPI;
 import com.xylope.betriot.layer.domain.event.OnSecondEvent;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender;
@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -36,14 +37,14 @@ public class BetService {
     private final ChannelMessageSenderImpl channelMessageSender;
     private final ChannelErrorMessageSender channelErrorMessageSender;
 
-    private final MatchAPI matchAPI;
+    private final OriannaMatchAPI oriannaMatchAPI;
     private final JdaAPI jdaAPI;
 
     private final BankUserDao userDao;
 
 
     //TODO MVC 패턴 적용, BetQueue에서 정보를 가져오는것에 대한 클래스 BetModel 을 만들고, 매칭 개설 등에 대한 메세지 수신을 담은 BetView 를 새로 생성한다 (Command 에 있는 메세지 수신도 통합한다)
-    public BetService(TimeCounter counter, MatchAPI matchAPI, JdaAPI jdaAPI,
+    public BetService(TimeCounter counter, OriannaMatchAPI oriannaMatchAPI, JdaAPI jdaAPI,
                       PrivateEmbedMessageSenderWithMention privateEmbedMessageSenderWithMention,
                       ChannelEmbedMessageSender channelEmbedMessageSender,
                       ChannelMessageSenderImpl channelMessageSender,
@@ -55,7 +56,7 @@ public class BetService {
         this.channelMessageSender = channelMessageSender;
         this.channelErrorMessageSender = channelErrorMessageSender;
 
-        this.matchAPI = matchAPI;
+        this.oriannaMatchAPI = oriannaMatchAPI;
         this.jdaAPI = jdaAPI;
         this.userDao = userDao;
 
@@ -77,7 +78,7 @@ public class BetService {
         action = bet -> {
             UserVO user = bet.getPublisher();
 
-            if(matchAPI.isCurrentMatchExist(user.getRiotId())) {
+            if(oriannaMatchAPI.isCurrentMatchExist(user.getRiotId())) {
                 startBet(bet);
             } else {
                 MessageEmbed message = new EmbedBuilder()
@@ -107,6 +108,7 @@ public class BetService {
 
     //배팅을 개설하는 로직이 담긴 private 메서드
     private void openBet(UserVO user, TextChannel openChannel, PrivateChannel privateChannel, Bet.BetType betType) {
+        //만약, 이미 해당 유저의 배팅이 개설되어있을경우, 중복 개설자 예외를 던진다
         betQueue.forEach(bet -> {
             if(bet.getPublisher().getDiscordId() == user.getDiscordId())
                 throw new DuplicatePublisherException(bet);
@@ -127,13 +129,17 @@ public class BetService {
     //배팅 객체를 가지고 배팅을 시작한다
     private void startBet(Bet bet) {
         String summonerId = bet.getPublisher().getRiotId();
-        CurrentMatch match = matchAPI.getCurrentMatch(summonerId);
+        CurrentMatch match = oriannaMatchAPI.getCurrentMatch(summonerId);
+        if(!bet.getProgress().equals(Bet.Progress.UN_ACTIVE))
+            throw new WrongBetProgressException();
+        if(match.getCreationTime().isAfter(new Date().getTime() + 5 * 60 * 1000))
+
         bet.setCurrentMatch(match);
 
         User user = jdaAPI.getUserById(bet.getPublisher().getDiscordId());;
         int betId = betQueue.indexOf(bet);
         if(betId == -1)
-            throw new BetNotFountException("unknown bet : " + bet);
+            throw new BetNotFoundException("unknown bet : " + bet);
 
         MessageEmbed message = new EmbedBuilder()
                 .setTitle("배팅이 개설되었습니다!")
@@ -144,7 +150,6 @@ public class BetService {
 
         bet.setProgress(Bet.Progress.OPEN_BET);//TODO 일정시간 이후 배팅 닫기
 
-
         channelEmbedMessageSender.sendMessage(bet.getTextChannel(), message);
     }
 
@@ -154,7 +159,8 @@ public class BetService {
     }
 
     public void endBet(Bet bet) {
-        //TODO exists 로매칭이 끝나는지 여부를 체크할 수 있는지 테스트한다
+        //TODO exists 로매칭이 끝나는지 여부를 체크할 수 있는지 테스트한다\
+        //TODO 테스트 설계 : 롤 플레이중 테스트를 실행한다. 해당 테스트에는 CurrentMatch 와 Match 를 가져오는 코드가 있고, 둘다 exists 메서드를 실행시켰을때 CurrentMatch 는 true, Match 는 false 가 나오면 성공
         Match match =Orianna.matchWithId(bet.getCurrentMatch().getId()).get();
         if(!match.exists()) {
             throw new IllegalProcessException("Match isn't end");
@@ -165,9 +171,9 @@ public class BetService {
             bet.cancelBet();
         }
 
-        boolean isPublisherWin = matchAPI.isSummonerWin(match, bet.getPublisher().getRiotId());
+        boolean isPublisherWin = oriannaMatchAPI.isSummonerWin(match, bet.getPublisher().getRiotId()); //배팅 개설자가 승리했는지를 저장하는 논리형 변수
 
-        Map<UserVO, Integer> winners;
+        Map<UserVO, Integer> winners; //배팅에서 이긴사람
         if(isPublisherWin) {
             winners = bet.getParticipantsWin();
         } else {
@@ -183,7 +189,13 @@ public class BetService {
     //Participant's work
 
     public void addParticipant(int betId, UserVO user, int money, boolean isBetWin) {
-        if(!getBet(betId).getProgress().equals(Bet.Progress.OPEN_BET)) throw new WrongBetProgressException();
+        Bet bet = getBet(betId);
+        if(!bet.getProgress().equals(Bet.Progress.OPEN_BET)) throw new WrongBetProgressException();
+
+        bet.getAllParticipants().forEach((betUser, betMoney) -> {
+            if (betUser.getDiscordId() == user.getDiscordId()) //만약 추가하려는 유저가 해당 배팅에 이미 참여한 참가자일경우
+                throw new DuplicatePublisherException(bet);
+        });
         if(money < 0) {
             isBetWin = !isBetWin;
             channelMessageSender.sendMessage(getBet(betId).getTextChannel(), "돈의 값이 음수입니다! 자동으로 반대쪽 배팅에 배팅됩니다!");

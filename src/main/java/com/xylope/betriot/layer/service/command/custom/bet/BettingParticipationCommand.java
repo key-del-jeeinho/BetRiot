@@ -5,7 +5,7 @@ import com.xylope.betriot.exception.WrongBetProgressException;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.bet.BetService;
-import com.xylope.betriot.layer.service.bet.UnknownBetIdException;
+import com.xylope.betriot.exception.UnknownBetIdException;
 import com.xylope.betriot.layer.service.command.AbstractCommand;
 import com.xylope.betriot.layer.service.command.LeafCommand;
 import com.xylope.betriot.layer.service.message.ChannelErrorMessageSender;

@@ -3,8 +3,8 @@ package com.xylope.betriot.exception;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class BetNotFountException extends DataNotFoundException {
-    public BetNotFountException(String s) {
+public class BetNotFoundException extends DataNotFoundException {
+    public BetNotFoundException(String s) {
         super(s);
     }
 }

@@ -1,6 +1,6 @@
 package com.xylope.betriot.layer.service.user.account.create;
 
-import com.xylope.betriot.exception.NotExistIDException;
+import com.xylope.betriot.exception.NotExistIdException;
 import com.xylope.betriot.exception.WrongRegisterProgressException;
 
 import java.util.HashSet;
@@ -42,7 +42,7 @@ public class BeforeCreateAccountUserSet extends HashSet<BeforeCreateAccountUser>
         return isMessageRiot;
     }
 
-    public BeforeCreateAccountUser getUserByTermsMessageId(long termsMessageId) throws NotExistIDException {
+    public BeforeCreateAccountUser getUserByTermsMessageId(long termsMessageId) throws NotExistIdException {
         if (isMessageTerms(termsMessageId)) {
             BeforeCreateAccountUser result = null;
             for(BeforeCreateAccountUser beforeCreateAccountUser : this) {
@@ -57,7 +57,7 @@ public class BeforeCreateAccountUserSet extends HashSet<BeforeCreateAccountUser>
                 }
             }
             return result;
-        } else throw new NotExistIDException("User with the TermsMessageId does not exist\n termsMessageId : " + termsMessageId);
+        } else throw new NotExistIdException("User with the TermsMessageId does not exist\n termsMessageId : " + termsMessageId);
     }
 
     public boolean isUserExistByDiscordId(long discordId) {
@@ -73,6 +73,6 @@ public class BeforeCreateAccountUserSet extends HashSet<BeforeCreateAccountUser>
                 if (beforeCreateAccountUser.getDiscordId() == discordId)
                     return beforeCreateAccountUser;
         }
-        throw new NotExistIDException("User with the discordId does not exist\n discordId : " + discordId);
+        throw new NotExistIdException("User with the discordId does not exist\n discordId : " + discordId);
     }
 }

@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.bet;
+package com.xylope.betriot.exception;
 
 import lombok.Getter;
 

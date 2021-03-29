@@ -15,7 +15,7 @@ import java.util.Map;
 
 @ToString
 public class Bet {
-    public static final int DEFAULT_SECOND_COUNT = 240; //4분
+    public static final int DEFAULT_SECOND_COUNT = 240; //단위 : 초
     @Getter
     private final UserVO publisher;
     @Getter

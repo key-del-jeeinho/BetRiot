@@ -8,7 +8,7 @@ import com.merakianalytics.orianna.types.core.match.Team;
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch;
 import com.merakianalytics.orianna.types.core.summoner.Summoner;
 
-public class MatchAPIOriana implements MatchAPI{
+public class MatchAPIOrianna implements OriannaMatchAPI {
 
     @Override
     public Match getByMatchId(long matchId) {

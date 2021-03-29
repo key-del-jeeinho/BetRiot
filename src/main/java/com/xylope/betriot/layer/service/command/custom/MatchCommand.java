@@ -7,7 +7,7 @@ import com.merakianalytics.orianna.types.core.match.ParticipantStats;
 import com.merakianalytics.orianna.types.core.searchable.SearchableList;
 import com.merakianalytics.orianna.types.core.summoner.Summoner;
 import com.xylope.betriot.exception.DataNotFoundException;
-import com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPI;
+import com.xylope.betriot.layer.dataaccess.apis.riot.OriannaMatchAPI;
 import com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import com.xylope.betriot.layer.service.SpecialEmote;
@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MatchCommand extends LeafCommand {
-    public MatchCommand(MatchAPI matchAPI, SummonerAPI summonerAPI, ChannelEmbedMessageSender channelEmbedMessageSender, ChannelMessageSenderImpl channelMessageSender) {
+    public MatchCommand(OriannaMatchAPI oriannaMatchAPI, SummonerAPI summonerAPI, ChannelEmbedMessageSender channelEmbedMessageSender, ChannelMessageSenderImpl channelMessageSender) {
         super(new AbstractCommand() {
                   @Override
                   public void execute(GuildChannel channel, User sender, String... args) {
@@ -72,7 +72,7 @@ public class MatchCommand extends LeafCommand {
                           return;
                       }
 
-                      MatchHistory list = matchAPI.getMatchListBySummoner(summoner.getId());
+                      MatchHistory list = oriannaMatchAPI.getMatchListBySummoner(summoner.getId());
 
 
                       Match match = list.get(matchNumber);
