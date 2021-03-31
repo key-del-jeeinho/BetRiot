@@ -237,7 +237,7 @@
     <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4$SummonerAPICallback"/>
 
     <!-- DAOs -->
-    <bean id="bankUserDao" class="com.xylope.betriot.layer.service.user.dao.BankUserDao">
+    <bean id="bankUserDao" class="com.xylope.betriot.layer.service.user.dao.BankUserDaoImpl">
         <property name="spareDao" ref="userDao"/>
     </bean>
     <bean id="userDao" class="com.xylope.betriot.layer.domain.dao.UserDaoJdbc">

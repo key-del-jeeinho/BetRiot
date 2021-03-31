@@ -2,6 +2,7 @@ import com.xylope.betriot.layer.domain.event.OnMinuteEvent;
 import com.xylope.betriot.layer.domain.event.OnSecondEvent;
 import com.xylope.betriot.manager.TimeCounter;
 import com.xylope.betriot.manager.TimeListenerAdapter;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testContext.xml", "/secretContext.xml"})
 public class TimeCounterTest {
-    @Autowired
     private TimeCounter timeCounter;
+
+    @Before
+    public void setUp() {
+        timeCounter = new TimeCounter();
+    }
 
     @Test
     public void testTimeEventCall() throws InterruptedException {
@@ -46,8 +49,28 @@ public class TimeCounterTest {
                 });
         timeCounter.run();
 
-        Thread.sleep(10000);
+        Thread.sleep(1000 * 3);
         timeCounter.setRunning(false);
-        Thread.sleep(10000);
+        Thread.sleep(1000 * 3);
+        timeCounter.setRunning(true);
+        Thread.sleep(1000 * 3);
+    }
+
+    @Test
+    public void testCount() throws InterruptedException {
+        timeCounter.addTimeListener(
+                new TimeListenerAdapter() {
+                    int count = 0;
+                    @Override
+                    public void onTimeSecond(OnSecondEvent e) {
+                        count++;
+                        if(count % 3 == 0) {
+                            System.out.println("count = " + count);
+                        }
+                    }
+                }
+        );
+        timeCounter.run();
+        Thread.sleep(1000 * 20);
     }
 }

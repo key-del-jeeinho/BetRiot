@@ -12,7 +12,7 @@ import com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender;
 import com.xylope.betriot.layer.service.message.ChannelErrorMessageSender;
 import com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl;
 import com.xylope.betriot.layer.service.message.PrivateEmbedMessageSenderWithMention;
-import com.xylope.betriot.layer.service.user.dao.BankUserDao;
+import com.xylope.betriot.layer.service.user.dao.BankUserDaoImpl;
 import com.xylope.betriot.manager.TimeCounter;
 import com.xylope.betriot.manager.TimeListenerAdapter;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -40,7 +40,7 @@ public class BetService {
     private final OriannaMatchAPI oriannaMatchAPI;
     private final JdaAPI jdaAPI;
 
-    private final BankUserDao userDao;
+    private final BankUserDaoImpl userDao;
 
 
     //TODO MVC 패턴 적용, BetQueue에서 정보를 가져오는것에 대한 클래스 BetModel 을 만들고, 매칭 개설 등에 대한 메세지 수신을 담은 BetView 를 새로 생성한다 (Command 에 있는 메세지 수신도 통합한다)
@@ -49,7 +49,7 @@ public class BetService {
                       ChannelEmbedMessageSender channelEmbedMessageSender,
                       ChannelMessageSenderImpl channelMessageSender,
                       ChannelErrorMessageSender channelErrorMessageSender,
-                      BankUserDao userDao) {
+                      BankUserDaoImpl userDao) {
         //기본적인 데이터를 초기화한다.
         this.privateEmbedMessageSenderWithMention = privateEmbedMessageSenderWithMention;
         this.channelEmbedMessageSender = channelEmbedMessageSender;
