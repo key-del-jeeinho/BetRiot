@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TimeCounter{
     @Setter @Getter
@@ -22,7 +23,7 @@ public class TimeCounter{
     private int runningTimeDay;
 
     @Setter
-    private List<TimeListener> listeners = new ArrayList<>();
+    private List<TimeListener> listeners = new CopyOnWriteArrayList<>();
 
     public void addTimeListener(TimeListener listener) {
         listeners.add(listener);
@@ -30,6 +31,12 @@ public class TimeCounter{
 
     public void addTimeListener(TimeListener... listeners) {
         this.listeners.addAll(Arrays.asList(listeners));
+    }
+
+    public void removeTimeListener(TimeListener listener) {
+        if(!this.listeners.remove(listener)) {
+            System.out.println("디버그");
+        }
     }
 
     public int getListenerCount() {

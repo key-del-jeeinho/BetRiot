@@ -31,6 +31,6 @@ public class CommandTrigger implements Trigger<String> {
 
     @Override
     public String toString() {
-        return command;
+        return "트리거 : " + command;
     }
 }

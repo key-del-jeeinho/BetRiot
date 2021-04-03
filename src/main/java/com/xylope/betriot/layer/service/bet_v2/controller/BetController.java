@@ -7,6 +7,7 @@ import com.xylope.betriot.layer.service.bet_v2.model.*;
 import com.xylope.betriot.layer.service.bet_v2.view.BetView;
 import com.xylope.betriot.layer.service.user.dao.BankUserDao;
 import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.Set;
 
@@ -34,6 +35,10 @@ public class BetController {
 
     public long getMatchId(int betId) {
         return model.getBet(betId).getMatchId();
+    }
+
+    public void addParticipant(int betId, BetUserVO betUser, WinOrLose betWhere) {
+        model.addParticipant(betId, betUser, betWhere);
     }
 
     //LifeCycle
@@ -70,7 +75,7 @@ public class BetController {
         if(!dto.getProgress().equals(BetProgress.BET_PARTICIPATION_OPEN))
             throw new WrongBetProgressException("progress isn't BET_PARTICIPATION_OPEN", BetProgress.BET_PARTICIPATION_OPEN);
 
-        view.sendOpenBetParticipationView();
+        view.sendOpenBetParticipationView(dto);
     }
 
     public void closeBetParticipation(int betId) {
@@ -78,7 +83,7 @@ public class BetController {
         if(!dto.getProgress().equals(BetProgress.BET_PARTICIPATION_CLOSE))
             throw new WrongBetProgressException("progress isn't BET_PARTICIPATION_CLOSE", BetProgress.BET_PARTICIPATION_CLOSE);
 
-        view.sendCloseBetParticipationView();
+        view.sendCloseBetParticipationView(dto);
     }
 
     public void giveRewardToWinners(int betId, WinOrLose isPublisherWinOrLose) {
@@ -98,6 +103,10 @@ public class BetController {
             throw new WrongBetProgressException("progress isn't BET_END", BetProgress.BET_END);
 
         model.remove(betId);
-        view.sendEndBetView(betId);
+        view.sendEndBetView(betId, dto);
+    }
+
+    public void matchNotFound(int betId) {
+        view.sendMatchNotFoundView(model.getBet(betId));
     }
 }

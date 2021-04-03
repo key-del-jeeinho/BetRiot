@@ -16,27 +16,39 @@ public class DiscordBetView implements BetView{
     }
 
     @Override
-    public void sendStartBetView(BetDto dto) {
+    public void sendStartBetView(BetDto bet) {
 
     }
 
     @Override
-    public void sendOpenBetParticipationView() {
+    public void sendOpenBetParticipationView(BetDto bet) {
 
     }
 
     @Override
-    public void sendCloseBetParticipationView() {
+    public void sendCloseBetParticipationView(BetDto bet) {
 
     }
 
     @Override
-    public void sendGiveRewardToWinnersView(BetDto dto, WinOrLose isPublisherWinOrLose) {
+    public void sendGiveRewardToWinnersView(BetDto bet, WinOrLose isPublisherWinOrLose) {
 
     }
 
     @Override
-    public void sendEndBetView(int betId) {
+    public void sendEndBetView(int betId, BetDto bet) {
+        /*
+
+                privateEmbedMessageSender.sendMessage(discordUser.openPrivateChannel().complete(),
+                        new EmbedBuilder()
+                                .setTitle("배팅 개설에 실패하였습니다 :(")
+                                .addField("", "제한시간 내에 인게임 매칭이 감지되지 않아 배팅 개설이 취소되었습니다!", false)
+                                .build());
+         */
+    }
+
+    @Override
+    public void sendMatchNotFoundView(BetDto bet) {
 
     }
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="betService" class="com.xylope.betriot.layer.service.bet_v2.BetService">
+        <constructor-arg ref="betController"/>
+        <constructor-arg ref="matchApi"/>
+        <constructor-arg ref="bankUserDao"/>
+        <constructor-arg ref="timeCounter"/>
+    </bean>
+
+    <bean id="betController" class="com.xylope.betriot.layer.service.bet_v2.controller.BetController">
+        <constructor-arg ref="betModel"/>
+        <constructor-arg ref="betView"/>
+        <constructor-arg ref="matchApi"/>
+        <constructor-arg ref="bankUserDao"/>
+    </bean>
+
+    <bean id="betModel" class="com.xylope.betriot.layer.service.bet_v2.model.BetQueue"/>
+    <bean id="betView" class="com.xylope.betriot.layer.service.bet_v2.view.ConsoleBetView">
+        <constructor-arg ref="jdaApi"/>
+    </bean>
+
+    <bean id="betOpenCommand" class="com.xylope.betriot.layer.service.command.custom.bet.BetOpenCommand">
+        <constructor-arg ref="betService"/>
+        <constructor-arg ref="commandBetReader"/>
+        <constructor-arg ref="betReaderExceptionHandler"/>
+        <property name="trigger" ref="betOpenTrigger"/>
+    </bean>
+    <bean id="bettingParticipationCommand" class="com.xylope.betriot.layer.service.command.custom.bet.BettingParticipationCommand">
+        <constructor-arg ref="betService"/>
+        <constructor-arg ref="commandBetReader"/>
+        <constructor-arg ref="betReaderExceptionHandler"/>
+        <property name="trigger" ref="bettingParticipationTrigger"/>
+    </bean>
+
+    <bean id="betReaderExceptionHandler" class="com.xylope.betriot.layer.service.bet_v2.handler.DiscordBetReaderExceptionHandler">
+        <constructor-arg ref="channelErrorMessageSender"/>
+        <constructor-arg ref="channelMessageSender"/>
+    </bean>
+    <bean id="commandBetReader" class="com.xylope.betriot.layer.service.bet_v2.reader.CommandBetReader">
+        <constructor-arg ref="userDao"/>
+    </bean>
+</beans>

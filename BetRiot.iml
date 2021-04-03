@@ -6,6 +6,7 @@
         <fileset id="fileset" name="Spring Application Context" removed="false">
           <file>file://$MODULE_DIR$/src/main/resources/applicationContext.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/secretContext.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/betRefactoringContext.xml</file>
         </fileset>
         <fileset id="fileset2" name="TestContext" removed="false">
           <file>file://$MODULE_DIR$/src/main/resources/testContext.xml</file>

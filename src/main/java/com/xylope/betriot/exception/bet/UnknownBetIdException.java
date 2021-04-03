@@ -8,11 +8,11 @@ public class UnknownBetIdException extends RuntimeException {
         super(msg);
     }
 
-    public UnknownBetIdException(IndexOutOfBoundsException cause) {
+    public UnknownBetIdException(Throwable cause) {
         super(cause);
     }
 
-    public UnknownBetIdException(String msg, IndexOutOfBoundsException cause) {
+    public UnknownBetIdException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

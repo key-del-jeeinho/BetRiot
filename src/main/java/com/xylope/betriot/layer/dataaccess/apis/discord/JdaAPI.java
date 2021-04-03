@@ -24,6 +24,14 @@ public class JdaAPI {
         return user;
     }
 
+    public User getUserById(String discordId) {
+        initJda();
+        User user = jda.getUserById(discordId);
+        if(user == null)
+            user = jda.retrieveUserById(discordId).complete();
+        return user;
+    }
+
     private void initJda() {
         if(jda == null)
             jda = ApplicationBooter.CONTEXT.getBean(BetRiotApplication.class).getJda();

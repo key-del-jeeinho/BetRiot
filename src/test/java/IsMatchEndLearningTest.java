@@ -19,7 +19,7 @@ public class IsMatchEndLearningTest {
         Orianna.setRiotAPIKey(ctx.getBean("riotApiKey", String.class));
         Orianna.setDefaultPlatform(Platform.KOREA);
 
-        String testerName = "엄준식사하셧나요";
+        String testerName = "ReveinXI";
         Summoner summoner = Orianna.summonerNamed(testerName).get();
         CurrentMatch currentMatch = summoner.getCurrentMatch();
         Match match = Orianna.matchWithId(currentMatch.getId()).get();
@@ -31,13 +31,14 @@ public class IsMatchEndLearningTest {
             public void run() {
                 if(cnt[0]%60 == 0) {
                     System.out.println("hello" + cnt[0]);
+                    //리퀘스트 수 제한떄문에 1분마다 한번씩 실행
+                    if(!summoner.getCurrentMatch().exists()) { //현재 플레이어가 게임을 진행하고있지 않을경우
+                        Match testMatch = Orianna.matchWithId(currentMatch.getId()).get(); //이전에 진행중이던 게임의 아이디를 통해 매치를 찾는다
+                        assertTrue(testMatch.exists()); //해당 매치가 있는지 검사한다
+                        System.exit(700);
+                    }
                 }
                 cnt[0]++;
-                if(!summoner.getCurrentMatch().exists()) { //현재 플레이어가 게임을 진행하고있지 않을경우
-                    Match testMatch = Orianna.matchWithId(currentMatch.getId()).get(); //이전에 진행중이던 게임의 아이디를 통해 매치를 찾는다
-                    assertTrue(testMatch.exists()); //해당 매치가 있는지 검사한다
-                    System.exit(700);
-                }
             }
         }, 0L, 1000L);
         while (true);

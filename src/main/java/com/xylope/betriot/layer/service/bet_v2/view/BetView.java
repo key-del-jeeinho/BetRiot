@@ -6,9 +6,11 @@ import com.xylope.betriot.layer.service.bet_v2.model.WinOrLose;
 
 public interface BetView {
     void sendReserveBetView(UserVO user);
-    void sendStartBetView(BetDto dto);
-    void sendOpenBetParticipationView();
-    void sendCloseBetParticipationView();
-    void sendGiveRewardToWinnersView(BetDto dto, WinOrLose isPublisherWinOrLose);
-    void sendEndBetView(int betId);
+    void sendStartBetView(BetDto bet);
+    void sendOpenBetParticipationView(BetDto bet);
+    void sendCloseBetParticipationView(BetDto bet);
+    void sendGiveRewardToWinnersView(BetDto bet, WinOrLose isPublisherWinOrLose);
+    void sendEndBetView(int betId, BetDto bet);
+
+    void sendMatchNotFoundView(BetDto bet);
 }
