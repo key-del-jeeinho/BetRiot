@@ -1,5 +1,6 @@
 package com.xylope.betriot.layer.service.bet_v2.model;
 
+import com.xylope.betriot.exception.AlreadyInitializeValueException;
 import com.xylope.betriot.exception.bet.UnknownBetIdException;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 
@@ -16,16 +17,26 @@ public class BetQueue {
         bets = new ArrayList<>();
     }
 
-    public void addBet(Bet bet) {
-        bets.add(bet);
-    }
-
     public void nextStep(int betId) {
         getById(betId).nextStep();
     }
 
+    public void addBet(Bet bet) {
+        bets.add(bet);
+    }
+
     public void addParticipant(int betId, BetUserVO user, WinOrLose wal) {
         getById(betId).addParticipant(user, wal);
+    }
+
+    public void setMatchId(int betId, long matchId) {
+        Bet bet = getById(betId);
+
+        if(bet.getMatchId() != -1L)
+            throw new AlreadyInitializeValueException("The match ID for this bet has already been initialize");
+
+        bet.setMatchId(matchId);
+        System.out.println(matchId + "로 설정되었습니다\n" + "BetQueue 에서 실행됨");
     }
 
     public Set<BetUserVO> getParticipants(int betId) {
@@ -36,9 +47,15 @@ public class BetQueue {
         return getById(betId).getParticipants(sortMethod);
     }
 
-    public void remove(int betId) {
-        Bet bet = getById(betId);
-        bet.close();
+    public BetDto getBet(int betId) {
+        return getById(betId).convertToDto();
+    }
+
+    private @Nonnull Bet getById(int betId) {
+        for(Bet bet : bets)
+            if(bet.getId() == betId)
+                return bet;
+        throw new UnknownBetIdException("unknown bet Id : " + betId);
     }
 
     public boolean isBetExist(long discordId) {
@@ -52,14 +69,8 @@ public class BetQueue {
         return false;
     }
 
-    public BetDto getBet(int betId) {
-        return getById(betId).convertToDto();
-    }
-
-    private @Nonnull Bet getById(int betId) {
-        for(Bet bet : bets)
-            if(bet.getId() == betId)
-                return bet;
-        throw new UnknownBetIdException("unknown bet Id : " + betId);
+    public void remove(int betId) {
+        Bet bet = getById(betId);
+        bet.close();
     }
 }

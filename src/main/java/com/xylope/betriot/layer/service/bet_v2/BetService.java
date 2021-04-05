@@ -1,6 +1,7 @@
 package com.xylope.betriot.layer.service.bet_v2;
 
 import com.merakianalytics.orianna.types.core.match.Match;
+import com.merakianalytics.orianna.types.core.spectator.CurrentMatch;
 import com.xylope.betriot.layer.dataaccess.apis.riot.OriannaMatchAPI;
 import com.xylope.betriot.layer.domain.event.OnSecondEvent;
 import com.xylope.betriot.layer.domain.vo.UserVO;
@@ -11,8 +12,6 @@ import com.xylope.betriot.layer.service.bet_v2.model.WinOrLose;
 import com.xylope.betriot.layer.service.user.dao.BankUserDao;
 import com.xylope.betriot.manager.TimeCounter;
 import com.xylope.betriot.manager.TimeListenerAdapter;
-
-import java.util.Random;
 
 public class BetService {
     private final BetController betController;
@@ -42,9 +41,9 @@ public class BetService {
 
 //단일 배팅에대해 1초마다 생명주기 확인 밑 변환 작업을 수행하는 TimeListener 구현클래스
 class BetLifeCycle extends TimeListenerAdapter {
-    private static final int CHECK_MATCH_DELAY = 3; //단위 : 초
-    private static final int BET_PARTICIPATION_OPEN_TIME = 5; //단위 : 초
-    private static final int CHECK_MATCH_END_CYCLE_DELAY = 4; //단위 : 초
+    private static final int CHECK_MATCH_DELAY = 2; //단위 : 초
+    private static final int BET_PARTICIPATION_OPEN_TIME = 3; //단위 : 초
+    private static final int CHECK_MATCH_END_CYCLE_DELAY = 60; //단위 : 초
 
     private final int betId;
     private final UserVO user;
@@ -52,7 +51,6 @@ class BetLifeCycle extends TimeListenerAdapter {
     private final OriannaMatchAPI matchAPI;
     private final TimeCounter timeCounter;
     private int count = 0;
-    int test = 0;
 
     public BetLifeCycle(int betId, UserVO user, BetController betController, OriannaMatchAPI matchAPI, TimeCounter timeCounter) {
         this.betId = betId;
@@ -70,19 +68,20 @@ class BetLifeCycle extends TimeListenerAdapter {
     @Override
     public void onTimeSecond(OnSecondEvent e) {
         count++;
-        System.out.println(count);
         if (count == CHECK_MATCH_DELAY && betController.checkProgress(betId, BetProgress.BET_RESERVE)) {
             String summonerId = user.getRiotId();
-            boolean isMatchStart = matchAPI.getCurrentMatch(summonerId).exists();
+            CurrentMatch currentMatch = matchAPI.getCurrentMatch(summonerId);
+            boolean isMatchStart = currentMatch.exists();
 
             if (!isMatchStart) {
                 betController.matchNotFound(betId);
                 timeCounter.removeTimeListener(this);
+                return;
             }
 
             betController.nextStep(betId); //MATCH_START
             betController.nextStep(betId); //BET_START
-            betController.startBet(betId);
+            betController.startBet(betId, currentMatch.getId());
             betController.nextStep(betId); //BET_PARTICIPATION_OPEN
         }
 
@@ -101,8 +100,10 @@ class BetLifeCycle extends TimeListenerAdapter {
         }
 
         if (betController.checkProgress(betId, BetProgress.MATCH_END) && (count == CHECK_MATCH_END_CYCLE_DELAY)) {
-            if (betController.checkMatchEnd(betId))
+            if (betController.checkMatchEnd(betId)) {
                 betController.nextStep(betId); //BET_GIVE_REWARD
+            }
+
             count = 0;
             return;
         }
@@ -115,6 +116,7 @@ class BetLifeCycle extends TimeListenerAdapter {
             betController.giveRewardToWinners(betId, wol);
             betController.nextStep(betId); //BET_END;
             betController.endBet(betId);
+            timeCounter.removeTimeListener(this);
         }
     }
 }

@@ -2,6 +2,8 @@ package com.xylope.betriot.layer.service.bet_v2.model;
 
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.Singular;
 
 import java.util.*;
 
@@ -10,7 +12,7 @@ public class Bet {
     public static int betAsc = 0; //게속해서 올라간다
     @Getter
     private int id;
-    @Getter
+    @Getter @Setter
     private long matchId = -1L;
     private BetProgress progress;
     @Getter
@@ -24,11 +26,6 @@ public class Bet {
         this.participants = new HashMap<>();
         this.id = betAsc++;
         betNum++;
-    }
-
-    public void setMatchId(long matchId) {
-        if(this.matchId != -1)
-            this.matchId = matchId;
     }
 
     public void nextStep() {

@@ -7,7 +7,6 @@ import com.xylope.betriot.layer.service.bet_v2.model.*;
 import com.xylope.betriot.layer.service.bet_v2.view.BetView;
 import com.xylope.betriot.layer.service.user.dao.BankUserDao;
 import lombok.AllArgsConstructor;
-import net.dv8tion.jda.api.entities.User;
 
 import java.util.Set;
 
@@ -21,8 +20,15 @@ public class BetController {
     private final BankUserDao bankUserDao;
 
     public boolean checkMatchEnd(int betId) {
-        long matchId = model.getBet(betId).getMatchId();
-        return matchAPI.getByMatchId(matchId).exists();
+        BetDto bet = model.getBet(betId);
+        long currentMatchId = matchAPI.getCurrentMatch(bet.getPublisher().getRiotId()).getId();
+
+        boolean isMatchEnd = false;
+
+        if(currentMatchId == 0) isMatchEnd = true; //현재 진행중인 매치가 없을경우 ID로 0을 반환한다
+        else if(currentMatchId != bet.getMatchId()) isMatchEnd = true;
+
+        return isMatchEnd;
     }
 
     public void nextStep(int betId) {
@@ -62,11 +68,12 @@ public class BetController {
         view.sendReserveBetView(bet.getPublisher());
     }
 
-    public void startBet(int betId) {
+    public void startBet(int betId, long matchId) {
         BetDto dto = model.getBet(betId);
         if(!dto.getProgress().equals(BetProgress.BET_START))
             throw new WrongBetProgressException("progress isn't BET_START", BetProgress.BET_START);
 
+        model.setMatchId(betId, matchId);
         view.sendStartBetView(dto);
     }
 
