@@ -1,10 +1,10 @@
-package com.xylope.betriot.layer.service.bet_v2.handler;
+package com.xylope.betriot.layer.service.bet.handler;
 
 import com.xylope.betriot.exception.bet.WrongArgumentException;
-import com.xylope.betriot.layer.service.bet_v2.BetService;
-import com.xylope.betriot.layer.service.bet_v2.controller.BetAlreadyCreatedException;
-import com.xylope.betriot.layer.service.bet_v2.reader.Action;
-import com.xylope.betriot.layer.service.bet_v2.reader.BetReader;
+import com.xylope.betriot.layer.service.bet.BetService;
+import com.xylope.betriot.exception.bet.BetAlreadyCreatedException;
+import com.xylope.betriot.layer.service.bet.reader.Action;
+import com.xylope.betriot.layer.service.bet.reader.BetReader;
 import com.xylope.betriot.layer.service.message.ChannelErrorMessageSender;
 import com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 @RequiredArgsConstructor
-public class DiscordBetReaderExceptionHandler extends BetReaderExceptionHandler<String[]> {
+public class DiscordBetReaderExceptionHandlerImpl extends DiscordBetReaderExceptionHandler {
     @Setter
     private TextChannel textChannel;
     private final ChannelErrorMessageSender channelErrorMessageSender;
@@ -29,14 +29,20 @@ public class DiscordBetReaderExceptionHandler extends BetReaderExceptionHandler<
 
             if(action.equals(Action.BET_OPEN)) {
                 if (argIdx == 0) {
-                    channelErrorMessageSender.sendMessage(textChannel, e.getCause().getMessage());
+                    String errMessage;
+                    if((errMessage = e.getCause().getMessage()) == null)
+                        errMessage = e.getMessage();
+                    channelErrorMessageSender.sendMessage(textChannel, errMessage);
                 }
             }
 
             if(action.equals(Action.BETTING_PARTICIPATION)) {
                 switch (argIdx) {
                     case 0:
-                        channelErrorMessageSender.sendMessage(textChannel, e.getCause().getMessage());
+                        String errMessage;
+                        if((errMessage = e.getCause().getMessage()) == null)
+                            errMessage = e.getMessage();
+                        channelErrorMessageSender.sendMessage(textChannel, errMessage);
                         break;
                     case 1:
                         channelMessageSenderImpl.sendMessage(textChannel, "배팅 아이디는 정수값이어야합니다!");
@@ -50,7 +56,13 @@ public class DiscordBetReaderExceptionHandler extends BetReaderExceptionHandler<
                 }
             }
         } catch (Exception e) { //예상하지 못한 예외가 나왔을경우 이를 오류상황이라 인식한다
-            channelErrorMessageSender.sendMessage(textChannel, e.getMessage());
+            String errMessage = e.getMessage();
+            if (e.getCause() != null) {
+                if ((errMessage = e.getCause().getMessage()) != null) {
+                    errMessage = e.getCause().getMessage();
+                }
+            }
+            channelErrorMessageSender.sendMessage(textChannel, errMessage);
         }
     }
 }

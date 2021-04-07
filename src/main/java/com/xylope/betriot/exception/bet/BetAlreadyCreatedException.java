@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.bet_v2.controller;
+package com.xylope.betriot.exception.bet;
 
 import lombok.NoArgsConstructor;
 

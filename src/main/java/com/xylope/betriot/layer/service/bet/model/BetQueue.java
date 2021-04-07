@@ -1,8 +1,7 @@
-package com.xylope.betriot.layer.service.bet_v2.model;
+package com.xylope.betriot.layer.service.bet.model;
 
 import com.xylope.betriot.exception.AlreadyInitializeValueException;
 import com.xylope.betriot.exception.bet.UnknownBetIdException;
-import com.xylope.betriot.layer.domain.vo.UserVO;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ public class BetQueue {
             throw new AlreadyInitializeValueException("The match ID for this bet has already been initialize");
 
         bet.setMatchId(matchId);
-        System.out.println(matchId + "로 설정되었습니다\n" + "BetQueue 에서 실행됨");
     }
 
     public Set<BetUserVO> getParticipants(int betId) {
@@ -69,8 +67,42 @@ public class BetQueue {
         return false;
     }
 
+    public boolean isParticipationExist(int betId, long discordId) {
+        AtomicBoolean isParticipationExist = new AtomicBoolean(false);
+        BetDto bet = getBet(betId);
+
+        bet.getParticipants().forEach(
+                (user, betWhere) -> {
+                    if(user.getUser().getDiscordId() == discordId)
+                        isParticipationExist.set(true);
+                }
+        );
+
+        return isParticipationExist.get();
+    }
+
     public void remove(int betId) {
         Bet bet = getById(betId);
         bet.close();
+    }
+
+    public List<BetDto> getBetList() {
+        return getBetList(bet -> true);
+    }
+
+    public List<BetDto> getBetList(Checker checker) {
+        List<BetDto> result = new ArrayList<>();
+        for (Bet bet : bets) {
+            if(checker.check(bet)) {
+                result.add(bet.convertToDto());
+            }
+        }
+
+        return result;
+    }
+
+    @FunctionalInterface
+    interface Checker {
+        boolean check(Bet bet);
     }
 }

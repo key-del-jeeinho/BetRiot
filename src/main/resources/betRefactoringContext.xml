@@ -3,23 +3,28 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="betService" class="com.xylope.betriot.layer.service.bet_v2.BetService">
+    <bean id="betService" class="com.xylope.betriot.layer.service.bet.BetService">
         <constructor-arg ref="betController"/>
         <constructor-arg ref="matchApi"/>
         <constructor-arg ref="bankUserDao"/>
         <constructor-arg ref="timeCounter"/>
     </bean>
 
-    <bean id="betController" class="com.xylope.betriot.layer.service.bet_v2.controller.BetController">
+    <bean id="betController" class="com.xylope.betriot.layer.service.bet.controller.BetController">
         <constructor-arg ref="betModel"/>
         <constructor-arg ref="betView"/>
         <constructor-arg ref="matchApi"/>
         <constructor-arg ref="bankUserDao"/>
+        <constructor-arg ref="jdaApi"/>
     </bean>
 
-    <bean id="betModel" class="com.xylope.betriot.layer.service.bet_v2.model.BetQueue"/>
-    <bean id="betView" class="com.xylope.betriot.layer.service.bet_v2.view.ConsoleBetView">
+    <bean id="betModel" class="com.xylope.betriot.layer.service.bet.model.BetQueue"/>
+    <bean id="betView" class="com.xylope.betriot.layer.service.bet.view.DiscordBetView">
         <constructor-arg ref="jdaApi"/>
+        <constructor-arg ref="printer"/>
+        <constructor-arg ref="channelEmbedMessageSender"/>
+        <constructor-arg ref="channelMessageSender"/>
+        <constructor-arg ref="privateEmbedMessageSender"/>
     </bean>
 
     <bean id="betOpenCommand" class="com.xylope.betriot.layer.service.command.custom.bet.BetOpenCommand">
@@ -35,11 +40,14 @@
         <property name="trigger" ref="bettingParticipationTrigger"/>
     </bean>
 
-    <bean id="betReaderExceptionHandler" class="com.xylope.betriot.layer.service.bet_v2.handler.DiscordBetReaderExceptionHandler">
+    <bean id="betReaderExceptionHandler" class="com.xylope.betriot.layer.service.bet.handler.DiscordBetReaderExceptionHandlerImpl">
         <constructor-arg ref="channelErrorMessageSender"/>
         <constructor-arg ref="channelMessageSender"/>
     </bean>
-    <bean id="commandBetReader" class="com.xylope.betriot.layer.service.bet_v2.reader.CommandBetReader">
+    <bean id="commandBetReader" class="com.xylope.betriot.layer.service.bet.reader.CommandBetReader">
         <constructor-arg ref="userDao"/>
+    </bean>
+    <bean id="printer" class="com.xylope.betriot.layer.service.bet.view.printer.DateTimePrinter">
+        <constructor-arg value="yyyy.MM.dd hh시 mm분 ss초"/>
     </bean>
 </beans>

@@ -56,20 +56,6 @@
         <property name="dao" ref="userDao"/>
     </bean>
 
-    <!--
-    <bean id="betService" class="com.xylope.betriot.layer.service.bet.BetService">
-        <constructor-arg ref="timeCounter"/>
-        <constructor-arg ref="matchApi"/>
-        <constructor-arg ref="jdaApi"/>
-        <constructor-arg ref="privateEmbedMessageSenderWithMention"/>
-        <constructor-arg ref="channelEmbedMessageSender"/>
-        <constructor-arg ref="channelMessageSender"/>
-        <constructor-arg ref="channelErrorMessageSender"/>
-        <constructor-arg ref="bankUserDao"/>
-    </bean>
-    -->
-
-
     <!-- JDA Events -->
     <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener"/>
     <bean id="messageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener"/>
@@ -146,24 +132,6 @@
         <property name="trigger" ref="betTrigger"/>
     </bean>
 
-
-    <!--
-    <bean id="betOpenCommand" class="com.xylope.betriot.layer.service.command.custom.bet.BetOpenCommand">
-        <constructor-arg ref="betService"/>
-        <constructor-arg ref="userDao"/>
-        <constructor-arg ref="channelMessageSender"/>
-        <property name="trigger" ref="betOpenTrigger"/>
-    </bean>
-
-    <bean id="bettingParticipationCommand" class="com.xylope.betriot.layer.service.command.custom.bet.BettingParticipationCommand">
-        <constructor-arg ref="channelErrorMessageSender"/>
-        <constructor-arg ref="channelMessageSender"/>
-        <constructor-arg ref="betService"/>
-        <constructor-arg ref="userDao"/>
-        <property name="trigger" ref="bettingParticipationTrigger"/>
-    </bean>
--->
-
     <!-- Triggers -->
     <bean id="profileTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="프로필"/>
@@ -227,7 +195,9 @@
 
     <bean id="privateEmbedMessageSenderWithMention" class="com.xylope.betriot.layer.service.message.PrivateEmbedMessageSenderWithMention"/>
     <bean id="privateEmbedMessageSender" class="com.xylope.betriot.layer.service.message.PrivateEmbedMessageSender"/>
-    <bean id="channelErrorMessageSender" class="com.xylope.betriot.layer.service.message.ChannelErrorMessageSender"/>
+    <bean id="channelErrorMessageSender" class="com.xylope.betriot.layer.service.message.ChannelErrorMessageSender">
+        <property name="adminEmail" ref="adminMail"/>
+    </bean>
 
     <!-- property reference(SPARE) -->
     <bean id="spareSummonerApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4">

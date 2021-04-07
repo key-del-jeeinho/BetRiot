@@ -4,6 +4,7 @@ import com.xylope.betriot.ApplicationBooter;
 import com.xylope.betriot.BetRiotApplication;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.Objects;
@@ -30,6 +31,11 @@ public class JdaAPI {
         if(user == null)
             user = jda.retrieveUserById(discordId).complete();
         return user;
+    }
+
+    public TextChannel getTextChannelById(long channelId) {
+        initJda();
+        return jda.getTextChannelById(channelId);
     }
 
     private void initJda() {

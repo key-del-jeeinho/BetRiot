@@ -1,6 +1,6 @@
 package com.xylope.betriot.exception.bet;
 
-import com.xylope.betriot.layer.service.bet_v2.model.BetProgress;
+import com.xylope.betriot.layer.service.bet.model.BetProgress;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

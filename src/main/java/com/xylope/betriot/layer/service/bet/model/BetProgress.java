@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.bet_v2.model;
+package com.xylope.betriot.layer.service.bet.model;
 
 import com.xylope.betriot.exception.bet.WrongBetProgressException;
 

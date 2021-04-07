@@ -1,10 +1,12 @@
-package com.xylope.betriot.layer.service.bet_v2.controller;
+package com.xylope.betriot.layer.service.bet.controller;
 
+import com.xylope.betriot.exception.bet.BetAlreadyCreatedException;
 import com.xylope.betriot.exception.bet.WrongBetProgressException;
+import com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI;
 import com.xylope.betriot.layer.dataaccess.apis.riot.OriannaMatchAPI;
 import com.xylope.betriot.layer.domain.vo.UserVO;
-import com.xylope.betriot.layer.service.bet_v2.model.*;
-import com.xylope.betriot.layer.service.bet_v2.view.BetView;
+import com.xylope.betriot.layer.service.bet.model.*;
+import com.xylope.betriot.layer.service.bet.view.BetView;
 import com.xylope.betriot.layer.service.user.dao.BankUserDao;
 import lombok.AllArgsConstructor;
 
@@ -18,6 +20,7 @@ public class BetController {
     private final BetView view;
     private final OriannaMatchAPI matchAPI;
     private final BankUserDao bankUserDao;
+    private final JdaAPI jdaAPI;
 
     public boolean checkMatchEnd(int betId) {
         BetDto bet = model.getBet(betId);
@@ -44,16 +47,34 @@ public class BetController {
     }
 
     public void addParticipant(int betId, BetUserVO betUser, WinOrLose betWhere) {
-        model.addParticipant(betId, betUser, betWhere);
+        if(!checkProgress(betId, BetProgress.BET_PARTICIPATION_CLOSE)) { //프로그레스는 라이프사이클 특성상 하나씩 밀린다
+            view.sendParticipationAlreadyCloseView(model.getBet(betId));
+            return;
+        }
+        if(model.isParticipationExist(betId, betUser.getUser().getDiscordId())) {
+            view.sendDuplicateParticipationView(model.getBet(betId), betUser.getUser());
+            return;
+        }
+
+        UserVO user = betUser.getUser();
+        int betMoney = betUser.getMoney();
+
+        if(betMoney <= user.getMoney()) {
+            bankUserDao.addMoney(betUser.getUser(), -1 * betMoney);
+            model.addParticipant(betId, betUser, betWhere);
+
+            view.sendUserParticipationBettingView(model.getBet(betId), betUser);
+        } else
+            view.sendNotEnoughMoneyToParticipationView(model.getBet(betId), user);
     }
 
     //LifeCycle
-    public int createBet(UserVO user) {
+    public int createBet(UserVO user, long relayChannel) {
         if (model.isBetExist(user.getDiscordId())) { //이미 해당 유저 명의로 배팅이 예약되어있거나 개설된경우
             throw new BetAlreadyCreatedException("bet is Already Created");
         }
 
-        Bet bet = new Bet(user);
+        Bet bet = new Bet(user, jdaAPI.getTextChannelById(relayChannel));
         model.addBet(bet);
 
         return bet.getId();
@@ -115,5 +136,9 @@ public class BetController {
 
     public void matchNotFound(int betId) {
         view.sendMatchNotFoundView(model.getBet(betId));
+    }
+
+    public void matchExceedTimeLimit(int betId) {
+        view.sendMatchExceedTimeLimitView(model.getBet(betId));
     }
 }

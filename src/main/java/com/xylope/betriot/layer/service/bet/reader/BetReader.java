@@ -1,5 +1,5 @@
-package com.xylope.betriot.layer.service.bet_v2.reader;
-import com.xylope.betriot.layer.service.bet_v2.BetService;
+package com.xylope.betriot.layer.service.bet.reader;
+import com.xylope.betriot.layer.service.bet.BetService;
 
 @FunctionalInterface
 public interface BetReader<T> {

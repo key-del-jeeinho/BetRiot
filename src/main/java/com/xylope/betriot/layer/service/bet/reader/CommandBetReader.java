@@ -1,11 +1,10 @@
-package com.xylope.betriot.layer.service.bet_v2.reader;
+package com.xylope.betriot.layer.service.bet.reader;
 
 import com.xylope.betriot.exception.bet.WrongArgumentException;
 import com.xylope.betriot.exception.bet.WrongDisplayStatusException;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
-import com.xylope.betriot.layer.service.bet_v2.BetService;
-import com.xylope.betriot.layer.service.bet_v2.model.WinOrLose;
+import com.xylope.betriot.layer.service.bet.BetService;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -26,7 +25,7 @@ public class CommandBetReader implements BetReader<String[]>{
 
     private void openBet(BetService service, String[] input) {
         try {
-            service.createNewBet(Long.parseLong(input[0]));
+            service.createNewBet(Long.parseLong(input[0]), input[1]); //TODO ArrayOutOfBound
         } catch(NumberFormatException e) {
             throw new WrongArgumentException(e, 0);
         }
@@ -37,7 +36,7 @@ public class CommandBetReader implements BetReader<String[]>{
         UserVO user;
         int betId;
         int money;
-        WinOrLose betWhere;
+        String betWhere;
 
         //SenderArgument
         try {
@@ -55,7 +54,8 @@ public class CommandBetReader implements BetReader<String[]>{
 
         //SecondArgument
         try {
-            betWhere = WinOrLose.getByDisplayStatus(input[2]);
+            service.checkIsWiOrLoseByDisplayStatus(input[2]);
+            betWhere = input[2];
         } catch (WrongDisplayStatusException e) {
             throw new WrongArgumentException(e, 2);
         }
