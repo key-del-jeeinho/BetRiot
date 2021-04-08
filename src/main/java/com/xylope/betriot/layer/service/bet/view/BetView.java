@@ -21,4 +21,6 @@ public interface BetView {
 
     void sendParticipationAlreadyCloseView(BetDto bet);
     void sendDuplicateParticipationView(BetDto bet, UserVO user);
+
+    void sendBetAlreadyCreatedView(UserVO user);
 }

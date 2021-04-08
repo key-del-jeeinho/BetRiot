@@ -83,6 +83,11 @@ public class ConsoleBetView implements BetView{
 
     }
 
+    @Override
+    public void sendBetAlreadyCreatedView(UserVO user) {
+
+    }
+
     private String getPublisherNameByBetDto(BetDto bet) {
         return jdaAPI.getUserById(bet.getPublisher().getDiscordId()).getName();
     }

@@ -2,7 +2,9 @@ package com.xylope.betriot.layer.service.bet;
 
 import com.merakianalytics.orianna.types.core.match.Match;
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch;
+import com.xylope.betriot.exception.bet.BetAlreadyCreatedException;
 import com.xylope.betriot.layer.dataaccess.apis.riot.OriannaMatchAPI;
+import com.xylope.betriot.layer.domain.event.OnMinuteEvent;
 import com.xylope.betriot.layer.domain.event.OnSecondEvent;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.bet.controller.BetController;
@@ -29,7 +31,12 @@ public class BetService {
 
     public void createNewBet(long discordId, String relayChannel) {
         UserVO user = userDao.get(discordId);
-        int betId = betController.createBet(user, Long.parseLong(relayChannel)); //TODO 포멧팅 예외
+        int betId;
+        try {
+            betId = betController.createBet(user, Long.parseLong(relayChannel)); //TODO 포멧팅 예외
+        } catch (BetAlreadyCreatedException e) {
+            return;
+        }
 
         new BetLifeCycle(betId, user, betController, matchAPI, timeCounter);
     }
@@ -48,9 +55,10 @@ class BetLifeCycle extends TimeListenerAdapter {
     private static final int CHECK_MATCH_DELAY = 100; //단위 : 초
     private static final int BET_PARTICIPATION_OPEN_TIME = 300; //단위 : 초
     private static final int CHECK_MATCH_END_CYCLE_DELAY = 300; //단위 : 초
+    private static final int REMOVE_CLOSE_BET_CYCLE_DELAY = 30; //단위 : 초
 
     //CHECK_MATCH 시, 배팅이 정상적으로 진행되기 위한 최대 게임 진행시간
-    private static final int MAX_MATCH_DURATION_WHEN_CHECK_MATCH = 2000; //단위 : 초
+    private static final int MAX_MATCH_DURATION_WHEN_CHECK_MATCH = 360; //단위 : 초
 
     private final int betId;
     private final UserVO user;
@@ -58,6 +66,7 @@ class BetLifeCycle extends TimeListenerAdapter {
     private final OriannaMatchAPI matchAPI;
     private final TimeCounter timeCounter;
     private int count = 0;
+    private int removeCloseBetCount = 0;
 
     public BetLifeCycle(int betId, UserVO user, BetController betController, OriannaMatchAPI matchAPI, TimeCounter timeCounter) {
         
@@ -76,6 +85,7 @@ class BetLifeCycle extends TimeListenerAdapter {
     @Override
     public void onTimeSecond(OnSecondEvent e) {
         count++;
+        removeCloseBetCount++;
         if (count == CHECK_MATCH_DELAY && betController.checkProgress(betId, BetProgress.BET_RESERVE)) {
             String summonerId = user.getRiotId();
             CurrentMatch currentMatch = matchAPI.getCurrentMatch(summonerId);
@@ -132,6 +142,11 @@ class BetLifeCycle extends TimeListenerAdapter {
             betController.nextStep(betId); //BET_END;
             betController.endBet(betId);
             timeCounter.removeTimeListener(this);
+        }
+        
+        if(removeCloseBetCount == REMOVE_CLOSE_BET_CYCLE_DELAY) {
+            betController.removeCloseBets();
+            removeCloseBetCount = 0;
         }
     }
 

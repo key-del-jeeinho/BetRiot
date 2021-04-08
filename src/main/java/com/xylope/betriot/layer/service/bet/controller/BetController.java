@@ -20,6 +20,7 @@ public class BetController {
     private final BetView view;
     private final OriannaMatchAPI matchAPI;
     private final BankUserDao bankUserDao;
+
     private final JdaAPI jdaAPI;
 
     public boolean checkMatchEnd(int betId) {
@@ -32,6 +33,10 @@ public class BetController {
         else if(currentMatchId != bet.getMatchId()) isMatchEnd = true;
 
         return isMatchEnd;
+    }
+
+    public boolean checkBetExist(long discordId) {
+        return model.isBetExist(discordId);
     }
 
     public void nextStep(int betId) {
@@ -71,6 +76,7 @@ public class BetController {
     //LifeCycle
     public int createBet(UserVO user, long relayChannel) {
         if (model.isBetExist(user.getDiscordId())) { //이미 해당 유저 명의로 배팅이 예약되어있거나 개설된경우
+            view.sendBetAlreadyCreatedView(user);
             throw new BetAlreadyCreatedException("bet is Already Created");
         }
 
@@ -140,5 +146,9 @@ public class BetController {
 
     public void matchExceedTimeLimit(int betId) {
         view.sendMatchExceedTimeLimitView(model.getBet(betId));
+    }
+
+    public void removeCloseBets() {
+        model.removeCloseBets();
     }
 }

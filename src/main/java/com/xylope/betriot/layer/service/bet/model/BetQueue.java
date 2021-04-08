@@ -64,7 +64,7 @@ public class BetQueue {
             }
         });
 
-        return false;
+        return betExist.get();
     }
 
     public boolean isParticipationExist(int betId, long discordId) {
@@ -99,6 +99,14 @@ public class BetQueue {
         }
 
         return result;
+    }
+
+    public void removeCloseBets() {
+        bets.forEach((bet -> {
+            if(bet.getId() == -1) {
+                bets.remove(bet);
+            }
+        }));
     }
 
     @FunctionalInterface

@@ -12,6 +12,7 @@ import com.xylope.betriot.layer.service.message.PrivateEmbedMessageSender;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.awt.Color;
@@ -178,11 +179,26 @@ public class DiscordBetView implements BetView{
         channelMessageSender.sendMessage(bet.getRelayChannel(), message);
     }
 
+    @Override
+    public void sendBetAlreadyCreatedView(UserVO user) {
+        PrivateChannel pc = jdaAPI.getUserById(user.getDiscordId()).openPrivateChannel().complete();
+        MessageEmbed message = new EmbedBuilder()
+                .setColor(errColor)
+                .setTitle(getMatchCancelMessageTitle(user))
+                .addField("", "이미 배팅을 만드셧습니다!", false)
+                .build();
+        privateEmbedMessageSender.sendMessage(pc, message);
+    }
+
     private String getPublisherNameByBetDto(BetDto bet) {
         return jdaAPI.getUserById(bet.getPublisher().getDiscordId()).getName();
     }
 
     private String getMatchCancelMessageTitle(BetDto bet) {
         return String.format("%s님의 배팅 개설에 실패하였습니다 :(", getPublisherNameByBetDto(bet));
+    }
+
+    private String getMatchCancelMessageTitle(UserVO user) {
+        return String.format("%s님의 배팅 개설에 실패하였습니다 :(", jdaAPI.getUserById(user.getDiscordId()).getName());
     }
 }
