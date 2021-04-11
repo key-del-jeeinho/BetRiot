@@ -7,7 +7,7 @@ import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.command.AbstractCommand;
 import com.xylope.betriot.layer.service.command.LeafCommand;
 import com.xylope.betriot.layer.service.user.apis.UserSummonerAPI;
-import com.xylope.betriot.layer.service.message.ChannelMessageSender;
+import com.xylope.betriot.layer.logic.discord.message.ChannelMessageSender;
 import net.dv8tion.jda.api.entities.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 

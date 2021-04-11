@@ -1,6 +1,7 @@
 package com.xylope.betriot.layer.service.bet.view;
 
 import com.xylope.betriot.layer.domain.vo.UserVO;
+import com.xylope.betriot.layer.service.bet.controller.BetController;
 import com.xylope.betriot.layer.service.bet.model.BetDto;
 import com.xylope.betriot.layer.service.bet.model.BetUserVO;
 import com.xylope.betriot.layer.service.bet.model.WinOrLose;
@@ -13,7 +14,6 @@ public interface BetView {
     void sendGiveRewardToWinnersView(BetDto bet, WinOrLose isPublisherWinOrLose);
     void sendEndBetView(int betId, BetDto bet);
 
-    void sendMatchNotFoundView(BetDto bet);
     void sendMatchExceedTimeLimitView(BetDto bet);
 
     void sendUserParticipationBettingView(BetDto bet, BetUserVO user);
@@ -23,4 +23,6 @@ public interface BetView {
     void sendDuplicateParticipationView(BetDto bet, UserVO user);
 
     void sendBetAlreadyCreatedView(UserVO user);
+
+    void sendCancelBetView(BetDto bet, BetController.BetCancelReason reason);
 }

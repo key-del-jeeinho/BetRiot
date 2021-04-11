@@ -1,5 +1,5 @@
-import com.xylope.betriot.layer.service.discord.listener.EventRepeater;
-import com.xylope.betriot.layer.service.discord.listener.RepeatListener;
+import com.xylope.betriot.layer.logic.discord.listener.EventRepeater;
+import com.xylope.betriot.layer.logic.discord.listener.RepeatListener;
 import net.dv8tion.jda.api.events.GenericEvent;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.message;
+package com.xylope.betriot.layer.logic.discord.message;
 
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.MessageEmbed;

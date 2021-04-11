@@ -2,7 +2,7 @@ package com.xylope.betriot.layer.service.command.custom;
 
 import com.xylope.betriot.layer.service.command.AbstractCommand;
 import com.xylope.betriot.layer.service.command.LeafCommand;
-import com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender;
+import com.xylope.betriot.layer.logic.discord.message.ChannelEmbedMessageSender;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 

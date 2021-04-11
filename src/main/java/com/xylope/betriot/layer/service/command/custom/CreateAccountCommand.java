@@ -4,7 +4,7 @@ import com.xylope.betriot.manager.CommandManager;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.service.command.AbstractCommand;
 import com.xylope.betriot.layer.service.command.LeafCommand;
-import com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl;
+import com.xylope.betriot.layer.logic.discord.message.ChannelMessageSenderImpl;
 import com.xylope.betriot.layer.service.user.account.create.CreateAccountService;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;

@@ -19,8 +19,6 @@ public class SummonerAPISummonerV4 implements SummonerAPI {
     @Override
     public SummonerDto getByName(String name) {
         name = name.replace(" ", "%20");
-        System.out.println(name);
-        System.out.println(RiotAPI.RIOT_ROOT_URL + "/lol/summoner/v4/summoners/by-name/" + name + "?api_key=" + riotApiKey);
         return RiotAPITemplate.getData( RiotAPI.RIOT_ROOT_URL + "/lol/summoner/v4/summoners/by-name/" + name + "?api_key=" + riotApiKey, callback);
     }
 

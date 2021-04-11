@@ -5,7 +5,7 @@ import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.service.command.AbstractCommand;
 import com.xylope.betriot.layer.service.command.LeafCommand;
 import com.xylope.betriot.layer.service.user.account.remove.RemoveAccountService;
-import com.xylope.betriot.layer.service.message.ChannelMessageSender;
+import com.xylope.betriot.layer.logic.discord.message.ChannelMessageSender;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.TextChannel;

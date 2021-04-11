@@ -7,13 +7,14 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BetQueue {
     private final List<Bet> bets;
 
     public BetQueue() {
-        bets = new ArrayList<>();
+        bets = new CopyOnWriteArrayList<>();
     }
 
     public void nextStep(int betId) {
@@ -107,6 +108,10 @@ public class BetQueue {
                 bets.remove(bet);
             }
         }));
+    }
+
+    public void cancelBet(int betId) {
+        getById(betId).close();
     }
 
     @FunctionalInterface

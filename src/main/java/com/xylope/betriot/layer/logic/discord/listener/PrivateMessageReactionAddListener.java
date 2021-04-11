@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.discord.listener;
+package com.xylope.betriot.layer.logic.discord.listener;
 
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import org.jetbrains.annotations.NotNull;

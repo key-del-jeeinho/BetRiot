@@ -6,11 +6,11 @@ import com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
-import com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener;
-import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener;
-import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener;
+import com.xylope.betriot.layer.logic.discord.listener.GuildMemberJoinListener;
+import com.xylope.betriot.layer.logic.discord.listener.PrivateMessageReactionAddListener;
+import com.xylope.betriot.layer.logic.discord.listener.PrivateMessageReceivedListener;
 import com.xylope.betriot.layer.service.user.apis.UserSummonerAPI;
-import com.xylope.betriot.layer.service.message.PrivateErrorMessageSender;
+import com.xylope.betriot.layer.logic.discord.message.PrivateErrorMessageSender;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.xylope.betriot.layer.service.SpecialEmote.*;
+import static com.xylope.betriot.layer.logic.discord.SpecialEmote.*;
 import static com.xylope.betriot.layer.service.user.account.create.CreateAccountProgress.CHECK_TERMS;
 import static com.xylope.betriot.layer.service.user.account.create.CreateAccountProgress.RIOT_AUTHORIZE;
 

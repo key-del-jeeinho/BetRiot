@@ -26,6 +26,7 @@
         <property name="betCommand" ref="betCommand"/>
         <property name="betOpenCommand" ref="betOpenCommand"/>
         <property name="bettingParticipationCommand" ref="bettingParticipationCommand"/>
+        <property name="checkPointCommand" ref="checkPointCommand"/>
     </bean>
 
     <bean id="jdaEventManager" class="com.xylope.betriot.manager.JDAEventManager">
@@ -57,21 +58,23 @@
     </bean>
 
     <!-- JDA Events -->
-    <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener"/>
-    <bean id="messageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener"/>
-    <bean id="privateMessageReactionAddListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener"/>
-    <bean id="privateMessageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener"/>
+    <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.logic.discord.listener.GuildMemberJoinListener"/>
+    <bean id="messageReceivedListener" class="com.xylope.betriot.layer.logic.discord.listener.MessageReceivedListener"/>
+    <bean id="privateMessageReactionAddListener" class="com.xylope.betriot.layer.logic.discord.listener.PrivateMessageReactionAddListener"/>
+    <bean id="privateMessageReceivedListener" class="com.xylope.betriot.layer.logic.discord.listener.PrivateMessageReceivedListener"/>
 
     <!-- TimeEvent -->
     <bean id="timeCounter" class="com.xylope.betriot.manager.TimeCounter"/>
 
     <!-- JDA Message Sender -->
-    <bean id="errorMessageSender" class="com.xylope.betriot.layer.service.message.PrivateErrorMessageSender">
+    <bean id="errorMessageSender" class="com.xylope.betriot.layer.logic.discord.message.PrivateErrorMessageSender">
         <property name="adminEmail" ref="adminMail"/>
     </bean>
-    <bean id="channelMessageSender" class="com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl"/>
-    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender"/>
-    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.service.message.PrivateMessageSenderWithCallbackImpl"/>
+    <bean id="channelMessageSender" class="com.xylope.betriot.layer.logic.discord.message.ChannelMessageSenderImpl"/>
+    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.logic.discord.message.ChannelEmbedMessageSender"/>
+    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.logic.discord.message.PrivateMessageSenderWithCallbackImpl"/>
+
+    <bean id="privateMessageSender" class="com.xylope.betriot.layer.logic.discord.message.PrivateMessageSenderImpl"/>
 
     <!-- Commands -->
     <bean id="rootCommand" class="com.xylope.betriot.layer.service.command.RootCommand"/>
@@ -132,6 +135,22 @@
         <property name="trigger" ref="betTrigger"/>
     </bean>
 
+    <bean id="checkPointCommand" class="com.xylope.betriot.layer.service.command.custom.CheckPointCommand">
+        <constructor-arg ref="userPointChecker"/>
+        <property name="trigger" ref="checkPointTrigger"/>
+    </bean>
+
+    <!-- Utils -->
+    <bean id="userPointChecker" class="com.xylope.betriot.layer.service.util.userpoint.UserPointChecker">
+        <constructor-arg ref="userDao"/>
+        <constructor-arg ref="userPointView"/>
+    </bean>
+
+    <bean id="userPointView" class="com.xylope.betriot.layer.service.util.userpoint.DiscordUserPointView">
+        <constructor-arg ref="privateMessageSender"/>
+        <constructor-arg ref="jdaApi"/>
+    </bean>
+
     <!-- Triggers -->
     <bean id="profileTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="프로필"/>
@@ -166,6 +185,9 @@
     <bean id="bettingParticipationTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
         <constructor-arg value="참가"/>
     </bean>
+    <bean id="checkPointTrigger" class="com.xylope.betriot.layer.service.command.trigger.CommandTrigger">
+        <constructor-arg value="포인트"/>
+    </bean>
 
     <!-- JDAApi -->
     <bean id="jdaApi" class="com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI"/>
@@ -193,9 +215,9 @@
 
     <bean id="matchApi" class="com.xylope.betriot.layer.dataaccess.apis.riot.MatchAPIOrianna"/>
 
-    <bean id="privateEmbedMessageSenderWithMention" class="com.xylope.betriot.layer.service.message.PrivateEmbedMessageSenderWithMention"/>
-    <bean id="privateEmbedMessageSender" class="com.xylope.betriot.layer.service.message.PrivateEmbedMessageSender"/>
-    <bean id="channelErrorMessageSender" class="com.xylope.betriot.layer.service.message.ChannelErrorMessageSender">
+    <bean id="privateEmbedMessageSenderWithMention" class="com.xylope.betriot.layer.logic.discord.message.PrivateEmbedMessageSenderWithMention"/>
+    <bean id="privateEmbedMessageSender" class="com.xylope.betriot.layer.logic.discord.message.PrivateEmbedMessageSender"/>
+    <bean id="channelErrorMessageSender" class="com.xylope.betriot.layer.logic.discord.message.ChannelErrorMessageSender">
         <property name="adminEmail" ref="adminMail"/>
     </bean>
 
@@ -214,6 +236,10 @@
     <bean id="summonerApiCallback" class="com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPISummonerV4$SummonerAPICallback"/>
 
     <!-- DAOs -->
+    <bean id="betHistoryDao" class="com.xylope.betriot.layer.domain.dao.BetHistoryDaoJdbc">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="jdbc" ref="jdbcTemplate"/>
+    </bean>
     <bean id="bankUserDao" class="com.xylope.betriot.layer.service.user.dao.BankUserDaoImpl">
         <property name="spareDao" ref="userDao"/>
     </bean>

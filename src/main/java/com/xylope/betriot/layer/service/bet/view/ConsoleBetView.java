@@ -2,6 +2,7 @@ package com.xylope.betriot.layer.service.bet.view;
 
 import com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI;
 import com.xylope.betriot.layer.domain.vo.UserVO;
+import com.xylope.betriot.layer.service.bet.controller.BetController;
 import com.xylope.betriot.layer.service.bet.model.BetDto;
 import com.xylope.betriot.layer.service.bet.model.BetUserVO;
 import com.xylope.betriot.layer.service.bet.model.WinOrLose;
@@ -51,12 +52,6 @@ public class ConsoleBetView implements BetView{
     }
 
     @Override
-    public void sendMatchNotFoundView(BetDto bet) {
-        String publisherName = getPublisherNameByBetDto(bet);
-        printer.print(publisherName + "님의 매치가 발견되지 않아, 배팅이 취소되었습니다!");
-    }
-
-    @Override
     public void sendMatchExceedTimeLimitView(BetDto bet) {
         String publisherName = getPublisherNameByBetDto(bet);
         printer.print("이미" + publisherName + "님의 매치가 시작된지 일정 시간이 지나, 배팅이 취소되었습니다!");
@@ -85,6 +80,11 @@ public class ConsoleBetView implements BetView{
 
     @Override
     public void sendBetAlreadyCreatedView(UserVO user) {
+
+    }
+
+    @Override
+    public void sendCancelBetView(BetDto bet, BetController.BetCancelReason reason) {
 
     }
 

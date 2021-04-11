@@ -45,21 +45,21 @@
     </bean>
 
     <!-- JDA Events -->
-    <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.service.discord.listener.GuildMemberJoinListener"/>
-    <bean id="messageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener"/>
-    <bean id="privateMessageReactionAddListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener"/>
-    <bean id="privateMessageReceivedListener" class="com.xylope.betriot.layer.service.discord.listener.PrivateMessageReceivedListener"/>
+    <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.logic.discord.listener.GuildMemberJoinListener"/>
+    <bean id="messageReceivedListener" class="com.xylope.betriot.layer.logic.discord.listener.MessageReceivedListener"/>
+    <bean id="privateMessageReactionAddListener" class="com.xylope.betriot.layer.logic.discord.listener.PrivateMessageReactionAddListener"/>
+    <bean id="privateMessageReceivedListener" class="com.xylope.betriot.layer.logic.discord.listener.PrivateMessageReceivedListener"/>
 
     <!-- TimeEvent -->
     <bean id="timeCounter" class="com.xylope.betriot.manager.TimeCounter"/>
 
     <!-- JDA Message Sender -->
-    <bean id="errorMessageSender" class="com.xylope.betriot.layer.service.message.PrivateErrorMessageSender">
+    <bean id="errorMessageSender" class="com.xylope.betriot.layer.logic.discord.message.PrivateErrorMessageSender">
         <property name="adminEmail" ref="adminMail"/>
     </bean>
-    <bean id="channelMessageSender" class="com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl"/>
-    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender"/>
-    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.service.message.PrivateMessageSenderWithCallbackImpl"/>
+    <bean id="channelMessageSender" class="com.xylope.betriot.layer.logic.discord.message.ChannelMessageSenderImpl"/>
+    <bean id="channelEmbedMessageSender" class="com.xylope.betriot.layer.logic.discord.message.ChannelEmbedMessageSender"/>
+    <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.logic.discord.message.PrivateMessageSenderWithCallbackImpl"/>
 
     <!-- Commands -->
     <bean id="rootCommand" class="com.xylope.betriot.layer.service.command.RootCommand"/>

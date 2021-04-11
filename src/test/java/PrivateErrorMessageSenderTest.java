@@ -1,4 +1,4 @@
-import com.xylope.betriot.layer.service.message.PrivateMessageSender;
+import com.xylope.betriot.layer.logic.discord.message.PrivateMessageSender;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;

@@ -10,11 +10,11 @@ import com.xylope.betriot.exception.DataNotFoundException;
 import com.xylope.betriot.layer.dataaccess.apis.riot.OriannaMatchAPI;
 import com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
-import com.xylope.betriot.layer.service.SpecialEmote;
+import com.xylope.betriot.layer.logic.discord.SpecialEmote;
 import com.xylope.betriot.layer.service.command.AbstractCommand;
 import com.xylope.betriot.layer.service.command.LeafCommand;
-import com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender;
-import com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl;
+import com.xylope.betriot.layer.logic.discord.message.ChannelEmbedMessageSender;
+import com.xylope.betriot.layer.logic.discord.message.ChannelMessageSenderImpl;
 import com.xylope.betriot.manager.CommandManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -58,7 +58,6 @@ public class MatchCommand extends LeafCommand {
                           channelMessageSender.sendMessage(textChannel, "최근 20번쨰까지의 전적만 보실 수 있습니다!");
                       }
                       String summonerName = CommandManager.getRawToArgs(args);
-                      System.out.println(summonerName);
                       SummonerDto summoner;
                       try {
                           summoner = summonerAPI.getByName(summonerName);

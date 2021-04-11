@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service;
+package com.xylope.betriot.layer.logic.discord;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

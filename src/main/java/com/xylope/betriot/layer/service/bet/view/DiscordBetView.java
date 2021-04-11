@@ -2,13 +2,14 @@ package com.xylope.betriot.layer.service.bet.view;
 
 import com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI;
 import com.xylope.betriot.layer.domain.vo.UserVO;
+import com.xylope.betriot.layer.service.bet.controller.BetController;
 import com.xylope.betriot.layer.service.bet.model.BetDto;
 import com.xylope.betriot.layer.service.bet.model.BetUserVO;
 import com.xylope.betriot.layer.service.bet.model.WinOrLose;
 import com.xylope.betriot.layer.service.bet.view.printer.Printer;
-import com.xylope.betriot.layer.service.message.ChannelEmbedMessageSender;
-import com.xylope.betriot.layer.service.message.ChannelMessageSenderImpl;
-import com.xylope.betriot.layer.service.message.PrivateEmbedMessageSender;
+import com.xylope.betriot.layer.logic.discord.message.ChannelEmbedMessageSender;
+import com.xylope.betriot.layer.logic.discord.message.ChannelMessageSenderImpl;
+import com.xylope.betriot.layer.logic.discord.message.PrivateEmbedMessageSender;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -83,15 +84,16 @@ public class DiscordBetView implements BetView{
         int winnerMoney = 0;
         int loserMoney = 0;
 
-        for (BetUserVO user : bet.getParticipants().keySet()) {
-            WinOrLose betWhere = bet.getParticipants().get(user);
+        for (BetUserVO user : participants.keySet()) {
+            WinOrLose betWhere = participants.get(user);
             long discordId = user.getUser().getDiscordId();
             if(betWhere.equals(isPublisherWinOrLose)) {
                 nameOfParticipants.add(jdaAPI.getUserById(discordId).getName() + "(승리)");
                 winnerMoney += user.getMoney();
-            } else
+            } else {
                 nameOfParticipants.add(jdaAPI.getUserById(discordId).getName() + "(패배)");
                 loserMoney += user.getMoney();
+            }
             totalMoney += user.getMoney();
         }
 
@@ -103,8 +105,8 @@ public class DiscordBetView implements BetView{
         MessageEmbed message = new EmbedBuilder()
                 .setColor(color)
                 .setTitle(String.format("%s 님의 배팅결과가 나왔습니다!", getPublisherNameByBetDto(bet)))
-                .addField("매치결과", isPublisherWinOrLose.getDisplayStatus(), false)
-                .addField("참여인원", String.valueOf(bet.getParticipants().size()), false)
+                .addField("매치 결과", isPublisherWinOrLose.getDisplayStatus(), false)
+                .addField("참여 인원", String.valueOf(bet.getParticipants().size()), false)
                 .addField("총 배팅액", String.valueOf(totalMoney), true)
                 .addField("승리한 배팅액", String.valueOf(winnerMoney), true)
                 .addField("패배한 배팅액", String.valueOf(loserMoney), true)
@@ -119,17 +121,6 @@ public class DiscordBetView implements BetView{
         String message = String.format("%s 님의 배팅이 종료되었습니다", getPublisherNameByBetDto(bet));
 
         channelMessageSender.sendMessage(bet.getRelayChannel(), message);
-    }
-
-    @Override
-    public void sendMatchNotFoundView(BetDto bet) {
-        MessageEmbed message = new EmbedBuilder()
-                .setColor(errColor)
-                .setTitle(getMatchCancelMessageTitle(bet))
-                .addField("", "제한시간 내에 인게임 매칭이 감지되지 않아 배팅 개설이 취소되었습니다!", false)
-                .build();;
-
-        channelEmbedMessageSender.sendMessage(bet.getRelayChannel(), message);
     }
 
     @Override
@@ -188,6 +179,32 @@ public class DiscordBetView implements BetView{
                 .addField("", "이미 배팅을 만드셧습니다!", false)
                 .build();
         privateEmbedMessageSender.sendMessage(pc, message);
+    }
+
+    @Override
+    public void sendCancelBetView(BetDto bet, BetController.BetCancelReason reason) {
+        MessageEmbed message;
+        String publisherName = getPublisherNameByBetDto(bet);
+        switch (reason) {
+            case MATCH_IS_CANCEL:
+                message = new EmbedBuilder()
+                        .setColor(errColor)
+                        .setTitle(publisherName + "님의 배팅이 취소되었습니다!")
+                        .addField("취소사유", "비정상적인 매치(탈주, 닷지 등) 가 감지되었습니다!", false)
+                        .build();
+                break;
+            case MATCH_NOT_FOUND:
+                message = new EmbedBuilder()
+                        .setColor(errColor)
+                        .setTitle(getMatchCancelMessageTitle(bet))
+                        .addField("", "제한시간 내에 인게임 매칭이 감지되지 않아 배팅 개설이 취소되었습니다!", false)
+                        .build();;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + reason);
+        }
+
+        channelEmbedMessageSender.sendMessage(bet.getRelayChannel(), message);
     }
 
     private String getPublisherNameByBetDto(BetDto bet) {

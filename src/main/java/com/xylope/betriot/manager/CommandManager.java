@@ -7,7 +7,7 @@ import com.xylope.betriot.layer.service.command.custom.bet.BetOpenCommand;
 import com.xylope.betriot.layer.service.command.custom.bet.BettingParticipationCommand;
 import com.xylope.betriot.layer.service.command.custom.notice.NoticeAllCommand;
 import com.xylope.betriot.layer.service.command.custom.notice.NoticeCheckCommand;
-import com.xylope.betriot.layer.service.discord.listener.MessageReceivedListener;
+import com.xylope.betriot.layer.logic.discord.listener.MessageReceivedListener;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -15,7 +15,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.util.Arrays;
 import java.util.List;
 
-public class CommandManager implements Manager{
+public class
+CommandManager implements Manager{
     public static final String ROOT_CMD_STR = "뱃라이엇";
     @Setter
     MessageReceivedListener messageReceivedListener;
@@ -42,6 +43,8 @@ public class CommandManager implements Manager{
     private BetOpenCommand betOpenCommand;
     @Setter
     private BettingParticipationCommand bettingParticipationCommand;
+    @Setter
+    private CheckPointCommand checkPointCommand;
 
     public CommandManager() {
         this.rootCmd = new RootCommand();
@@ -61,6 +64,7 @@ public class CommandManager implements Manager{
         rootCmd.addChildCommand(helpCommand);
         rootCmd.addChildCommand(killCodeCommand); //TODO 임시 커맨드 릴리즈 후 무조건 삭제
         rootCmd.addChildCommand(matchCommand);
+        rootCmd.addChildCommand(checkPointCommand);
     }
 
     @Override

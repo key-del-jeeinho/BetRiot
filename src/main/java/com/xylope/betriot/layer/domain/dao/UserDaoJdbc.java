@@ -17,7 +17,7 @@ public class UserDaoJdbc implements UserDao {
     PlatformTransactionManager transactionManager;
     @Setter
     JdbcOperations jdbc;
-    private final RowMapper<UserVO> userMapper = (rs, rowNum) -> new UserVO(
+    private static final RowMapper<UserVO> userMapper = (rs, rowNum) -> new UserVO(
             rs.getLong("discord_id"),
             rs.getString("riot_id"),
             rs.getInt("money"),
@@ -70,6 +70,7 @@ public class UserDaoJdbc implements UserDao {
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
+            throw e;
         }
     }
 

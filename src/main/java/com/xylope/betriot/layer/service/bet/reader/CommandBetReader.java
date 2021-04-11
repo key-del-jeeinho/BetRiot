@@ -1,7 +1,7 @@
 package com.xylope.betriot.layer.service.bet.reader;
 
+import com.xylope.betriot.exception.WrongDisplayStatusException;
 import com.xylope.betriot.exception.bet.WrongArgumentException;
-import com.xylope.betriot.exception.bet.WrongDisplayStatusException;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.bet.BetService;

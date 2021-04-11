@@ -1,9 +1,9 @@
 package com.xylope.betriot.layer.service.user.account.remove;
 
 import com.xylope.betriot.layer.domain.dao.UserDao;
-import com.xylope.betriot.layer.service.SpecialEmote;
-import com.xylope.betriot.layer.service.discord.listener.PrivateMessageReactionAddListener;
-import com.xylope.betriot.layer.service.message.PrivateMessageSenderWithCallback;
+import com.xylope.betriot.layer.logic.discord.SpecialEmote;
+import com.xylope.betriot.layer.logic.discord.listener.PrivateMessageReactionAddListener;
+import com.xylope.betriot.layer.logic.discord.message.PrivateMessageSenderWithCallback;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.PrivateChannel;

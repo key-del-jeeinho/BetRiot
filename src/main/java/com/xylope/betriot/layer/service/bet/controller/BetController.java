@@ -1,15 +1,22 @@
 package com.xylope.betriot.layer.service.bet.controller;
 
+import com.merakianalytics.orianna.types.core.match.Match;
 import com.xylope.betriot.exception.bet.BetAlreadyCreatedException;
 import com.xylope.betriot.exception.bet.WrongBetProgressException;
 import com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI;
 import com.xylope.betriot.layer.dataaccess.apis.riot.OriannaMatchAPI;
+import com.xylope.betriot.layer.domain.dao.BetHistoryDao;
+import com.xylope.betriot.layer.domain.vo.BetHistoryVO;
+import com.xylope.betriot.layer.domain.vo.BetParticipantVO;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.bet.model.*;
 import com.xylope.betriot.layer.service.bet.view.BetView;
 import com.xylope.betriot.layer.service.user.dao.BankUserDao;
 import lombok.AllArgsConstructor;
+import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -20,6 +27,7 @@ public class BetController {
     private final BetView view;
     private final OriannaMatchAPI matchAPI;
     private final BankUserDao bankUserDao;
+    private final BetHistoryDao betHistoryDao;
 
     private final JdaAPI jdaAPI;
 
@@ -136,12 +144,29 @@ public class BetController {
         if(!dto.getProgress().equals(BetProgress.BET_END))
             throw new WrongBetProgressException("progress isn't BET_END", BetProgress.BET_END);
 
+        Match match = matchAPI.getByMatchId(dto.getMatchId());
+        DateTime matchDuration = new DateTime().minus(match.getCreationTime().getMillis());
+        WinOrLose isPublisherWin = matchAPI.isSummonerWin(match, dto.getPublisher().getRiotId()) ? WinOrLose.WIN : WinOrLose.LOSE;
+        List<BetParticipantVO> participants = new ArrayList<>();
+        dto.getParticipants().forEach(
+                ((betUserVO, winOrLose) -> participants.add(BetParticipantVO.convertBetUserVOToThis(betUserVO, winOrLose)))
+        );
+
+        betHistoryDao.add(new BetHistoryVO(
+                0,
+                dto.getPublisher().getDiscordId(),
+                matchDuration,
+                new DateTime(),
+                isPublisherWin,
+                participants
+        ));
+
         model.remove(betId);
         view.sendEndBetView(betId, dto);
     }
 
     public void matchNotFound(int betId) {
-        view.sendMatchNotFoundView(model.getBet(betId));
+        cancelBet(betId, BetCancelReason.MATCH_NOT_FOUND);
     }
 
     public void matchExceedTimeLimit(int betId) {
@@ -150,5 +175,19 @@ public class BetController {
 
     public void removeCloseBets() {
         model.removeCloseBets();
+    }
+
+    public void cancelBetBecauseMatchIsCancel(int betId) {
+        cancelBet(betId, BetCancelReason.MATCH_IS_CANCEL);
+    }
+
+    private void cancelBet(int betId, BetCancelReason reason) {
+        BetDto bet = model.getBet(betId);
+        model.cancelBet(betId);
+        view.sendCancelBetView(bet, reason);
+    }
+
+    public enum BetCancelReason {
+        MATCH_IS_CANCEL, MATCH_NOT_FOUND;
     }
 }

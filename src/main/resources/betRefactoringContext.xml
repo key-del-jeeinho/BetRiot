@@ -16,6 +16,7 @@
         <constructor-arg ref="matchApi"/>
         <constructor-arg ref="bankUserDao"/>
         <constructor-arg ref="jdaApi"/>
+        <constructor-arg ref="betHistoryDao"/>
     </bean>
 
     <bean id="betModel" class="com.xylope.betriot.layer.service.bet.model.BetQueue"/>
