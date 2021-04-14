@@ -11,7 +11,7 @@ import com.xylope.betriot.layer.domain.vo.BetParticipantVO;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.bet.model.*;
 import com.xylope.betriot.layer.service.bet.view.BetView;
-import com.xylope.betriot.layer.service.user.dao.BankUserDao;
+import com.xylope.betriot.layer.service.user_v2.dao.BankUserDao;
 import lombok.AllArgsConstructor;
 import org.joda.time.DateTime;
 
@@ -153,7 +153,7 @@ public class BetController {
         );
 
         betHistoryDao.add(new BetHistoryVO(
-                0,
+                dto.getMatchId(),
                 dto.getPublisher().getDiscordId(),
                 matchDuration,
                 new DateTime(),
@@ -169,12 +169,12 @@ public class BetController {
         cancelBet(betId, BetCancelReason.MATCH_NOT_FOUND);
     }
 
-    public void matchExceedTimeLimit(int betId) {
-        view.sendMatchExceedTimeLimitView(model.getBet(betId));
-    }
-
     public void removeCloseBets() {
         model.removeCloseBets();
+    }
+
+    public void cancelBetBecauseMatchExceededTimeLimit(int betId) {
+        cancelBet(betId, BetCancelReason.MATCH_EXCEEDED_TIME_LIMIT);
     }
 
     public void cancelBetBecauseMatchIsCancel(int betId) {
@@ -188,6 +188,6 @@ public class BetController {
     }
 
     public enum BetCancelReason {
-        MATCH_IS_CANCEL, MATCH_NOT_FOUND;
+        MATCH_IS_CANCEL, MATCH_NOT_FOUND, MATCH_EXCEEDED_TIME_LIMIT
     }
 }

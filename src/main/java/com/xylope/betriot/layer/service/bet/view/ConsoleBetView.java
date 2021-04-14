@@ -60,7 +60,8 @@ public class ConsoleBetView implements BetView{
     //TODO 구현하기
     @Override
     public void sendUserParticipationBettingView(BetDto bet, BetUserVO user) {
-
+        String publisherName = getPublisherNameByBetDto(bet);
+        printer.print(publisherName + "님이 " + getPublisherNameByBetDto(bet) + "님의 배팅에 참여하셧습니다!\n배팅 금액 : " + user.getMoney());
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.xylope.betriot.layer.service.bet.controller.BetController;
 import com.xylope.betriot.layer.service.bet.model.BetProgress;
 import com.xylope.betriot.layer.service.bet.model.BetUserVO;
 import com.xylope.betriot.layer.service.bet.model.WinOrLose;
-import com.xylope.betriot.layer.service.user.dao.BankUserDao;
+import com.xylope.betriot.layer.service.user_v2.dao.BankUserDao;
 import com.xylope.betriot.manager.TimeCounter;
 import com.xylope.betriot.manager.TimeListenerAdapter;
 import org.joda.time.DateTime;
@@ -113,7 +113,7 @@ class BetLifeCycle extends TimeListenerAdapter {
 
             DateTime creationTime = currentMatch.getCreationTime();
             if(new DateTime().isAfter(creationTime.plusSeconds(MAX_MATCH_DURATION_WHEN_CHECK_MATCH))) {
-                betController.matchExceedTimeLimit(betId);
+                betController.cancelBetBecauseMatchExceededTimeLimit(betId);
                 timeCounter.removeTimeListener(this);
                 return;
             }
@@ -156,6 +156,9 @@ class BetLifeCycle extends TimeListenerAdapter {
             else wol = WinOrLose.LOSE;
             betController.giveRewardToWinners(betId, wol);
             betController.nextStep(betId); //BET_END;
+        }
+
+        if(betController.checkProgress(betId, BetProgress.BET_END)) {
             betController.endBet(betId);
             timeCounter.removeTimeListener(this);
         }

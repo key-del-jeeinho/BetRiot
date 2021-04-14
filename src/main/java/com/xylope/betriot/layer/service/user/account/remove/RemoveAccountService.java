@@ -16,7 +16,7 @@ import java.util.List;
 public class RemoveAccountService {
     private final List<Message> removeMessageQueue;
     @Setter
-    private PrivateMessageSenderWithCallback privateMessageSender;
+    private PrivateMessageSenderWithCallback<String> privateMessageSender;
     @Setter
     private UserDao dao;
 

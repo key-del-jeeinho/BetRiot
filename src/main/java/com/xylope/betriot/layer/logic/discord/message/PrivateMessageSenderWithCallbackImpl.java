@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 
 import java.util.function.Consumer;
 
-public class PrivateMessageSenderWithCallbackImpl implements PrivateMessageSenderWithCallback{
+public class PrivateMessageSenderWithCallbackImpl implements PrivateMessageSenderWithCallback<String>{
     @Override
     public void sendMessage(PrivateChannel channel, String msg) {
         channel.sendMessage(msg).queue();

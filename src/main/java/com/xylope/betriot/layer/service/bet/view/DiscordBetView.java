@@ -200,6 +200,13 @@ public class DiscordBetView implements BetView{
                         .addField("", "제한시간 내에 인게임 매칭이 감지되지 않아 배팅 개설이 취소되었습니다!", false)
                         .build();;
                 break;
+            case MATCH_EXCEEDED_TIME_LIMIT:
+                message = new EmbedBuilder()
+                        .setColor(errColor)
+                        .setTitle(getMatchCancelMessageTitle(bet))
+                        .addField("", "매치가 진행된지 일정시간이 지나, 해당 매치로 배팅을 개설할 수 없습니다!", false)
+                        .build();;
+                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + reason);
         }
