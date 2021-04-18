@@ -38,6 +38,7 @@ public class NewRegisterAccount {
 
     void checkIsPolicyChecked(String emote) {
         if(SpecialEmote.TERMS_AGREE.getEmote().equals(emote)) {
+            System.out.println("씨이발 - " + System.identityHashCode(progress)); //정상작동
             progress.setPolicyAccept(true);
         }else if(SpecialEmote.TERMS_DISAGREE.getEmote().equals(emote)) {
             progress.setPolicyAccept(false);
@@ -58,12 +59,7 @@ public class NewRegisterAccount {
     }
 
     public boolean checkIsRiotAuthorized() {
-        try {
-            progress.getIsRiotAccountAuthorize();
-            return true;
-        } catch (WrongAccountProgressException e) {
-            return false;
-        }
+        return progress.getIsRiotAccountAuthorize();
     }
 
     public NewRegisterAccountDto convertToDto() {

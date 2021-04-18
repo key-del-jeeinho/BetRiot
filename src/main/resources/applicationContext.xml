@@ -41,6 +41,7 @@
     </bean>
 
     <!-- Services -->
+
     <bean id="createAccountService" class="com.xylope.betriot.layer.service.user.account.create.CreateAccountService">
         <constructor-arg ref="guildMemberJoinListener"/>
         <constructor-arg ref="privateMessageReactionAddListener"/>
@@ -75,6 +76,7 @@
     <bean id="channelMessageSenderWithCallback" class="com.xylope.betriot.layer.logic.discord.message.PrivateMessageSenderWithCallbackImpl"/>
 
     <bean id="privateMessageSender" class="com.xylope.betriot.layer.logic.discord.message.PrivateMessageSenderImpl"/>
+    <bean id="privateEmbedMessageSenderWithCallback" class="com.xylope.betriot.layer.logic.discord.message.PrivateEmbedMessageSenderWithCallback"/>
 
     <!-- Commands -->
     <bean id="rootCommand" class="com.xylope.betriot.layer.service.command.RootCommand"/>
@@ -88,7 +90,7 @@
     </bean>
 
     <bean id="createAccountCommand" class="com.xylope.betriot.layer.service.command.custom.CreateAccountCommand">
-        <constructor-arg ref="createAccountService"/>
+        <constructor-arg ref="accountService"/>
         <constructor-arg ref="userDao"/>
         <constructor-arg ref="channelMessageSender"/>
         <property name="trigger" ref="createAccountTrigger"/>

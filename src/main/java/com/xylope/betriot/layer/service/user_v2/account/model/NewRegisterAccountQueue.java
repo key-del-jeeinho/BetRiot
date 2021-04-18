@@ -99,4 +99,8 @@ public class NewRegisterAccountQueue {
                 }
         );
     }
+
+    public void close(long accountId) {
+        accounts.remove(getById(accountId));
+    }
 }

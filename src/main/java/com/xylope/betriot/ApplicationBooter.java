@@ -7,7 +7,8 @@ public class ApplicationBooter {
     public static final ApplicationContext CONTEXT = new GenericXmlApplicationContext(
             "/applicationContext.xml",
             "/secretContext.xml",
-            "/betRefactoringContext.xml");
+            "/betRefactoringContext.xml",
+            "/userRefactoringContext.xml");
 
     public static void main(String[] args) throws InterruptedException {
         CONTEXT.getBean(BetRiotApplication.class).start();

@@ -79,11 +79,15 @@ public class AccountController {
         long discordId = account.getDiscordId();
         PrivateChannel pc = jdaApi.getPrivateChannelByUserId(discordId);
 
+        System.out.println(account.getRiotName());
+        System.out.println(summonerAPI);
         SummonerDto summoner = summonerAPI.getByName(account.getRiotName());
+        System.out.println("summoner : " + summoner);
         String iconUrl = getAuthorizeIconUrl(summoner);
+        System.out.println("icon url : " + iconUrl);
 
-        long policyMessageId = view.sendAuthorizeRiotAccountView(pc, iconUrl);
-        model.setPolicyMessageId(accountId, policyMessageId);
+        long riotAuthorizeMessageId = view.sendAuthorizeRiotAccountView(pc, iconUrl);
+        model.setRiotAuthorizeMessageId(accountId, riotAuthorizeMessageId);
     }
 
     public boolean checkAuthorizeRiotAccount(long accountId) {
@@ -101,5 +105,9 @@ public class AccountController {
         long discordId = model.getAccount(accountId).getDiscordId();
         PrivateChannel pc = jdaApi.getPrivateChannelByUserId(discordId);
         view.sendRegisterView(pc);
+    }
+
+    public void close(long accountId) {
+        model.close(accountId);
     }
 }

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @AllArgsConstructor
 @RequiredArgsConstructor
 public enum NewRegisterAccountProgress {
@@ -19,25 +21,33 @@ public enum NewRegisterAccountProgress {
     @Getter
     private final int progressLevel;
     @Setter
-    private boolean isPolicyAccept;
+    private AtomicBoolean isPolicyAccept;
     @Setter
-    private boolean isRiotAccountAuthorize;
+    private boolean isRiotAccountAuthorize = false;
 
     public boolean getIsPolicyAccept() {
-        if(progressLevel < POLICY_UNCHECKED.progressLevel) {
-            throw new WrongAccountProgressException();
+        try {
+            System.out.println("getPolicy is" + isPolicyAccept.get() + " - " + System.identityHashCode(this));
+            return isPolicyAccept.get();
+        } catch (NullPointerException e) {
+            System.out.println("null씨발 - " + System.identityHashCode(this));
+            throw new WrongAccountProgressException(e);
         }
-        return isPolicyAccept;
     }
 
     public boolean getIsRiotAccountAuthorize() {
-        if(progressLevel < RIOT_AUTHORIZE_ACCOUNT.progressLevel) {
-            throw new WrongAccountProgressException();
-        }
         return isRiotAccountAuthorize;
     }
 
     public NewRegisterAccountProgress nextStep() {
-        return values()[ordinal()+1];
+        NewRegisterAccountProgress progress =  values()[ordinal()+1];
+        progress.setIsPolicyAccept(isPolicyAccept);
+        progress.setRiotAccountAuthorize(isRiotAccountAuthorize);
+        return progress;
+    }
+
+    public void setPolicyAccept(boolean isPolicyAccept) {
+        System.out.println("setPolicy to " + isPolicyAccept + " - " + hashCode());
+        this.isPolicyAccept = new AtomicBoolean(isPolicyAccept);
     }
 }

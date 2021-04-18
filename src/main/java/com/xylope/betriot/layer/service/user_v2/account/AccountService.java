@@ -1,5 +1,6 @@
 package com.xylope.betriot.layer.service.user_v2.account;
 
+import com.xylope.betriot.exception.user.WrongAccountProgressException;
 import com.xylope.betriot.layer.domain.event.OnSecondEvent;
 import com.xylope.betriot.layer.service.user_v2.account.controller.AccountController;
 import com.xylope.betriot.layer.service.user_v2.account.model.NewRegisterAccount;
@@ -11,7 +12,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AccountService {
     private final AccountController controller;
-    private TimeCounter timeCounter;
+    private final TimeCounter timeCounter;
 
     public void createAccount(long discordId) {
         new CreateAccountLifeCycle(timeCounter, controller, discordId);
@@ -39,18 +40,27 @@ class CreateAccountLifeCycle extends TimeListenerAdapter {
         controller.nextStep(accountId); //POLICY_UNCHECKED
 
         timeCounter.addTimeListener(this);
-
     }
 
     @Override
-    public void onTimeSecond(OnSecondEvent e) {
+    public void onTimeSecond(OnSecondEvent event) {
         if(controller.checkProgress(accountId, NewRegisterAccountProgress.POLICY_UNCHECKED)) {
-            if(controller.checkIsPolicyChecked(accountId))
+            boolean isPolicyChecked = controller.checkIsPolicyChecked(accountId);
+            if(isPolicyChecked){
                 controller.nextStep(accountId); //POLICY_CHECKED
+            }
             else return;
         }
         if(controller.checkProgress(accountId, NewRegisterAccountProgress.POLICY_CHECKED)) {
-            if(!controller.policyLogic(accountId)) {//만약 유저가 약관에 동의 하지 않았을 경우
+            boolean isUserAcceptPolicy;
+            try {
+                isUserAcceptPolicy = controller.policyLogic(accountId);
+            } catch (WrongAccountProgressException e) {
+                return;
+            }
+            System.out.println("isUserAcceptPolicy : " + isUserAcceptPolicy);
+            if(!isUserAcceptPolicy) {//만약 유저가 약관에 동의 하지 않았을 경우
+                controller.close(accountId);
                 timeCounter.removeTimeListener(this);
                 return;
             }
