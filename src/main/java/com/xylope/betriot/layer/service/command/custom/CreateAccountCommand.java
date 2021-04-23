@@ -1,6 +1,6 @@
 package com.xylope.betriot.layer.service.command.custom;
 
-import com.xylope.betriot.layer.service.user_v2.account.AccountService;
+import com.xylope.betriot.layer.service.user.account.AccountService;
 import com.xylope.betriot.manager.CommandManager;
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.service.command.AbstractCommand;

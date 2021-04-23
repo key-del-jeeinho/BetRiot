@@ -39,25 +39,6 @@
             </list>
         </property>
     </bean>
-
-    <!-- Services -->
-
-    <bean id="createAccountService" class="com.xylope.betriot.layer.service.user.account.create.CreateAccountService">
-        <constructor-arg ref="guildMemberJoinListener"/>
-        <constructor-arg ref="privateMessageReactionAddListener"/>
-        <constructor-arg ref="privateMessageReceivedListener"/>
-        <property name="summonerAPI" ref="userSummonerApi"/>
-        <property name="dataDragonAPI" ref="dataDragonApi"/>
-        <property name="errorMessageSender" ref="errorMessageSender"/>
-        <property name="dao" ref="userDao"/>
-    </bean>
-
-    <bean id="removeAccountService" class="com.xylope.betriot.layer.service.user.account.remove.RemoveAccountService">
-        <constructor-arg ref="privateMessageReactionAddListener"/>
-        <property name="privateMessageSender" ref="channelMessageSenderWithCallback"/>
-        <property name="dao" ref="userDao"/>
-    </bean>
-
     <!-- JDA Events -->
     <bean id="guildMemberJoinListener" class="com.xylope.betriot.layer.logic.discord.listener.GuildMemberJoinListener"/>
     <bean id="messageReceivedListener" class="com.xylope.betriot.layer.logic.discord.listener.MessageReceivedListener"/>
@@ -98,7 +79,7 @@
 
     <bean id="removeAccountCommand" class="com.xylope.betriot.layer.service.command.custom.RemoveAccountCommand">
         <constructor-arg ref="userDao"/>
-        <constructor-arg ref="removeAccountService"/>
+        <constructor-arg ref="accountService"/>
         <constructor-arg ref="channelMessageSender"/>
         <property name="trigger" ref="removeAccountTrigger"/>
     </bean>
@@ -242,7 +223,7 @@
         <property name="transactionManager" ref="transactionManager"/>
         <property name="jdbc" ref="jdbcTemplate"/>
     </bean>
-    <bean id="bankUserDao" class="com.xylope.betriot.layer.service.user_v2.dao.BankUserDaoImpl">
+    <bean id="bankUserDao" class="com.xylope.betriot.layer.service.user.dao.BankUserDaoImpl">
         <property name="spareDao" ref="userDao"/>
     </bean>
     <bean id="userDao" class="com.xylope.betriot.layer.domain.dao.UserDaoJdbc">

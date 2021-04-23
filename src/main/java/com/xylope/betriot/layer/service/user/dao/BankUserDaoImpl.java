@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user_v2.dao;
+package com.xylope.betriot.layer.service.user.dao;
 
 import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.domain.vo.UserVO;

@@ -1,14 +1,16 @@
-package com.xylope.betriot.layer.service.user_v2.account.controller;
+package com.xylope.betriot.layer.service.user.account.controller;
 
 import com.xylope.betriot.layer.dataaccess.apis.discord.JdaAPI;
 import com.xylope.betriot.layer.dataaccess.apis.riot.DataDragonAPI;
 import com.xylope.betriot.layer.dataaccess.apis.riot.SummonerAPI;
 import com.xylope.betriot.layer.dataaccess.riotdata.SummonerDto;
-import com.xylope.betriot.layer.service.user_v2.account.model.NewRegisterAccount;
-import com.xylope.betriot.layer.service.user_v2.account.model.NewRegisterAccountDto;
-import com.xylope.betriot.layer.service.user_v2.account.model.NewRegisterAccountProgress;
-import com.xylope.betriot.layer.service.user_v2.account.model.NewRegisterAccountQueue;
-import com.xylope.betriot.layer.service.user_v2.account.view.AccountView;
+import com.xylope.betriot.layer.domain.dao.UserDao;
+import com.xylope.betriot.layer.domain.vo.UserVO;
+import com.xylope.betriot.layer.service.user.account.model.NewRegisterAccount;
+import com.xylope.betriot.layer.service.user.account.model.NewRegisterAccountDto;
+import com.xylope.betriot.layer.service.user.account.model.NewRegisterAccountProgress;
+import com.xylope.betriot.layer.service.user.account.model.NewRegisterAccountQueue;
+import com.xylope.betriot.layer.service.user.account.view.AccountView;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 
@@ -19,11 +21,14 @@ import java.util.Random;
 
 @AllArgsConstructor
 public class AccountController {
+    private static final int START_MONEY = 10000;
+
     private final NewRegisterAccountQueue model;
     private final AccountView view;
     private final JdaAPI jdaApi;
     private final SummonerAPI summonerAPI;
     private final DataDragonAPI dataDragonAPI;
+    private final UserDao userDao;
 
     public void createAccount(NewRegisterAccount account) {
         model.addAccount(account);
@@ -67,7 +72,7 @@ public class AccountController {
         long discordId = model.getAccount(accountId).getDiscordId();
         PrivateChannel pc = jdaApi.getPrivateChannelByUserId(discordId);
         long messageId = view.sendAuthorizeRiotNameView(pc);
-        model.setRiotAuthorizeMessageId(accountId, messageId);
+        model.setRiotNameAuthorizeMessageId(accountId, messageId);
     }
 
     public boolean checkAuthorizeRiotName(long accountId) {
@@ -79,25 +84,22 @@ public class AccountController {
         long discordId = account.getDiscordId();
         PrivateChannel pc = jdaApi.getPrivateChannelByUserId(discordId);
 
-        System.out.println(account.getRiotName());
-        System.out.println(summonerAPI);
-        SummonerDto summoner = summonerAPI.getByName(account.getRiotName());
-        System.out.println("summoner : " + summoner);
-        String iconUrl = getAuthorizeIconUrl(summoner);
-        System.out.println("icon url : " + iconUrl);
+        String iconUrl = getAuthorizeIconUrl(accountId);
 
         long riotAuthorizeMessageId = view.sendAuthorizeRiotAccountView(pc, iconUrl);
-        model.setRiotAuthorizeMessageId(accountId, riotAuthorizeMessageId);
+        model.setRiotAccountAuthorizeMessageId(accountId, riotAuthorizeMessageId);
     }
 
     public boolean checkAuthorizeRiotAccount(long accountId) {
         return model.checkAuthorizeRiotAccount(accountId);
     }
 
-    private String getAuthorizeIconUrl(final SummonerDto summoner) {
+    private String getAuthorizeIconUrl(long accountId) {
+        final SummonerDto summoner = summonerAPI.getByName(model.getAccount(accountId).getRiotName());
         List<Integer> iconIdQueue = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
         iconIdQueue.removeIf(data -> (data == summoner.getProfileIconId()));
         int authorizeIconId = iconIdQueue.get(new Random().nextInt(iconIdQueue.size()));
+        model.setAuthorizeIconId(accountId, authorizeIconId);
         return dataDragonAPI.getProfileIconURL(authorizeIconId);
     }
 
@@ -109,5 +111,49 @@ public class AccountController {
 
     public void close(long accountId) {
         model.close(accountId);
+    }
+
+    public boolean authorizeRiotAccountLogic(long accountId) {
+        NewRegisterAccountDto account = model.getAccount(accountId);
+        SummonerDto summoner = summonerAPI.getByName(account.getRiotName());
+        int iconId = summoner.getProfileIconId();
+        final boolean isUserAuthorizeRiotAccount = iconId == account.getAuthorizeIconId();
+        System.out.println(iconId);
+        System.out.println(account.getAuthorizeIconId());
+
+
+
+        long discordId = model.getAccount(accountId).getDiscordId();
+        PrivateChannel pc = jdaApi.getPrivateChannelByUserId(discordId);
+
+        if(isUserAuthorizeRiotAccount) {
+            view.sendRiotAuthorizeSucessView(pc);
+        } else {
+            view.sendRiotAuthorizeFailureView(pc);
+        }
+
+        return isUserAuthorizeRiotAccount;
+    }
+
+    public void register(long accountId) {
+        UserVO user = new AccountConverter(summonerAPI).convert(model.getAccount(accountId));
+        userDao.add(user);
+    }
+
+    public void removeAccount(long discordId) {
+        model.removeAccount(discordId, userDao);
+        view.sendRemoveAccountView(jdaApi.getPrivateChannelByUserId(discordId));
+    }
+
+    @AllArgsConstructor
+    private class AccountConverter {
+        SummonerAPI summonerAPI;
+        public UserVO convert(NewRegisterAccountDto account) {
+            long discordId = account.getDiscordId();
+            String riotId = summonerAPI.getByName(account.getRiotName()).getId();
+            UserVO.Permission permission = UserVO.Permission.IRON;
+
+            return new UserVO(discordId, riotId, START_MONEY, permission);
+        }
     }
 }

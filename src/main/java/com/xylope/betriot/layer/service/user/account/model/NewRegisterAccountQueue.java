@@ -1,6 +1,7 @@
-package com.xylope.betriot.layer.service.user_v2.account.model;
+package com.xylope.betriot.layer.service.user.account.model;
 
 import com.xylope.betriot.exception.DataNotFoundException;
+import com.xylope.betriot.layer.domain.dao.UserDao;
 import com.xylope.betriot.layer.logic.discord.listener.EventRepeater;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
@@ -52,8 +53,12 @@ public class NewRegisterAccountQueue {
         getById(accountId).setPolicyMessageId(policyMessageId);
     }
 
-    public void setRiotAuthorizeMessageId(long accountId, long riotAuthorizeMessageId) {
-        getById(accountId).setRiotAuthorizeMessageId(riotAuthorizeMessageId);
+    public void setRiotNameAuthorizeMessageId(long accountId, long riotAuthorizeMessageId) {
+        getById(accountId).setRiotNameAuthorizeMessageId(riotAuthorizeMessageId);
+    }
+
+    public void setRiotAccountAuthorizeMessageId(long accountId, long riotAuthorizeMessageId) {
+        getById(accountId).setRiotAccountAuthorizeMessageId(riotAuthorizeMessageId);
     }
 
     public void nextStep(long accountId) {
@@ -79,8 +84,8 @@ public class NewRegisterAccountQueue {
                         if (messageId == account.getPolicyMessageId()) {
                             account.checkIsPolicyChecked(emote);
                         }
-                        if (messageId == account.getRiotAuthorizeMessageId()) {
-                            account.authorizeRiot(emote);
+                        if (messageId == account.getRiotAccountAuthorizeMessageId()) {
+                            account.authorizeRiotAccount(emote);
                         }
                     }
                 }
@@ -103,4 +108,14 @@ public class NewRegisterAccountQueue {
     public void close(long accountId) {
         accounts.remove(getById(accountId));
     }
+
+    public void setAuthorizeIconId(long accountId, int authorizeIconId) {
+        getById(accountId).setAuthorizeIconId(authorizeIconId);
+    }
+
+    public void removeAccount(long discordId, UserDao dao) {
+        dao.remove(discordId);
+    }
 }
+
+

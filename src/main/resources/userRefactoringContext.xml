@@ -3,23 +3,24 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="accountService" class="com.xylope.betriot.layer.service.user_v2.account.AccountService">
+    <bean id="accountService" class="com.xylope.betriot.layer.service.user.account.AccountService">
         <constructor-arg ref="accountController"/>
         <constructor-arg ref="timeCounter"/>
     </bean>
-    <bean id="accountController" class="com.xylope.betriot.layer.service.user_v2.account.controller.AccountController">
+    <bean id="accountController" class="com.xylope.betriot.layer.service.user.account.controller.AccountController">
         <constructor-arg ref="newRegisterAccountQueue"/>
         <constructor-arg ref="discordAccountView"/>
         <constructor-arg ref="jdaApi"/>
         <constructor-arg ref="summonerApi"/>
         <constructor-arg ref="dataDragonApi"/>
+        <constructor-arg ref="userDao"/>
     </bean>
-    <bean id="discordAccountView" class="com.xylope.betriot.layer.service.user_v2.account.view.DiscordAccountView">
+    <bean id="discordAccountView" class="com.xylope.betriot.layer.service.user.account.view.DiscordAccountView">
         <constructor-arg ref="privateMessageSender"/>
         <constructor-arg ref="privateEmbedMessageSenderWithCallback"/>
         <constructor-arg ref="adminMail"/>
     </bean>
-    <bean id="newRegisterAccountQueue" class="com.xylope.betriot.layer.service.user_v2.account.model.NewRegisterAccountQueue">
+    <bean id="newRegisterAccountQueue" class="com.xylope.betriot.layer.service.user.account.model.NewRegisterAccountQueue">
         <constructor-arg ref="privateMessageReactionAddListener"/>
         <constructor-arg ref="privateMessageReceivedListener"/>
     </bean>

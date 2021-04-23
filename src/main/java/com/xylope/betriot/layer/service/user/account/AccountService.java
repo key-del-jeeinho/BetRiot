@@ -1,10 +1,10 @@
-package com.xylope.betriot.layer.service.user_v2.account;
+package com.xylope.betriot.layer.service.user.account;
 
 import com.xylope.betriot.exception.user.WrongAccountProgressException;
 import com.xylope.betriot.layer.domain.event.OnSecondEvent;
-import com.xylope.betriot.layer.service.user_v2.account.controller.AccountController;
-import com.xylope.betriot.layer.service.user_v2.account.model.NewRegisterAccount;
-import com.xylope.betriot.layer.service.user_v2.account.model.NewRegisterAccountProgress;
+import com.xylope.betriot.layer.service.user.account.controller.AccountController;
+import com.xylope.betriot.layer.service.user.account.model.NewRegisterAccount;
+import com.xylope.betriot.layer.service.user.account.model.NewRegisterAccountProgress;
 import com.xylope.betriot.manager.TimeCounter;
 import com.xylope.betriot.manager.TimeListenerAdapter;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class AccountService {
     }
 
     public void removeAccount(long discordId) {
-
+        controller.removeAccount(discordId);
     }
 }
 
@@ -58,13 +58,12 @@ class CreateAccountLifeCycle extends TimeListenerAdapter {
             } catch (WrongAccountProgressException e) {
                 return;
             }
-            System.out.println("isUserAcceptPolicy : " + isUserAcceptPolicy);
             if(!isUserAcceptPolicy) {//만약 유저가 약관에 동의 하지 않았을 경우
                 controller.close(accountId);
                 timeCounter.removeTimeListener(this);
                 return;
             }
-            //유저가 약관에 동의하였을경우,
+            //유저가 약관에 동의 하였을경우,
             controller.authorizeRiotName(accountId); //라이엇 인증 (소환사 닉네임) 메세지 보냄
             controller.nextStep(accountId); //RIOT_AUTHORIZE_NAME
         }
@@ -75,11 +74,19 @@ class CreateAccountLifeCycle extends TimeListenerAdapter {
             } else return;
         }
         if(controller.checkProgress(accountId, NewRegisterAccountProgress.RIOT_AUTHORIZE_ACCOUNT)) {
-            if(controller.checkAuthorizeRiotAccount(accountId)) //인증 확인
-                controller.nextStep(accountId); //REGISTERED
-            else return;
+            if(controller.checkAuthorizeRiotAccount(accountId)) {//인증 확인
+                if(controller.authorizeRiotAccountLogic(accountId)) { //인증 성공
+                    controller.nextStep(accountId); //REGISTERED
+                } else { //인증 실패
+                    controller.close(accountId);
+                    timeCounter.removeTimeListener(this);
+                    return;
+                }
+            } else return;
         }
         if(controller.checkProgress(accountId, NewRegisterAccountProgress.REGISTERED)) {
+            controller.register(accountId);
+            controller.close(accountId);
             timeCounter.removeTimeListener(this);
         }
     }

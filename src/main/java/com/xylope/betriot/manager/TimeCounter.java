@@ -14,9 +14,6 @@ public class TimeCounter{
     @Setter @Getter
     private boolean isRunning;
 
-    private long startTimeMills; // 계속 변동함
-    private long currentTimeMills;
-
     private long runningTimeSecond;
     private int runningTimeMinute;
     private int runningTimeHour;
@@ -34,9 +31,7 @@ public class TimeCounter{
     }
 
     public void removeTimeListener(TimeListener listener) {
-        if(!this.listeners.remove(listener)) {
-            System.out.println("디버그");
-        }
+        this.listeners.remove(listener);
     }
 
     public int getListenerCount() {
@@ -55,7 +50,6 @@ public class TimeCounter{
     }
 
     public void loop() {
-        startTimeMills = currentTimeMills;
         secondLogic();
         if(runningTimeSecond % 60 == 0) {
             minuteLogic();

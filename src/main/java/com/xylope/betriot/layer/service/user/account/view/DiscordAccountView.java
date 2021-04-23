@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user_v2.account.view;
+package com.xylope.betriot.layer.service.user.account.view;
 
 import com.xylope.betriot.layer.logic.discord.SpecialEmote;
 import com.xylope.betriot.layer.logic.discord.message.PrivateEmbedMessageSenderWithCallback;
@@ -44,9 +44,7 @@ public class DiscordAccountView implements AccountView{
                         "이용 약관에 동의하지 않거나, 해당 봇에 가입을 희망하지 않으신다면, %s 이모지를 달아주세요.",
                 SpecialEmote.TERMS_AGREE.getEmote(), SpecialEmote.TERMS_DISAGREE.getEmote());
 
-        String policyFieldB = String.format(
-                "이용약관입니다"
-        );
+        String policyFieldB = "이용약관입니다";
 
         MessageEmbed message = new EmbedBuilder()
                 .setColor(COLOR)
@@ -70,10 +68,11 @@ public class DiscordAccountView implements AccountView{
                 .setColor(COLOR)
                 .setTitle(pc.getUser().getName() + "님의 라이엇 닉네임을 입력해주세요!")
                 .build();
-        AtomicLong messageId = new AtomicLong();
+        AtomicLong messageId = new AtomicLong(-1);
 
         privateEmbedMessageSenderWithCallback.sendMessage(pc, message,
                 (msg) -> messageId.set(msg.getIdLong()));
+        while (messageId.get() == -1);
 
         return messageId.get();
     }
@@ -89,10 +88,11 @@ public class DiscordAccountView implements AccountView{
                 .addField("", description, false)
                 .build();
 
-        AtomicLong messageId = new AtomicLong();
+        AtomicLong messageId = new AtomicLong(-1);
 
         privateEmbedMessageSenderWithCallback.sendMessage(pc, message,
                 (msg) -> messageId.set(msg.getIdLong()));
+        while (messageId.get() == -1);
 
         return messageId.get();
     }
@@ -106,6 +106,29 @@ public class DiscordAccountView implements AccountView{
     public void sendUserDenyPolicyView(PrivateChannel pc) {
 
         privateMessageSender.sendMessage(pc, String.format("이용 약관에 비동의하셧습니다! (%s)", getPolicyTimeStamp()));
+    }
+
+    @Override
+    public void sendRiotAuthorizeSucessView(PrivateChannel pc) {
+        MessageEmbed message = new EmbedBuilder()
+                .setTitle(pc.getUser().getName() + "님, 환영합니다!")
+                .setColor(COLOR)
+                .addField("회원가입이 완료되셧습니다!", "이제 뱃라이엇을 통해서 자신의 경기를 배팅하고, 배팅에 참여할 수 있습니다!\n 일확천금의 기회를 놓치지 마세요!\n행운을빕니다..", false)
+                .setFooter("시작티어 : 아이언")
+                .build();
+        privateEmbedMessageSenderWithCallback.sendMessage(pc, message, msg->{});
+    }
+
+    @Override
+    public void sendRiotAuthorizeFailureView(PrivateChannel pc) {
+        String message = "라이엇 인증에 실패하셧습니다! 회원가입 절차를 처음부터 다시진행해주세요.";
+        privateMessageSender.sendMessage(pc, message);
+    }
+
+    @Override
+    public void sendRemoveAccountView(PrivateChannel pc) {
+        String message = "회원탈퇴가 정상적으로 완료되었습니다!";
+        privateMessageSender.sendMessage(pc, message);
     }
 
     private String getPolicyTimeStamp() {

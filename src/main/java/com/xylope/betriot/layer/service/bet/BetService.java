@@ -10,7 +10,7 @@ import com.xylope.betriot.layer.service.bet.controller.BetController;
 import com.xylope.betriot.layer.service.bet.model.BetProgress;
 import com.xylope.betriot.layer.service.bet.model.BetUserVO;
 import com.xylope.betriot.layer.service.bet.model.WinOrLose;
-import com.xylope.betriot.layer.service.user_v2.dao.BankUserDao;
+import com.xylope.betriot.layer.service.user.dao.BankUserDao;
 import com.xylope.betriot.manager.TimeCounter;
 import com.xylope.betriot.manager.TimeListenerAdapter;
 import org.joda.time.DateTime;

@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user_v2.account.model;
+package com.xylope.betriot.layer.service.user.account.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,5 +14,9 @@ public class NewRegisterAccountDto {
     @Getter
     private final long policyMessageId;
     @Getter
-    private final long riotAuthorizeMessageId;
+    private final long riotNameAuthorizeMessageId;
+    @Getter
+    private final long riotAccountAuthorizeMessageId;
+    @Getter
+    private final int authorizeIconId;
 }

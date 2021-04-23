@@ -1,8 +1,6 @@
 package com.xylope.betriot.layer.domain.vo;
 
 import com.xylope.betriot.exception.DataNotFoundException;
-import com.xylope.betriot.exception.WrongRegisterProgressException;
-import com.xylope.betriot.layer.service.user.account.create.BeforeCreateAccountUser;
 import lombok.*;
 
 @AllArgsConstructor
@@ -24,17 +22,6 @@ public class UserVO {
         this.discordId = discordId;
         this.riotId = riotId;
         this.money = money;
-        this.permission = Permission.IRON;
-    }
-
-    public UserVO(BeforeCreateAccountUser beforeCreateAccountUser) {
-        this.discordId = beforeCreateAccountUser.getDiscordId();
-        try {
-            this.riotId = beforeCreateAccountUser.getRiotId();
-        } catch (WrongRegisterProgressException e) {
-            e.printStackTrace();
-        }
-        this.money = START_MONEY;
         this.permission = Permission.IRON;
     }
 

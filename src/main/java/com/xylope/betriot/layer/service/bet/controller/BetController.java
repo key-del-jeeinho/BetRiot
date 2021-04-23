@@ -11,7 +11,7 @@ import com.xylope.betriot.layer.domain.vo.BetParticipantVO;
 import com.xylope.betriot.layer.domain.vo.UserVO;
 import com.xylope.betriot.layer.service.bet.model.*;
 import com.xylope.betriot.layer.service.bet.view.BetView;
-import com.xylope.betriot.layer.service.user_v2.dao.BankUserDao;
+import com.xylope.betriot.layer.service.user.dao.BankUserDao;
 import lombok.AllArgsConstructor;
 import org.joda.time.DateTime;
 

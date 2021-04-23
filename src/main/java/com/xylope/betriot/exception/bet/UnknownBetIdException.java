@@ -3,7 +3,8 @@ package com.xylope.betriot.exception.bet;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class UnknownBetIdException extends RuntimeException {
+public class
+UnknownBetIdException extends RuntimeException {
     public UnknownBetIdException(String msg) {
         super(msg);
     }

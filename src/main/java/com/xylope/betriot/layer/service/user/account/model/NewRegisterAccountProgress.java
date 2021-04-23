@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user_v2.account.model;
+package com.xylope.betriot.layer.service.user.account.model;
 
 import com.xylope.betriot.exception.user.WrongAccountProgressException;
 import lombok.AllArgsConstructor;
@@ -23,14 +23,12 @@ public enum NewRegisterAccountProgress {
     @Setter
     private AtomicBoolean isPolicyAccept;
     @Setter
-    private boolean isRiotAccountAuthorize = false;
+    private boolean isRiotAccountAuthorize;
 
     public boolean getIsPolicyAccept() {
         try {
-            System.out.println("getPolicy is" + isPolicyAccept.get() + " - " + System.identityHashCode(this));
             return isPolicyAccept.get();
         } catch (NullPointerException e) {
-            System.out.println("null씨발 - " + System.identityHashCode(this));
             throw new WrongAccountProgressException(e);
         }
     }
@@ -47,7 +45,6 @@ public enum NewRegisterAccountProgress {
     }
 
     public void setPolicyAccept(boolean isPolicyAccept) {
-        System.out.println("setPolicy to " + isPolicyAccept + " - " + hashCode());
         this.isPolicyAccept = new AtomicBoolean(isPolicyAccept);
     }
 }

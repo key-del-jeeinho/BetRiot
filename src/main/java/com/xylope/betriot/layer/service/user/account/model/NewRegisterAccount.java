@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user_v2.account.model;
+package com.xylope.betriot.layer.service.user.account.model;
 
 import com.xylope.betriot.exception.user.WrongAccountProgressException;
 import com.xylope.betriot.layer.logic.discord.SpecialEmote;
@@ -15,7 +15,11 @@ public class NewRegisterAccount {
     @Getter @Setter
     private long policyMessageId;
     @Getter @Setter
-    private long riotAuthorizeMessageId;
+    private long riotNameAuthorizeMessageId;
+    @Getter @Setter
+    private long riotAccountAuthorizeMessageId;
+    @Getter @Setter
+    private int authorizeIconId;
 
     public NewRegisterAccount(long discordId) {
         this.discordId = discordId;
@@ -30,7 +34,7 @@ public class NewRegisterAccount {
         return this.progress == progress;
     }
 
-    void authorizeRiot(String emote) {
+    void authorizeRiotAccount(String emote) {
         if(SpecialEmote.RIOT_CHANGE_ICON_DONE.getEmote().equals(emote)) {
             progress.setRiotAccountAuthorize(true);
         }
@@ -38,7 +42,6 @@ public class NewRegisterAccount {
 
     void checkIsPolicyChecked(String emote) {
         if(SpecialEmote.TERMS_AGREE.getEmote().equals(emote)) {
-            System.out.println("씨이발 - " + System.identityHashCode(progress)); //정상작동
             progress.setPolicyAccept(true);
         }else if(SpecialEmote.TERMS_DISAGREE.getEmote().equals(emote)) {
             progress.setPolicyAccept(false);
@@ -68,7 +71,9 @@ public class NewRegisterAccount {
                 discordId,
                 riotName,
                 policyMessageId,
-                riotAuthorizeMessageId
+                riotNameAuthorizeMessageId,
+                riotAccountAuthorizeMessageId,
+                authorizeIconId
         );
     }
 }

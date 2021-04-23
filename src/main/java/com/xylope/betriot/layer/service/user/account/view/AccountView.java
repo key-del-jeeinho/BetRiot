@@ -1,4 +1,4 @@
-package com.xylope.betriot.layer.service.user_v2.account.view;
+package com.xylope.betriot.layer.service.user.account.view;
 
 import net.dv8tion.jda.api.entities.PrivateChannel;
 
@@ -9,4 +9,9 @@ public interface AccountView {
     long sendAuthorizeRiotAccountView(PrivateChannel pc, String iconUrl);
     void sendUserAcceptPolicyView(PrivateChannel pc);
     void sendUserDenyPolicyView(PrivateChannel pc);
+
+    void sendRiotAuthorizeSucessView(PrivateChannel pc);
+    void sendRiotAuthorizeFailureView(PrivateChannel pc);
+
+    void sendRemoveAccountView(PrivateChannel pc);
 }
